@@ -64,3 +64,12 @@ counter:
 
 highlight:
   enable: true
+
+# Deployment
+## Docs: https://hexo.io/docs/one-command-deployment
+deploy:
+  type: 'git'
+  repo: git@github.com:Wanger-SJTU/wanger-sjtu.github.io.git
+  branch: gh-pages
+  # 默认提交信息： Site updated: {{ now('YYYY-MM-DD HH:mm:ss') }}
+  message: ${{ github.event.head_commit.message }} # 直接将提交消息传输到 GitHub Pages 存储库
