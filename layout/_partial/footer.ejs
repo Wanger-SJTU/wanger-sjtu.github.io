@@ -1,47 +1,77 @@
-<div class="footer" id="footer">
-    <p><h4><%= __('footer.copyright') %> © 2020 | <%= __('footer.author') %>: <%= theme.author %> | <%= __('footer.theme') %> By <a class="theme-author" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
-    <% if (theme.counter.enable){ %>
-        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-        <span id="busuanzi_container_site_pv"><%= __('footer.site_pv') %>: <span id="busuanzi_value_site_pv"></span></span>
-        <span class="post-meta-divider">|</span>
-        <span id="busuanzi_container_site_uv"><%= __('footer.site_uv') %>: <span id="busuanzi_value_site_uv"></span></span>
-    <% } %>
-    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
-        <input type="checkbox" name="switch" id="update_style">
-        <span class="el-switch-style"></span>
-    </label>
 
-    <!--         <script type="text/javascript">
-    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
-    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
-    </script> -->
-</p>
-</div>
+<footer class="footer">
+    <ul class="list-inline text-center">
+        <% if (config.twitter_username) { %>
+        <li>
+            <a target="_blank" href="https://twitter.com/<%= config.twitter_username %>">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-twitter"></i>
+                            </span>
+            </a>
+        </li>
+        <% } %>
+        <% if (config.zhihu_username) { %>
+        <li>
+            <a target="_blank" href="https://www.zhihu.com/people/<%= config.zhihu_username %>">
+                            <span class="fa-stack fa-lg">
+                                 <i class="iconfont icon-zhihu"></i>
+                            </span>
+            </a>
+        </li>
+        <% } %>
 
-<input type="hidden" id="web_style" value="<%= theme.style %>">
-<input type="hidden" id="valine_appid" value="<%= theme.valine.appId %>">
-<input type="hidden" id="valine_appKey" value="<%= theme.valine.appKey %>">
-<%- js('libs/jquery.min.js') %>
-<%- js('libs/highlight/highlight.pack.js') %>
-<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
-<%- js('js/js.js') %>
-<style type="text/css">
-.v * {
-color: #698fca;
-}
-.v .vlist .vcard .vhead .vsys {
-color: #3a3e4a;
-}
-.v .vlist .vcard .vh .vmeta .vat {
-color: #638fd5;
-}
-.v .vlist .vcard .vhead .vnick {
-color: #6ba1ff;
-}
-.v a {
-color: #8696b1;
-}
-.v .vlist .vcard .vhead .vnick:hover {
-color: #669bfc;
-}
-</style>
+        <% if (config.weibo_username) { %>
+        <li>
+            <a target="_blank" href="http://weibo.com/<%= config.weibo_username %>">
+                            <span class="fa-stack fa-lg">
+                                  <i class="iconfont icon-weibo"></i>
+                            </span>
+            </a>
+        </li>
+        <% } %>
+
+        <% if (config.facebook_username) { %>
+        <li>
+            <a target="_blank" href="https://www.facebook.com/<%= config.facebook_username %>">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-facebook"></i>
+                            </span>
+            </a>
+        </li>
+        <% } %>
+
+        <% if (config.github_username) { %>
+        <li>
+            <a target="_blank"  href="https://github.com/<%= config.github_username %>">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        <% } %>
+
+        <% if (config.linkedin_username) { %>
+        <li>
+            <a target="_blank"  href="https://www.linkedin.com/in/<%= config.linkedin_username %>">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-linkedin"></i>
+                            </span>
+            </a>
+        </li>
+        <% } %>
+
+    </ul>
+    <% if(config.friends) { %>
+    <p>
+        <span>/</span>
+        <% config.friends.forEach(function(friend){ %>
+        <span><a href="<%= friend.href %>"><%= friend.title %></a></span>
+        <span>/</span>
+        <% }); %>
+    </p>
+    <% }%>
+    <p>
+        Created By <a href="https://hexo.io/">Hexo</a>  Theme <a href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+

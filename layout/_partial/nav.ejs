@@ -1,47 +1,80 @@
 
-<div class="hd">
-    <ol class="breadcrumb">
-        <% for (name in theme.menu) { %>
-            <li><a class="ba" href="<%- url_for(theme.menu[name]) %>"><%= name %></a></li>
-        <% } %>
-
-            <%- js('libs/jquery.min.js') %>
-            <%- js('js/search.js') %>
-            <% if (theme.search.enable) { %>
-                <form class="site-search-form">
-                    <i class="fa fa-search" id="search-logo"><input type="text" id="local-search-input" class="st-search-input" /></i>
-                </form>
-                <div id="local-search-result" class="local-search-result-cls"></div>
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar <% if(config.avatar_style && config.avatar_style.radius) {%>radius<% } %>">
+            <img src="<%= config['sidebar-avatar'] %>" />
+        </div>
+        <div class="name">
+            <i><%= config.author %></i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li <% if(is_home()){ %> <%- "class=active" %> <% } %>>
+                <a href="<%= url_for(config.home_dir || '/') %>">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span><%= __('nav.home') %></span>
+                </a>
+            </li>
+            <li <% if(is_current('tags')){ %> <%- "class=active" %> <% } %>>
+                <a href="<%= url_for(config.tag_dir) %>">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span><%= __('nav.tags') %></span>
+                </a>
+            </li>
+            <li <% if(is_current('archive')){ %> <%- "class=active" %> <% } %>>
+                <a href="<%= url_for(config.archive_dir) %>">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span><%= __('nav.archives') %></span>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.vvzero.com">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>主站</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://iot.vvzero.com">
+                    <i class="iconfont icon-guidang"></i>
+                    <span>购买极客产品</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://status.vvzero.com">
+                    <i class="iconfont icon-guanyu1"></i>
+                    <span>服务监测</span>
+                </a>
+            </li>
+            <%if(config.search && config.search.path){%>
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span><%= __('nav.search') %></span>
+                </a>
+            </li>
             <% } %>
-            <script type="text/javascript" id="local.search.active">
-                var inputArea       = document.querySelector("#local-search-input");
-                var getSearchFile = function(){
-                    var path = "/search.xml";
-                    searchFunc(path, 'local-search-input', 'local-search-result');
-                }
-                inputArea.onfocus = function(){ getSearchFile() }
+        </ul>
+    </div>
+    <%
+        if(is_post()){
+        // if(/[0-9]*\/[0-9]*\/[0-9]*\//.test(path)){
+    %>
+        <%- partial('./toc', {item: page, index: false}) %>
+    <% } %>
+</div>
 
-                var $resetButton = $("#search-form .fa-times");
-                var $resultArea = $("#local-search-result");
 
-                inputArea.oninput = function(){ $resetButton.show(); }
-                resetSearch = function(){
-                    $resultArea.html("");
-                    document.querySelector("#search-form").reset();
-                    $resetButton.hide();
-                    $(".no-result").hide();
-                }
-                inputArea.onkeydown = function(){ if(event.keyCode == 13) return false }
-                //No search result
-                $resultArea.bind("DOMNodeRemoved DOMNodeInserted", function(e) {
-                    if (!$(e.target).text()) {
-                        $(".no-result").show(100);
-                    } else {
-                        $(".no-result").hide();
-                    }
-                })
-            </script>
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search"><%= __('search.search') %></span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
 
-    </ol>
-    <hr>
+        </div>
+    </div>
 </div>
