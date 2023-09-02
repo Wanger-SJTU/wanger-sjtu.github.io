@@ -21,6 +21,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '18.17.1' # 自己正在使用的node版本即可
+      - name: Git Clone and Global Config
+        run: 
+          git config --global user.email "howiechen@sjtu.edu.cn"
+          git config --global user.name "wanger"
       # - run: node -v # 查看node版本号
       # 缓存依赖项: https://docs.github.com/cn/actions/using-workflows/caching-dependencies-to-speed-up-workflows
       - name: Cache NPM dependencies
