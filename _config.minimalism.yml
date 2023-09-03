@@ -10,3 +10,9 @@ comment:
       repository: wanger-sjtu.github.io
       owner: wanger-sjtu
       createIssueManually: true
+
+menu:
+  about:
+    url: "/about/"
+    External: false
+    name: 关于
