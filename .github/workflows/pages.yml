@@ -21,6 +21,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '18.17.1' # 自己正在使用的node版本即可
+      - name: npm install
+        run: |
+          npm install hexo-generator-sitemap --save
+          npm install hexo-generator-feed --save
+
       - name: Global Config
         env:
           ACTIONS_DEPLOY_KEY: ${{secrets.ACTIONS_DEPLOY_KEY}}

@@ -11,6 +11,25 @@ comment:
       owner: wanger-sjtu
       createIssueManually: true
 
+feed:
+  type: # Feed 类型，可选值：atom、rss2、rdf
+    - atom
+    - rss2
+  path: # 可选多个
+    - atom.xml
+    - rss2.xml
+  limit: 30
+  hub:
+  content:
+  content_limit: 160
+  content_limit_delim: ' '
+  order_by: -date
+
+sitemap:
+  path: # 可选只要一个
+    - sitemap.xml
+  rel: true # 是否在页面头部添加 rel="sitemap" 链接
+
 menu:
   about:
     url: "/about/"
