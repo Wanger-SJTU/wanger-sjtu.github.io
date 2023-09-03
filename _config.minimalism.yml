@@ -35,3 +35,9 @@ menu:
     url: "/about/"
     External: false
     name: 关于
+
+# 联系方式
+contact:
+  github: "https://github.com/Wanger-SJTU"
+  zhihu: "https://www.zhihu.com/people/wang-er-90-86"
+  cnblog: "https://www.cnblogs.com/wanger-sjtu"
