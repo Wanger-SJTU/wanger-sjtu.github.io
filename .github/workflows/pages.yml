@@ -5,6 +5,11 @@ on:
   push:
     branches:
       - gh-pages  # default branch
+
+env:
+  THEME_REPO: Wanger-SJTU/hexo-theme-minimalism
+  THEME_BRANCH: master
+
 jobs:
   # 子任务
   pages:
@@ -14,8 +19,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: true
-          fetch-depth: 1
+          submodules: false
+          # fetch-depth: 1
+      
+      - name: Checkout theme repo
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.THEME_REPO }}
+          ref: ${{ env.THEME_BRANCH }}
+          path: themes/minimalism
+
       # 每个name表示一个步骤:step
       - name: Use Node.js 18.x
         uses: actions/setup-node@v2
@@ -25,7 +38,6 @@ jobs:
         run: |
           npm install hexo-generator-sitemap --save
           npm install hexo-generator-feed --save
-
       - name: Global Config
         env:
           ACTIONS_DEPLOY_KEY: ${{secrets.ACTIONS_DEPLOY_KEY}}
