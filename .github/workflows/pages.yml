@@ -7,7 +7,7 @@ on:
       - gh-pages  # default branch
 
 env:
-  THEME_REPO: Wanger-SJTU/hexo-theme-minimalism
+  THEME_REPO: Wanger-SJTU/maupassant-hexo
   THEME_BRANCH: master
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
         with:
           repository: ${{ env.THEME_REPO }}
           ref: ${{ env.THEME_BRANCH }}
-          path: themes/minimalism
+          path: themes/maupassant
 
       # 每个name表示一个步骤:step
       - name: Use Node.js 18.x
