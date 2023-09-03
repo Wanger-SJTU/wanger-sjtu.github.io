@@ -1,0 +1,12 @@
+image.lazyload_enable: true
+
+comment:
+  enable: true
+  system: gitalk
+  config:
+    gitalk:
+      clientId: "25c52264eb62b88a09d0"
+      clientSecret: "08dd790dcadb5826a40004b55e56414d2f477734"
+      repository: wanger-sjtu.github.io
+      owner: wanger-sjtu
+      createIssueManually: true
