@@ -66,7 +66,7 @@ show_category_count: false
 toc_number: true 
 shareto: false 
 busuanzi: false 
-wordcount: true 
+wordcount: false 
 widgets_on_small_screens: false 
 canvas_nest:
   enable: false 
