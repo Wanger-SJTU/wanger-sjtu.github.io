@@ -38,6 +38,8 @@ jobs:
         run: |
           npm install hexo-generator-sitemap --save
           npm install hexo-generator-feed --save
+          npm install hexo-renderer-pug --save  
+          npm install hexo-renderer-sass --save
       - name: Global Config
         env:
           ACTIONS_DEPLOY_KEY: ${{secrets.ACTIONS_DEPLOY_KEY}}

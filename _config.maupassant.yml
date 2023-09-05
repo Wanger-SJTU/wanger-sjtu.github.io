@@ -110,6 +110,17 @@ menu:
     directory: atom.xml
     icon: fa-rss
 
+info:
+  avatar: /img/avatar.png
+  discription: To be a better man.
+  outlinkitem:
+    - name: github
+      outlink: https://github.com/Wanger-SJTU
+      message: Github
+    - name: rss
+      outlink: /atom.xml
+      message: RSS
+
 widgets: 
   - search
   - category
