@@ -1,5 +1,6 @@
 ---
 title: 利用 Github Actions 自动部署 Hexo 博客
+date: 2023-08-03 20:55:35
 tags:
 ---
 
