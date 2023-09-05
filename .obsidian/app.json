@@ -2,7 +2,7 @@
   "useMarkdownLinks": true,
   "attachmentFolderPath": "./",
   "newFileLocation": "folder",
-  "newFileFolderPath": "source/_draft",
+  "newFileFolderPath": "source/_drafts",
   "newLinkFormat": "relative",
   "promptDelete": false,
   "mobileToolbarCommands": [
