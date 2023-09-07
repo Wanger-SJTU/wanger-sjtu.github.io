@@ -1,5 +1,4 @@
 ---
-layout: sve学习记录-
 title: SVE特性以及寄存器
 date: 2023-09-05 22:18:30
 tags:
