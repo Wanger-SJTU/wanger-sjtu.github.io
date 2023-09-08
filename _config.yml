@@ -86,6 +86,8 @@ ignore:
 # theme: minimalism
 theme: maupassant
 
+mathjax: true  
+
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy: 
