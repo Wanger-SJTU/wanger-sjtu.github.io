@@ -40,6 +40,7 @@ jobs:
           npm install hexo-generator-feed --save
           npm install hexo-renderer-pug --save  
           npm install hexo-renderer-sass --save
+          npm install hexo-filter-mermaid-diagrams
       - name: Global Config
         env:
           ACTIONS_DEPLOY_KEY: ${{secrets.ACTIONS_DEPLOY_KEY}}

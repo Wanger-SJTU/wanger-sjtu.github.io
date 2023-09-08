@@ -5,6 +5,7 @@ tags:
 ---
 
 TVM在编译过程中，经历了
+
 ```mermaid
 graph LR
   A[3rd IR] --> B[Relay IR]
@@ -12,6 +13,7 @@ graph LR
   C --> D[LLVM IR]
   C -->E[Source]
 ```
+
 这一系列的过程。其中在生成cpu、rocm、nvptx、hexagon等平台的相关代码的时候，会先由TVM的`TIR`转换为`LLVM IR`,在后续由LLVM生成相关的机器码。
 
 这一步是由`tvm::codegen::Build`调用转换的。
