@@ -3,10 +3,9 @@ title: 初始化方法-基本到kaiming
 date:  2019-09-04 01:23:37
 tags:
   - DL
+category:
+  - DL
 ---
-
-
-
 ### 为什么需要初始化
 
 初始化的原因，
