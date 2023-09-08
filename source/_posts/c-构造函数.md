@@ -1,11 +1,12 @@
 ---
-title:  C++的构造函数以及拷贝构造函数
-date:   2019-4-26
-tags: 
-	 - C++
+title: c++构造函数
+tags:
+  - C++
+category:
+  - C++
+date: 2019-4-26 21:22:45
 ---
 
-如显示不正常点击查看[markdown](https://github.com/Wanger-SJTU/Wanger-SJTU.github.io/blob/master/_posts/2019-04-26-%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0.md)
 
 ## 调用拷贝构造函数的几种情况
 
