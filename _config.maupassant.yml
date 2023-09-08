@@ -111,8 +111,8 @@ menu:
     icon: fa-rss
 
 info:
-  avatar: /img/avatar.png
-  discription: To be a better man.
+  # avatar: /img/avatar.png
+  discription: 我已经四十岁了，除了这只猪，还没见过谁敢于如此无视对生活的设置。
   outlinkitem:
     - name: github
       outlink: https://github.com/Wanger-SJTU
