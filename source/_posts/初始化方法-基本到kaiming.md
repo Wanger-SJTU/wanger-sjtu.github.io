@@ -1,6 +1,6 @@
 ---
-title:  初始化方法-基本到kaiming
-date:   2019-09-04T01:23:37.942Z+08:00
+title: 初始化方法-基本到kaiming
+date:  2019-09-04 01:23:37
 tags:
   - DL
 ---
@@ -74,9 +74,8 @@ print(x.mean(), x.std())
 $$
 y_i= \sum_{k=1}^{n-1}a_{i,k}x_k
 $$
+
 $i$ 是矩阵 $\mathbf{m}$ 的行，$k$ 是矩阵 $\mathbf{m}$ 的列。python的计算代码
-
-
 ```python
 y[i] = sum([c*d for c,d in zip(a[i], x)])
 ```
@@ -219,11 +218,11 @@ $$
 
 Glorot and Bengio 认为Xavier 初始化方法，可以在包含激活函数的神经网络中保持方差的变化很小。
 
-![img](https://tuchuang-1259359185.cos.ap-chengdu.myqcloud.com/bolgs/Xavier.png)
+![img](初始化方法-基本到kaiming/Xavier.png)
 
 除此之外，同样证明了，传统方法在底层网络方差大，高层网络方差趋近于0的现象。
 
-![](https://tuchuang-1259359185.cos.ap-chengdu.myqcloud.com/bolgs/Xavier2.png)
+![](初始化方法-基本到kaiming/Xavier2.png)
 
 ```python
 def xavier(m,n):
@@ -313,7 +312,7 @@ print(x.mean(), x.std())
 
 下图给出了两种方法在一个30层CNN上的结果。
 
-![kaiming method](https://tuchuang-1259359185.cos.ap-chengdu.myqcloud.com/bolgs/kaiming.png)
+![kaiming method](初始化方法-基本到kaiming/kaiming.png)
 
 ---
 
