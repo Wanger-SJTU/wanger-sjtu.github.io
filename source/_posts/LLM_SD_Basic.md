@@ -1,5 +1,6 @@
 ---
 title: 了解LLM——LLM&& SD 基本概念
+mathjax: true 
 tags:
   - LLM
   - SD

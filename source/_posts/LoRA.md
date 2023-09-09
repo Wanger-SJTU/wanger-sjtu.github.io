@@ -1,5 +1,6 @@
 ---
 title: 了解LLM —— LoRA
+mathjax: true 
 tags:
   - llm
 category:
