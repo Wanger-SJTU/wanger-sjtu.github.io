@@ -98,7 +98,7 @@ Vectorizer(Var var, int var_lanes) : var_(var), var_lanes_(var_lanes) {
 
 因为TVM中，Stmt的表达可以视为一个DSL的语言，访问的时候也是按照深度优先的策略遍历的AST，这里把上面的计算过程简单表示为一个AST的语法树，然后再分析一下流程中调用的各个函数是如何处理的。
 
-![](https://img2023.cnblogs.com/blog/2462804/202306/2462804-20230624144328795-2055285024.png)
+![](VectorizeLoop/2462804-20230624144328795-2055285024.png)
 
 
 从上面的AST的示意图可以看出来，对于上面的sch，依次访问了`BufferStoreNode`、`Add` `Mul`、`BufferLoadNode` 等。这里就以这几个Node的处理介绍一下向量化的过程。

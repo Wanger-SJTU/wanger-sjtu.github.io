@@ -8,7 +8,6 @@ category:
 date: 2023-09-09 15:41:16
 ---
 
-本文地址:https://www.cnblogs.com/wanger-sjtu/p/17470327.html
 
 - 论文链接：[link](https://arxiv.org/abs/2106.09685)
 - code: [github](https://github.com/microsoft/LoRA)
@@ -18,7 +17,7 @@ LoRA，英文全称**L**ow-**R**ank **A**daptation of Large Language Models，�
 
 LoRA的基本原理是冻结预训练好的模型权重参数，在冻结原模型参数的情况下，通过往模型中加入额外的网络层，并只训练这些新增的网络层参数。由于这些新增参数数量较少，这样不仅 finetune 的成本显著下降，还能获得和全模型微调类似的效果
 
-![](https://img2023.cnblogs.com/blog/2462804/202306/2462804-20230609214112382-1836386385.png)
+![](LoRA/2462804-20230609214112382-1836386385.png)
 
 
 

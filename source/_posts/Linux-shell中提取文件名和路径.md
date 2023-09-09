@@ -6,7 +6,6 @@ tags:
     - linux
 ---
 
-本文地址： https://www.cnblogs.com/wanger-sjtu/p/17561896.html
 
 首先假设我的文件全称：/home/luna/Desktop/Software/softHLA/HLAreporter.v103/HLAreporter.sh.
 
