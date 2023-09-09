@@ -83,9 +83,9 @@ donate:
   btc_key: 
   paypal_url: 
 post_copyright:
-  enable: false 
-  author: 
-  copyright_text: 
+  enable: true 
+  author: 王二
+  copyright_text: "本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！"
 love: false 
 plantuml: 
   render: "PlantUMLServer" 
@@ -94,7 +94,7 @@ copycode: true
 dark: false 
 totop: true 
 external_css: false 
-mathjax: true  
+
 
 menu:
   - page: home
