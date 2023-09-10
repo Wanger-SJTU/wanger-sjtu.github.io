@@ -1,8 +1,9 @@
 ---
-title: ondevice_dynamic_shape
+title: 端侧AI框架动态shape的现状和展望
 tags:
-  - null
+  - TVM
+  - 框架
 category:
-  - null
+  - XX
 date: 2023-09-10 12:50:34
 ---
