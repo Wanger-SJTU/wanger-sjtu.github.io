@@ -65,7 +65,7 @@ fancybox: true
 show_category_count: false 
 toc_number: true 
 shareto: false 
-busuanzi: false 
+busuanzi: true 
 wordcount: false 
 widgets_on_small_screens: false 
 canvas_nest:
