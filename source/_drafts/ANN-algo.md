@@ -62,10 +62,21 @@ LSH即 local sensitive hash，局部敏感哈希。不同于sha256、MD5这种�
 1. 将查询数据经过LSH hash function哈希得到相应的编码；
 2. 通过hamming 距离计算query数据与底库数据的距离，返回最近邻的数据
 
+当然也有其他的实现方案，这里不一一列举了。
 ## 量化
 
+### PQ量化
+
+### SQ量化
+
+## IVF类方法
 ## 基于图的方法
 
+
+
+### NSW
+
+### HNSW
 # 部署加速方案
 
 
