@@ -1,0 +1,1 @@
+find ./source/ -empty -type d -print0 | xargs -0 -I {} touch "{}/.gitkeep"
