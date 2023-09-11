@@ -87,7 +87,6 @@ plugins:
     enable: true # enable mermaid or not
     theme: forest
     # version: "9.3.0" # default v9.3.0
-## Themes: https://hexo.io/themes/
 # theme: minimalism
 theme: maupassant
 
@@ -96,7 +95,6 @@ favicon:
   medium: /images/avatar.ico
 
 # Deployment
-## Docs: https://hexo.io/docs/one-command-deployment
 deploy: 
   type: git 
   repository: git@github.com:Wanger-SJTU/wanger-sjtu.github.io.git
