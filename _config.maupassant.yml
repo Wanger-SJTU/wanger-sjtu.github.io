@@ -106,9 +106,12 @@ menu:
   - page: about
     directory: about/
     icon: fa-user
-  - page: rss
-    directory: atom.xml
-    icon: fa-rss
+  - page: tags
+    directory: tags
+    icon: fa-tag
+  - page: category
+    directory: categories
+    icon: fa-category
 
 info:
   # avatar: /img/avatar.png
