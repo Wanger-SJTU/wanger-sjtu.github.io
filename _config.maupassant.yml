@@ -109,13 +109,13 @@ menu:
   - page: tags
     directory: tags
     icon: fa-tag
-  - page: category
-    directory: categories
-    icon: fa-category
+      #- page: category
+      #    directory: categories
+      #    icon: fa-category
 
 info:
   # avatar: /img/avatar.png
-  discription: 我已经四十岁了，除了这只猪，还没见过谁敢于如此无视对生活的设置。
+  discription: 除了这只猪，还没见过谁敢于如此无视对生活的设置。
   outlinkitem:
     - name: github
       outlink: https://github.com/Wanger-SJTU
