@@ -114,7 +114,7 @@ menu:
       #    icon: fa-category
 
 info:
-  # avatar: /img/avatar.png
+  avatar: /img/avatar.jpg
   discription: 除了这只猪，还没见过谁敢于如此无视对生活的设置。
   outlinkitem:
     - name: github

@@ -92,6 +92,8 @@ plugins:
 theme: maupassant
 
 mathjax: true  
+favicon:
+  medium: /images/avatar.ico
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
