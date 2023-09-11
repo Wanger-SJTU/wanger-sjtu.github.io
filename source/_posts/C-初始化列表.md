@@ -2,9 +2,9 @@
 title: C++初始化列表
 date: 2021-09-08 21:18:18
 tags: 
-  - C++
+  - CPP
 category:
-  - C++
+  - CPP
 ---
 
 类对象的构造顺序是： 

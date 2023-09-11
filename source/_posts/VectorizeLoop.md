@@ -2,7 +2,7 @@
 title: TVM 源码阅读PASS — VectorizeLoop
 tags:
   - TVM
-  - C++
+  - CPP
 category:
   - TVM
 date: 2023-09-09 14:30:56

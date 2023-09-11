@@ -1,9 +1,9 @@
 ---
 title: C++'s most vexing parse
 tags:
-  - C++
+  - CPP
 category:
-  - C++
+  - CPP
 date: 2023-08-09 15:48:06
 ---
 

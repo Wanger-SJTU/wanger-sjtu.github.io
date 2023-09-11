@@ -1,9 +1,9 @@
 ---
 title: c++构造函数
 tags:
-  - C++
+  - CPP
 category:
-  - C++
+  - CPP
 date: 2019-4-26 21:22:45
 ---
 

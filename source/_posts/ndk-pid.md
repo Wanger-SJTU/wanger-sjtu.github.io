@@ -2,10 +2,10 @@
 title: ndk std_thread 获取pid
 tags:
   - TVM
-  - C++
+  - CPP
   - NDK
 category:
-  - C++
+  - CPP
 date: 2023-09-09 15:49:36
 ---
 

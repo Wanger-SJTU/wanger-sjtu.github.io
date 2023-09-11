@@ -2,7 +2,7 @@
 title: tvm-多线程代码生成和运行
 tags:
   - TVM
-  - C++
+  - CPP
 category:
   - TVM
 date: 2023-08-09 15:48:52

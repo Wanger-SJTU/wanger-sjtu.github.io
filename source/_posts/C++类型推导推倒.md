@@ -1,12 +1,13 @@
 ---
-title: c++模型推倒
+title: c++类型推导
 date: 2021-04-20 17:41:22
 category: 
-    - C++
+    - CPP
 tags: 
-    - C++11
-    - C++14
+    - CPP11
+    - CPP14
 ---
+
 C++的模板类型推导，主要分为 `template`、`auto`、`decltype`三种情况。
 
 ## item-1 理解模板类型推导（template 和 auto）
