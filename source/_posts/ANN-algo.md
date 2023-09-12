@@ -1,13 +1,13 @@
 ---
 title: 从向量数据库到 ANN search
-mathjax: true 
 tags:
-  - ANN 
-  - 向量检索
+  - null
 category:
-  - ANN
+  - null
+mathjax: true
 date: 2023-09-10 11:54:04
 ---
+
 
 LLM的模型的爆火，意外带动了向量数据库的热度。之前名不见经传的一些初创公司也突然备受追捧。最近在分析端侧LLM场景的时候也分析了相关的一些向量数据库的相关知识。
 
