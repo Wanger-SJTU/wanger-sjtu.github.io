@@ -2,7 +2,7 @@
 title: 了解LLM —— LoRA
 mathjax: true 
 tags:
-  - llm
+  - LLM
   - Deep Learning
 category:
   - 技术

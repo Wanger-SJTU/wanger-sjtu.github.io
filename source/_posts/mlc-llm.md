@@ -1,8 +1,8 @@
 ---
 title: TVM－MLC LLM 调优方案 
 tags:
-  - tvm
-  - llm
+  - TVM
+  - LLM
 category:
   - 技术
 date: 2023-09-09 15:39:15
