@@ -3,8 +3,9 @@ title: 了解LLM —— LoRA
 mathjax: true 
 tags:
   - llm
+  - Deep Learning
 category:
-  - DL
+  - 技术
 date: 2023-09-09 15:41:16
 ---
 

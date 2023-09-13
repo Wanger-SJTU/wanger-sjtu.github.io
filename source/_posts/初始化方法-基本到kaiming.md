@@ -5,7 +5,7 @@ mathjax: true
 tags:
   - DL
 category:
-  - DL
+  - 技术
 ---
 ### 为什么需要初始化
 

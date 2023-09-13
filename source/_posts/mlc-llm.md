@@ -4,7 +4,7 @@ tags:
   - tvm
   - llm
 category:
-  - TVM
+  - 技术
 date: 2023-09-09 15:39:15
 ---
 

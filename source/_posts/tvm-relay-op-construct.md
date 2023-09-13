@@ -3,7 +3,7 @@ title: 【TVM模型编译】2. relay算子构造.md
 tags:
   - TVM
 category:
-  - TVM
+  - 技术
 date: 2023-08-09 15:51:21
 ---
 

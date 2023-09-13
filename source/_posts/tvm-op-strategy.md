@@ -3,7 +3,7 @@ title: 【tvm解析】 Operator Strategy 机制
 tags:
   - TVM
 category:
-  - TVM
+  - 技术
 date: 2023-08-09 15:50:30
 ---
 

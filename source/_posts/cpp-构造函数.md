@@ -3,7 +3,7 @@ title: c++构造函数
 tags:
   - CPP
 category:
-  - CPP
+  - 技术
 date: 2019-4-26 21:22:45
 ---
 

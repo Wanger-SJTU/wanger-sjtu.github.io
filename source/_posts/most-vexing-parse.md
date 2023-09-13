@@ -3,7 +3,7 @@ title: C++'s most vexing parse
 tags:
   - CPP
 category:
-  - CPP
+  - 技术
 date: 2023-08-09 15:48:06
 ---
 

@@ -3,7 +3,7 @@ title: 【TVM模型编译】0.onnx模型优化流程.md
 tags:
   - TVM
 category:
-  - TVM
+  - 技术
 date: 2023-08-09 15:52:43
 ---
 

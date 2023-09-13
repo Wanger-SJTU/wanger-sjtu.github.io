@@ -5,7 +5,7 @@ tags:
   - LLM
   - SD
 category:
-  - LLM
+  - 技术
 date: 2023-09-09 15:44:17
 ---
 

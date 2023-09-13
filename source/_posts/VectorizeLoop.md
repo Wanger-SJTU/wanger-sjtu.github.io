@@ -4,7 +4,7 @@ tags:
   - TVM
   - CPP
 category:
-  - TVM
+  - 技术
 date: 2023-09-09 14:30:56
 ---
 

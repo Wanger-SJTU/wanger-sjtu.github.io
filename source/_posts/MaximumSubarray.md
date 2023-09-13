@@ -3,7 +3,7 @@ title: 53.最大子序列和
 date:   2018-09-07
 mathjax: true  
 category: 
-  - leetcode
+  - 技术
 tags: 
    - leetcode
 ---

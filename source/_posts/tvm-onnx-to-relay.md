@@ -3,7 +3,7 @@ title: 【TVM模型编译】1. onnx2relay.md
 tags:
   - TVM
 category:
-  - TVM
+  - 技术
 date: 2023-08-09 15:53:17
 ---
 

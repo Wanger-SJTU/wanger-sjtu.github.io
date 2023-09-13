@@ -106,12 +106,12 @@ menu:
   - page: tags
     directory: tags
     icon: fa-tag
+  - page: categories
+    directory: categories
+    icon: fa-tag
   - page: about
     directory: about/
     icon: fa-user
-      #- page: category
-      #    directory: categories
-      #    icon: fa-category
 
 info:
   avatar: /img/avatar.jpg

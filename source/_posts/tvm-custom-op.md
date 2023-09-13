@@ -3,7 +3,7 @@ title: 【TVM教程】 自定义relay算子
 tags:
   - TVM
 category:
-  - TVM
+  - 技术
 date: 2023-08-09 15:52:02
 ---
 

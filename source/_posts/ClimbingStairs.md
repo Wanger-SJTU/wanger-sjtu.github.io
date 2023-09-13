@@ -3,7 +3,7 @@ title: 70. climbing stairs
 date:   2018-09-05
 mathjax: true 
 category: 
-  - leetcode
+  - 技术
 tags: 
    - leetcode
 ---

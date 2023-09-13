@@ -1,9 +1,9 @@
 ---
 title: 从向量数据库到 ANN search
 tags:
-  - null
+  - ANN
 category:
-  - null
+  - 技术
 mathjax: true
 date: 2023-09-10 11:54:04
 ---

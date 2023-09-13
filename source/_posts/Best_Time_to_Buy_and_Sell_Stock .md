@@ -3,7 +3,7 @@ title: 121. Best Time to Buy and Sell Stock
 date:   2018-08-02
 mathjax: true 
 category: 
-  - leetcode
+  - 技术
 tags: 
    - leetcode
 ---

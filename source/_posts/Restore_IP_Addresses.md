@@ -2,7 +2,7 @@
 title: 93. Restore IP Address 
 date:   2018-07-28
 category: 
-  - leetcode
+  - 技术
 tags: 
    - leetcode
 ---
