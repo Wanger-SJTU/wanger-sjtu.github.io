@@ -7,7 +7,6 @@ category:
 tags: 
    - leetcode
 ---
-[pre_prob 最长回文子字符串](./5.Longest Palindromic Substring.md)
 
 **题目**
 

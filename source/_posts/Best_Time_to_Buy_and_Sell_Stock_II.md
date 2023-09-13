@@ -9,7 +9,7 @@ tags:
 ---
 
 
-> 与[121](./121. Best Time to Buy and Sell Stock .md)不同的在于，121只能操作一次，而这个是可以操作任意次。
+> 与[121](./Best_Time_to_Buy_and_Sell_Stock)不同的在于，121只能操作一次，而这个是可以操作任意次。
 >
 > ```
 > Input: [7,1,5,3,6,4]

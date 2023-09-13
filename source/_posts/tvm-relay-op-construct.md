@@ -1,5 +1,5 @@
 ---
-title: 【TVM模型编译】2. relay算子构造.md 
+title: 【TVM模型编译】2. relay算子构造
 tags:
   - TVM
 category:
