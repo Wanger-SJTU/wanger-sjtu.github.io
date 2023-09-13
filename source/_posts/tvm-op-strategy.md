@@ -7,7 +7,6 @@ category:
 date: 2023-08-09 15:50:30
 ---
 
-
 Relay Operator Strategy是建立Relay IR与TOPI算子库的桥梁，通过Relay Operator Strategy，每个Relay IR至少与一个compute和一个schedule注册关联起来。至少一个原因在于，一个算子在不同后端设备上有不同的实现，而且一个算子可能有多种计算算法，适应不同场景。
 
 在增加relay IR 的教程里面注册算子的compute、schedule中，就是通过`OpStrategy`关联算子的compute与schedule

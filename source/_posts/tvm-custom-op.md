@@ -12,7 +12,7 @@ date: 2023-08-09 15:52:02
 新增relay算子基本是下面几个步骤：
 1. 定义新增算子的属性节点（Attribute Node），声明在编译时已知的固定参数
 2. 为新增算子编写类型关系，以集成到relay的类型系统中
-3. 使用C++`RELAY_REGISTER_OP`宏，为新增算子注册生命参数数量、类型、提示信息
+3. 使用C++ `RELAY_REGISTER_OP` 宏，为新增算子注册生命参数数量、类型、提示信息
 4. 算子的compute
 5. 注册算子的compute、schedule
 6. 定义C++函数，为新增算子生成调用节点，并为该函数注册 Python API hook
