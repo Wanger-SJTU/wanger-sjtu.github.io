@@ -16,7 +16,7 @@ gitalk:
   client_id: "25c52264eb62b88a09d0" 
   client_secret: "08dd790dcadb5826a40004b55e56414d2f477734" 
   admin: wanger-sjtu 
-  createIssueManually: false 
+  createIssueManually: true 
 valine: 
   enable: false 
   appid: 
