@@ -1,5 +1,5 @@
 ---
-title: 【tvm解析】 Operator Strategy 机制
+title: 【tvm解析】3. Operator Strategy 机制
 tags:
   - TVM
 category:
