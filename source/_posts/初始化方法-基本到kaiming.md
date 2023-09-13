@@ -3,7 +3,7 @@ title: 初始化方法-基本到kaiming
 date:  2019-09-04 01:23:37
 mathjax: true 
 tags:
-  - DL
+  - Deep Learning
 category:
   - 技术
 ---
