@@ -10,7 +10,7 @@ date: 2023-08-09 15:51:21
 
 从TVM的官方[Tutorial](https://www.cnblogs.com/wanger-sjtu/p/15046641.html)里面，介绍了如何新增自定义算子。(这是我翻译的)
 
-之前的文章讲到了[onnx 算子转换到Relay IR](https://www.cnblogs.com/wanger-sjtu/p/15018035.html)的过程
+之前的文章讲到了[onnx 算子转换到Relay IR](../tvm-onnx-to-relay)的过程
 下面以Conv2d算子介绍，编译过程中 Relay IR是如何被调用的。
 
 ## relay 算子调用

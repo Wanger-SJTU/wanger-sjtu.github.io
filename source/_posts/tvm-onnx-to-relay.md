@@ -7,7 +7,7 @@ category:
 date: 2023-08-09 15:53:17
 ---
 
-[上一篇](./tvm-onnx)介绍了onnx模型在tvm中优化的总体流程。
+[上一篇](../tvm-onnx)介绍了onnx模型在tvm中优化的总体流程。
 
 在这一篇中，介绍onnx模型到relay模型的转换流程，主要涉及了以下几个方面：
 - onnx算子到relay算子转换
