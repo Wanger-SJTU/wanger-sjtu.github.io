@@ -130,7 +130,7 @@ widgets:
   - tag
   - recent_posts
   - recent_comments
-  # - links
+  - recent_posts
 
 # links:
 #   - title: site-name1
