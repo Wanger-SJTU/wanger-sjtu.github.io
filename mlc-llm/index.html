@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>TVM－MLC LLM 调优方案 | 一只特立独行的猪</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script src="https://www.googletagmanager.com/gtag/js?id=G-D0GZY9PECP" async></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-D0GZY9PECP');
+</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">TVM－MLC LLM 调优方案</h1><a id="logo" href="/.">一只特立独行的猪</a><p class="description">既然我存在，就不能装作不存在</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/tags"><i class="fa fa-tag"> 标签</i></a><a href="/categories"><i class="fa fa-tag"> 分类</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">TVM－MLC LLM 调优方案</h1><div class="post-meta">2023-09-09<span> | </span><span class="category"><a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span></div><div class="post-content"><p>LLM 等GPT大模型大火以后,TVM社区推出了自己的部署方案，支持Llama，Vicuna，Dolly等模型在iOS、Android、GPU、浏览器等平台上部署运行。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/mlc-ai/mlc-llm">https://github.com/mlc-ai/mlc-llm</a></p>
+<p>本文在之前作者介绍的基础上,简要介绍一下mlc的调优部署方案。</p>
+<h2 id="pipeline"><a href="#pipeline" class="headerlink" title="pipeline"></a>pipeline</h2><p>在正式介绍TVM mlc.ai部署LLM方案之前，首先简要介绍一下当前主流LLM的一个工作流程。</p>
+<img src="/mlc-llm/2462804-20230621222850510-751335110.png" class="">
+
+
+<blockquote>
+<p>需要说明一点的是，上图中的prefill跟Decode指的的同一个模型，只是输入的shape存在差异。</p>
+</blockquote>
+<p>这里的示意图省略了很多，只是大致描述一下pipeline。<br>在处理用户输入时，此时长度大小是不能确定的，这时候是完全的是一个完全的动态shape的。但在decode过程中由于是token by token的，这时候网络中的中除了kv cache相关几个部分，其他大多数的操作都是固定shape的，就可以用已有的算法调优了。</p>
+<h2 id="MLC-AI-部署调优方案"><a href="#MLC-AI-部署调优方案" class="headerlink" title="MLC.AI 部署调优方案"></a>MLC.AI 部署调优方案</h2><p>以下以RedPajama3B模型的tuning跟build过程介绍一下mlc的方案。</p>
+<h3 id="pipeline-组成"><a href="#pipeline-组成" class="headerlink" title="pipeline 组成"></a>pipeline 组成</h3><p>在已经支持的几个模型里面均有<code>get_model</code> 这个函数，在这个函数里面会创建下面4个IRModel。</p>
+<ul>
+<li>encoding_func</li>
+<li>decoding_func</li>
+<li>create_kv_cache_func</li>
+<li>create_softmax_func</li>
+<li>create_metadata_func</li>
+</ul>
+<p><strong>encoding_func</strong><br>这对应了上图中的prefill过程，在每次用户输入后调用。由于用户输入的不确定性，所以这个过程基本上都是动态shape的，很难确定到底输入是多大，也不适合搜索调优。</p>
+<p><strong>decoding_func</strong><br>这是上图中decode过程的一部分，因为这个过程是token by token的，在计算过程中大部分的计算是固定shape的。</p>
+<p><strong>create kv cache func</strong><br>这里是直接调用的<code>relax.vm</code>中的函数，创建的是kv cache的存储相关。</p>
+<p><strong>create softmax func</strong><br>这个也是解码过程的一部分，确切的说是采样过程中计算的一部分</p>
+<p>** create_metadata_func **<br>模型的meta信息，比如<code>model_name</code>、<code>stop_tokens</code>等</p>
+<h3 id="部署优化"><a href="#部署优化" class="headerlink" title="部署优化"></a>部署优化</h3><p>构建完以后，就进入到优化的阶段了。下面根据build.py过程描述一下过程。</p>
+<ol>
+<li><p>API构图构建了相关的模型，读取权重</p>
+</li>
+<li><p>量化</p>
+</li>
+<li><p>优化PASS</p>
+<ol>
+<li>FuseTransposeMatmul</li>
+<li>FuseDecodeMatmulEwise</li>
+<li>DeadCodeElimination</li>
+<li>LiftTransformParams</li>
+<li>split_transform_deploy_mod</li>
+</ol>
+</li>
+<li><p>Codegen 生成代码</p>
+<ol>
+<li>DispatchTIROperatorAdreno&#x2F;DispatchTIROperator&#x2F;DefaultGPUSchedule 手动优化的sch</li>
+<li>MetaScheduleApplyDatabase搜索的log生成固定shape的sch</li>
+</ol>
+</li>
+</ol>
+<h3 id="Tuning"><a href="#Tuning" class="headerlink" title="Tuning"></a>Tuning</h3><p>在MLC-LLM的代码仓里面已经提供了tuning的脚本，有一点需要先做一下，先调用build.py的文件，把静态shape的相关的函数分离出来。就得到了tuning文件中需要的<code>mod_tir_static.py</code></p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>TVM－MLC LLM 调优方案</p><p><span>文章作者：</span>王二</p><p><span>发布时间：</span>2023-09-09</p><p><span>最后更新：</span>2023-12-13</p><p><span>原始链接：</span><a href="/mlc-llm/">https://wanger-sjtu.github.io/mlc-llm/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://wanger-sjtu.github.io/mlc-llm/"></i></span></p><p><span>版权声明：</span>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TVM/" rel="tag">TVM</a></li></ul></div><div class="post-nav"><a class="pre" href="/LoRA/">了解LLM —— LoRA</a><a class="next" href="/VectorizeLoop/">TVM 源码阅读PASS — VectorizeLoop</a></div><div id="container"></div><link rel="stylesheet" type="text/css" href="//unpkg.com/gitalk/dist/gitalk.css"><script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script><script type="text/javascript" src="//unpkg.com/gitalk/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+  clientID: '25c52264eb62b88a09d0',
+  clientSecret: '08dd790dcadb5826a40004b55e56414d2f477734',
+  repo: 'wanger-sjtu.github.io',
+  owner: 'wanger-sjtu',
+  admin: ['wanger-sjtu'],
+  id: md5(location.pathname),
+  distractionFreeMode: false
+})
+gitalk.render('container')
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://wanger-sjtu.github.io"/></form></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpg"/></a><p>除了这只猪，还没见过谁敢于如此无视对生活的设置。</p><a class="info-icon" href="https://github.com/Wanger-SJTU" title="Github" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a><a class="info-icon" href="/atom.xml" title="RSS" target="_blank" style="margin-inline:5px"> <i class="fa fa-rss-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AB%9E%E5%88%86/">竞分</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" style="font-size: 15px;">体系结构</a> <a href="/tags/TVM/" style="font-size: 15px;">TVM</a> <a href="/tags/ANN/" style="font-size: 15px;">ANN</a> <a href="/tags/leetcode/" style="font-size: 15px;">leetcode</a> <a href="/tags/CPU/" style="font-size: 15px;">CPU</a> <a href="/tags/LLM/" style="font-size: 15px;">LLM</a> <a href="/tags/SD/" style="font-size: 15px;">SD</a> <a href="/tags/shell/" style="font-size: 15px;">shell</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/Deep-Learning/" style="font-size: 15px;">Deep Learning</a> <a href="/tags/CPP/" style="font-size: 15px;">CPP</a> <a href="/tags/CI/" style="font-size: 15px;">CI</a> <a href="/tags/%E7%AB%9E%E5%88%86/" style="font-size: 15px;">竞分</a> <a href="/tags/NDK/" style="font-size: 15px;">NDK</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/mlx-apple/">MLX 框架浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/ANN-algo/">从向量数据库到 ANN search</a></li><li class="post-list-item"><a class="post-list-link" href="/L1-cache-size/">L1 data 缓存为什么一般只有32K或者64K</a></li><li class="post-list-item"><a class="post-list-link" href="/ndk-pid/">ndk std_thread 获取pid</a></li><li class="post-list-item"><a class="post-list-link" href="/LLM_SD_Basic/">了解LLM——LLM&& SD 基本概念</a></li><li class="post-list-item"><a class="post-list-link" href="/LoRA/">了解LLM —— LoRA</a></li><li class="post-list-item"><a class="post-list-link" href="/mlc-llm/">TVM－MLC LLM 调优方案</a></li><li class="post-list-item"><a class="post-list-link" href="/VectorizeLoop/">TVM 源码阅读PASS — VectorizeLoop</a></li><li class="post-list-item"><a class="post-list-link" href="/SVE%E7%89%B9%E6%80%A7%E4%BB%A5%E5%8F%8A%E5%AF%84%E5%AD%98%E5%99%A8/">SVE特性以及寄存器</a></li><li class="post-list-item"><a class="post-list-link" href="/tir-to-llvm-ir/">tir_to_llvm_ir</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2023 <a href="/." rel="nofollow">一只特立独行的猪.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

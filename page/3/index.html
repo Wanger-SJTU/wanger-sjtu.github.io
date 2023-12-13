@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>一只特立独行的猪 | 既然我存在，就不能装作不存在</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script src="https://www.googletagmanager.com/gtag/js?id=G-D0GZY9PECP" async></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-D0GZY9PECP');
+</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">一只特立独行的猪</h1><a id="logo" href="/.">一只特立独行的猪</a><p class="description">既然我存在，就不能装作不存在</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/tags"><i class="fa fa-tag"> 标签</i></a><a href="/categories"><i class="fa fa-tag"> 分类</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title"><a href="/cpp-%E5%88%9D%E5%A7%8B%E5%8C%96%E5%88%97%E8%A1%A8/">C++初始化列表</a></h1><div class="post-meta">2021-09-08</div><div class="post-content">类对象的构造顺序是：1.分配内存，调用构造函数时，隐式／显示的初始化各数据成员；2.进入构造函数后在构造函数中执行一般赋值与计算。
+使用初始化列表有两个原因：原因1.必须这样做：
+《C++ Primer》中提到在以下三种情况下需要使用初始化成员列表： 
+
+需要初始化的数据成员是对象的情况(这里包含了继承情况下，通过显示调用父类的构造函数对父类数据成员进行初始...</div><p class="readmore"><a href="/cpp-%E5%88%9D%E5%A7%8B%E5%8C%96%E5%88%97%E8%A1%A8/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/%E5%88%9D%E5%A7%8B%E5%8C%96%E6%96%B9%E6%B3%95-%E5%9F%BA%E6%9C%AC%E5%88%B0kaiming/">初始化方法-基本到kaiming</a></h1><div class="post-meta">2019-09-04</div><div class="post-content">为什么需要初始化初始化的原因，
+
+防止每一层的输出太大或者太小，导致梯度反向传播过程中，梯度爆炸或者梯度消失。
+不能采用统一值得原因，因为统一值得初始化会使得每一层网络在不同通道学到得特征相同。
+
+上述原因都会导致，网络模型不能收敛。
+简单例子得说明假如我们有一个输入x ，定义为
+1&gt;&gt;&gt; x = torch.randn(512)
+
+x是&...</div><p class="readmore"><a href="/%E5%88%9D%E5%A7%8B%E5%8C%96%E6%96%B9%E6%B3%95-%E5%9F%BA%E6%9C%AC%E5%88%B0kaiming/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/%E9%93%BE%E8%A1%A8%E5%8F%8D%E8%BD%AC/">链表反转</a></h1><div class="post-meta">2019-07-23</div><div class="post-content">leetcode 206 单链表反转12输入: 1-&gt;2-&gt;3-&gt;4-&gt;5-&gt;NULL输出: 5-&gt;4-&gt;3-&gt;2-&gt;1-&gt;NULL
+
+迭代方法首先设置pre,cur,lat三个指针
+12pre   cur  latnull   1 -&gt; 2 -&gt; 3 -&gt; 4 -&gt; 5 -...</div><p class="readmore"><a href="/%E9%93%BE%E8%A1%A8%E5%8F%8D%E8%BD%AC/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/%E6%9F%94%E6%80%A7%E6%95%B0%E7%BB%84/">柔性数组</a></h1><div class="post-meta">2019-04-26</div><div class="post-content">这个问题是阿里的一个面试题。当时没有很清楚，答得很差，特地实验看一下运行结果。
+
+在结构体中定义了一个char*指针，与定义一个零元素的char数组有什么区别？
+
+作用常用来构成缓冲区。比起指针，用空数组有这样的优势：
+
+不需要初始化，数组名直接就是所在的偏移；
+不占任何空间，指针需要占用int长度空间，空数组不占任何空间。
+“这个数组不占用任何内存”，意味...</div><p class="readmore"><a href="/%E6%9F%94%E6%80%A7%E6%95%B0%E7%BB%84/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/cpp-%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/">c++构造函数</a></h1><div class="post-meta">2019-04-26</div><div class="post-content">调用拷贝构造函数的几种情况
+当类中成员有指针变量、类中有动态内存分配时常常需要用户自己定义拷贝构造函数。
+
+在什么情况下系统会调用拷贝构造函数：
+
+（1）用类的一个对象去初始化另一个对象时（2）当函数的形参是类的对象时（也就是值传递时），如果是引用传递则不会调用（3）当函数的返回值是类的对象或引用时
+
+代码示例：
+1234567891011121314151...</div><p class="readmore"><a href="/cpp-%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/Longest_Palindromic_Subsequence/">516.最长回文子序列</a></h1><div class="post-meta">2018-09-15</div><div class="post-content">题目
+
+给定字符串s，求其最长回文子序列（可以非连续）的长度
+
+
+DP
+
+当已知一个序列是回文时，添加首尾元素后的序列存在两种情况，一种是首尾元素相等，则最长回文的长度加2，当首尾元素不相等，则最长回文序列为仅添加首元素时的最长回文与仅添加尾元素时的最长回文之间的最大值。我们可以用$dp[i][j]$表示$s[i…j]$中的最长回文序列，而状态转移方程则是 ...</div><p class="readmore"><a href="/Longest_Palindromic_Subsequence/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/MaximumSubarray/">53.最大子序列和</a></h1><div class="post-meta">2018-09-07</div><div class="post-content">
+对于给定序列，得到最大和的子序列
+Example:
+123&gt;Input: [-2,1,-3,4,-1,2,1,-5,4],&gt;Output: 6&gt;Explanation: [4,-1,2,1] has the largest sum = 6.
+
+brute force
+
+遍历所有的可能答案，得到最大子序列和。
+
+12345678910def...</div><p class="readmore"><a href="/MaximumSubarray/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/Best_Time_to_Buy_and_Sell_Stock_II/">122.Best Time to Buy and Sell Stock II</a></h1><div class="post-meta">2018-09-06</div><div class="post-content">
+与121不同的在于，121只能操作一次，而这个是可以操作任意次。
+123Input: [7,1,5,3,6,4]Output: 7Explanation: Buy on day 2 (price = 1) and sell on day 3 (price = 5), profit = 5-1 = 4.Then buy on day 4 (price = 3...</div><p class="readmore"><a href="/Best_Time_to_Buy_and_Sell_Stock_II/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/ClimbingStairs/">70. climbing stairs</a></h1><div class="post-meta">2018-09-05</div><div class="post-content">描述
+
+n阶楼梯，每次一步或者两步，一共有多少种方法
+
+[Solutions](..&#x2F;prob_70_Climbing Stairs.py)
+brute_force
+
+$f(n)&#x3D;f(n-1)+f(n-2)$
+显然有，到第n阶楼梯有两种方法，从n-1过去，和n-2过去。即到n阶的方法等于这两种方法的和
+
+1234def brute_for...</div><p class="readmore"><a href="/ClimbingStairs/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/Best_Time_to_Buy_and_Sell_Stock%20/">121. Best Time to Buy and Sell Stock</a></h1><div class="post-meta">2018-08-02</div><div class="post-content">Say you have an array for which the $i^{th}$ element is the price of a given stock on day i.
+If you were only permitted to complete at most one transaction (i.e., buy one and sell ...</div><p class="readmore"><a href="/Best_Time_to_Buy_and_Sell_Stock%20/">阅读全文</a></p></div><nav class="page-navigator"><a class="extend prev" rel="prev" href="/page/2/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">下一页</a></nav><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" async></script></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://wanger-sjtu.github.io"/></form></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpg"/></a><p>除了这只猪，还没见过谁敢于如此无视对生活的设置。</p><a class="info-icon" href="https://github.com/Wanger-SJTU" title="Github" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a><a class="info-icon" href="/atom.xml" title="RSS" target="_blank" style="margin-inline:5px"> <i class="fa fa-rss-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AB%9E%E5%88%86/">竞分</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" style="font-size: 15px;">体系结构</a> <a href="/tags/TVM/" style="font-size: 15px;">TVM</a> <a href="/tags/ANN/" style="font-size: 15px;">ANN</a> <a href="/tags/leetcode/" style="font-size: 15px;">leetcode</a> <a href="/tags/CPU/" style="font-size: 15px;">CPU</a> <a href="/tags/LLM/" style="font-size: 15px;">LLM</a> <a href="/tags/SD/" style="font-size: 15px;">SD</a> <a href="/tags/shell/" style="font-size: 15px;">shell</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/Deep-Learning/" style="font-size: 15px;">Deep Learning</a> <a href="/tags/CPP/" style="font-size: 15px;">CPP</a> <a href="/tags/CI/" style="font-size: 15px;">CI</a> <a href="/tags/%E7%AB%9E%E5%88%86/" style="font-size: 15px;">竞分</a> <a href="/tags/NDK/" style="font-size: 15px;">NDK</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/mlx-apple/">MLX 框架浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/ANN-algo/">从向量数据库到 ANN search</a></li><li class="post-list-item"><a class="post-list-link" href="/L1-cache-size/">L1 data 缓存为什么一般只有32K或者64K</a></li><li class="post-list-item"><a class="post-list-link" href="/ndk-pid/">ndk std_thread 获取pid</a></li><li class="post-list-item"><a class="post-list-link" href="/LLM_SD_Basic/">了解LLM——LLM&& SD 基本概念</a></li><li class="post-list-item"><a class="post-list-link" href="/LoRA/">了解LLM —— LoRA</a></li><li class="post-list-item"><a class="post-list-link" href="/mlc-llm/">TVM－MLC LLM 调优方案</a></li><li class="post-list-item"><a class="post-list-link" href="/VectorizeLoop/">TVM 源码阅读PASS — VectorizeLoop</a></li><li class="post-list-item"><a class="post-list-link" href="/SVE%E7%89%B9%E6%80%A7%E4%BB%A5%E5%8F%8A%E5%AF%84%E5%AD%98%E5%99%A8/">SVE特性以及寄存器</a></li><li class="post-list-item"><a class="post-list-link" href="/tir-to-llvm-ir/">tir_to_llvm_ir</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2023 <a href="/." rel="nofollow">一只特立独行的猪.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

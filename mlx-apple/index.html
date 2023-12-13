@@ -1,0 +1,58 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>MLX 框架浅析 | 一只特立独行的猪</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script src="https://www.googletagmanager.com/gtag/js?id=G-D0GZY9PECP" async></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-D0GZY9PECP');
+</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">MLX 框架浅析</h1><a id="logo" href="/.">一只特立独行的猪</a><p class="description">既然我存在，就不能装作不存在</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/tags"><i class="fa fa-tag"> 标签</i></a><a href="/categories"><i class="fa fa-tag"> 分类</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">MLX 框架浅析</h1><div class="post-meta">2023-12-13<span> | </span><span class="category"><a href="/categories/%E7%AB%9E%E5%88%86/">竞分</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span></div><div class="post-content"><p>最近Apple 新发布了一个MLX的DL框架，这是继 ML Compute 可用于在 Mac 上进行 TensorFlow 模型的训练，PyTorch 在 M1芯片后可使用 Metal Performance Shaders (MPS) 作为GPU 加速的 PyTorch 机器学习模型训练之后，进一步的尝试。</p>
+<p>与MLX同时开源的还有数据读取的框架MLX-data，以及最近大模型相关的一些Example代码，MLX-examples</p>
+<h2 id="MLX特性"><a href="#MLX特性" class="headerlink" title="MLX特性"></a>MLX特性</h2><ul>
+<li><p><strong>Familiar APIs</strong>: MLX的python API 设计基本上与numpy和Pytorch对齐，基础的数据结构array设置可以隐式的转换为numpy的 Array。高层次的API mlx.nn 和mlx.optimizers则基本与pytorch对齐，使用方式也基本一致。C++ 的API与python基本一致。 这对算法开发人员来说上手的成本较低，历史代码也比较好迁移和继承。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> mlx.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> mlx.core <span class="keyword">as</span> np</span><br></pre></td></tr></table></figure>
+
+</li>
+<li><p><strong>Composable function transformations</strong>:  JAX </p>
+</li>
+<li><p>MLX has composable function transformations for automatic differentiation, automatic vectorization, and computation graph optimization.</p>
+</li>
+<li><p><strong>Lazy computation</strong>: 延迟计算，每部分的计算结果都是按需求值，也包括内存申请。</p>
+</li>
+<li><p><strong>Dynamic graph construction</strong>: 动态图构建，函数输入shape发生变化时，并不会触发编译，debug也很简单符合直觉。</p>
+</li>
+<li><p><strong>Multi-device</strong>: 多IP计算支持。当前支持CPU、GPU。因为ANE在Apple内部处于闭源的工具链，在这一现状没变化时，不会支持ANE。ref：<a target="_blank" rel="noopener" href="https://github.com/ml-explore/mlx/issues/18#issuecomment-1846492294">link</a></p>
+</li>
+<li><p><strong>Unified memory</strong>: 最大的特点在于统一的内存模型，MLX 中的在共享内存上分配，跨IP计算时无需拷贝移动数据。</p>
+</li>
+</ul>
+<h2 id="为什么还需要一个MLX"><a href="#为什么还需要一个MLX" class="headerlink" title="为什么还需要一个MLX"></a>为什么还需要一个MLX</h2><ul>
+<li>Apple silicon first</li>
+<li>Alternative Design and API</li>
+<li>Simple, Flexible, Baggage-Free</li>
+<li>More Exploration, More Diversity</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/ml-explore/mlx/issues/12">https://github.com/ml-explore/mlx/issues/12</a></p>
+<h2 id="缺少哪些部分"><a href="#缺少哪些部分" class="headerlink" title="缺少哪些部分"></a>缺少哪些部分</h2><ol>
+<li>图优化几近于无</li>
+<li>序列化、反序列化功能</li>
+<li>JIT 编译</li>
+<li>INT量化</li>
+</ol>
+<h2 id="性能以及现状"><a href="#性能以及现状" class="headerlink" title="性能以及现状"></a>性能以及现状</h2><p>M2 Max</p>
+<p>FP16 10 token&#x2F;s</p>
+<img src="/mlx-apple/20231213220124.png" class="">
+
+<img src="/mlx-apple/20231213220841.png" class="">
+
+<h2 id="可能的-Roadmap"><a href="#可能的-Roadmap" class="headerlink" title="可能的 Roadmap"></a>可能的 Roadmap</h2><ol>
+<li>有微调模型诉求的非算法人员。 比如lora、大模型的</li>
+<li>基础模型开源、lora微调以后，通过core ml导出</li>
+</ol>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>MLX 框架浅析</p><p><span>文章作者：</span>王二</p><p><span>发布时间：</span>2023-12-13</p><p><span>最后更新：</span>2023-12-13</p><p><span>原始链接：</span><a href="/mlx-apple/">https://wanger-sjtu.github.io/mlx-apple/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://wanger-sjtu.github.io/mlx-apple/"></i></span></p><p><span>版权声明：</span>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AB%9E%E5%88%86/" rel="tag">竞分</a></li></ul></div><div class="post-nav"><a class="next" href="/ANN-algo/">从向量数据库到 ANN search</a></div><div id="container"></div><link rel="stylesheet" type="text/css" href="//unpkg.com/gitalk/dist/gitalk.css"><script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script><script type="text/javascript" src="//unpkg.com/gitalk/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+  clientID: '25c52264eb62b88a09d0',
+  clientSecret: '08dd790dcadb5826a40004b55e56414d2f477734',
+  repo: 'wanger-sjtu.github.io',
+  owner: 'wanger-sjtu',
+  admin: ['wanger-sjtu'],
+  id: md5(location.pathname),
+  distractionFreeMode: false
+})
+gitalk.render('container')
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://wanger-sjtu.github.io"/></form></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpg"/></a><p>除了这只猪，还没见过谁敢于如此无视对生活的设置。</p><a class="info-icon" href="https://github.com/Wanger-SJTU" title="Github" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a><a class="info-icon" href="/atom.xml" title="RSS" target="_blank" style="margin-inline:5px"> <i class="fa fa-rss-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AB%9E%E5%88%86/">竞分</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" style="font-size: 15px;">体系结构</a> <a href="/tags/TVM/" style="font-size: 15px;">TVM</a> <a href="/tags/ANN/" style="font-size: 15px;">ANN</a> <a href="/tags/leetcode/" style="font-size: 15px;">leetcode</a> <a href="/tags/CPU/" style="font-size: 15px;">CPU</a> <a href="/tags/LLM/" style="font-size: 15px;">LLM</a> <a href="/tags/SD/" style="font-size: 15px;">SD</a> <a href="/tags/shell/" style="font-size: 15px;">shell</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/Deep-Learning/" style="font-size: 15px;">Deep Learning</a> <a href="/tags/CPP/" style="font-size: 15px;">CPP</a> <a href="/tags/CI/" style="font-size: 15px;">CI</a> <a href="/tags/%E7%AB%9E%E5%88%86/" style="font-size: 15px;">竞分</a> <a href="/tags/NDK/" style="font-size: 15px;">NDK</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/mlx-apple/">MLX 框架浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/ANN-algo/">从向量数据库到 ANN search</a></li><li class="post-list-item"><a class="post-list-link" href="/L1-cache-size/">L1 data 缓存为什么一般只有32K或者64K</a></li><li class="post-list-item"><a class="post-list-link" href="/ndk-pid/">ndk std_thread 获取pid</a></li><li class="post-list-item"><a class="post-list-link" href="/LLM_SD_Basic/">了解LLM——LLM&& SD 基本概念</a></li><li class="post-list-item"><a class="post-list-link" href="/LoRA/">了解LLM —— LoRA</a></li><li class="post-list-item"><a class="post-list-link" href="/mlc-llm/">TVM－MLC LLM 调优方案</a></li><li class="post-list-item"><a class="post-list-link" href="/VectorizeLoop/">TVM 源码阅读PASS — VectorizeLoop</a></li><li class="post-list-item"><a class="post-list-link" href="/SVE%E7%89%B9%E6%80%A7%E4%BB%A5%E5%8F%8A%E5%AF%84%E5%AD%98%E5%99%A8/">SVE特性以及寄存器</a></li><li class="post-list-item"><a class="post-list-link" href="/tir-to-llvm-ir/">tir_to_llvm_ir</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2023 <a href="/." rel="nofollow">一只特立独行的猪.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>
