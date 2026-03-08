@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="<%= config.language || 'zh-CN' %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><% if (page.title) { %><%= page.title %> - <% } %><%= config.title %></title>
+  <meta name="description" content="<%= config.description %>">
+  <meta name="keywords" content="<%= config.keywords %>">
+  <%- css('css/style') %>
+  <script>
+    (function() {
+      var savedTheme = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="<%= url_for() %>" class="site-title"><%= config.title %></a>
+      
+      <nav class="site-nav">
+        <% for (var name in theme.menu) { %>
+        <a href="<%= url_for(theme.menu[name]) %>" class="nav-link<% if (is_current(theme.menu[name])) { %> active<% } %>"><%= name %></a>
+        <% } %>
+      </nav>
+      
+      <div class="header-actions">
+        <% if (theme.search) { %>
+        <button class="search-toggle" id="search-toggle" aria-label="搜索">🔍</button>
+        <% } %>
+        <% if (theme.darkmode) { %>
+        <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">
+          <span class="icon-sun">☀️</span>
+          <span class="icon-moon">🌙</span>
+        </button>
+        <% } %>
+      </div>
+    </div>
+  </header>

@@ -1,0 +1,180 @@
+<!-- 时间线/废话页面模板 -->
+<div class="flow-page">
+  <header class="page-header">
+    <h1 class="page-title"><%= page.title || '废话' %></h1>
+    <% if (page.description) { %>
+    <p class="page-description"><%= page.description %></p>
+    <% } %>
+  </header>
+  
+  <div class="timeline">
+    <% 
+    // 从 page.flows 或 front-matter 获取时间线数据
+    var flows = page.flows || [];
+    if (flows.length > 0) {
+      flows.sort(function(a, b) {
+        return new Date(b.date) - new Date(a.date);
+      });
+    }
+    %>
+    
+    <% if (flows.length > 0) { %>
+      <% flows.forEach(function(item) { %>
+      <article class="timeline-item">
+        <time class="timeline-date" datetime="<%= item.date %>">
+          <%= date(item.date, 'YYYY年MM月DD日') %>
+        </time>
+        <div class="timeline-content">
+          <% if (item.title) { %>
+          <h3 class="timeline-title"><%= item.title %></h3>
+          <% } %>
+          <div class="timeline-body">
+            <% if (item.content) { %>
+            <%- item.content %>
+            <% } else if (item.text) { %>
+            <p><%= item.text %></p>
+            <% } %>
+          </div>
+          <% if (item.tags && item.tags.length) { %>
+          <div class="timeline-tags">
+            <% item.tags.forEach(function(tag) { %>
+            <span class="timeline-tag">#<%= tag %></span>
+            <% }); %>
+          </div>
+          <% } %>
+        </div>
+      </article>
+      <% }); %>
+    <% } else { %>
+      <!-- 如果没有 flows 数据，使用页面内容 -->
+      <div class="page-content">
+        <%- page.content %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<style>
+.flow-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-description {
+  color: var(--color-text-secondary);
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-border),
+    var(--color-accent),
+    var(--color-border)
+  );
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -2rem;
+  top: 0.5rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  border: 2px solid var(--color-accent);
+  transform: translateX(-5px);
+  z-index: 1;
+}
+
+.timeline-item:hover::before {
+  background: var(--color-accent);
+}
+
+.timeline-date {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.timeline-content {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.timeline-item:hover .timeline-content {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.timeline-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.timeline-body {
+  line-height: 1.7;
+}
+
+.timeline-body p:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-tags {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.timeline-tag {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  background: var(--color-hover);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+@media (max-width: 600px) {
+  .timeline {
+    padding-left: 1.5rem;
+  }
+  
+  .timeline::before {
+    left: 0;
+  }
+  
+  .timeline-item::before {
+    left: -1.5rem;
+    width: 10px;
+    height: 10px;
+  }
+}
+</style>

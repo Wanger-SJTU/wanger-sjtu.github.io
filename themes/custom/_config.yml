@@ -1,0 +1,28 @@
+# 主题配置
+# Theme Configuration
+
+# 网站菜单
+menu:
+  首页: /
+  简历: /resume
+  归档: /archives
+  标签: /tags
+  废话: /flows
+
+# 社交链接
+social:
+  github: https://github.com/your-username
+  email: mailto:your-email@example.com
+
+# 页脚信息
+footer:
+  since: 2026
+  copyright: Your Name
+
+# 功能开关
+darkmode: true
+search: true
+rss: true
+
+# 样式配置
+color_scheme: minimal

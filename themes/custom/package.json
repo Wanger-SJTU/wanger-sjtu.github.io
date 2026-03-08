@@ -1,0 +1,8 @@
+{
+  "name": "custom",
+  "version": "1.0.0",
+  "description": "简约黑白灰个人博客主题",
+  "main": "index.js",
+  "author": "bob",
+  "license": "MIT"
+}

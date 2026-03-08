@@ -1,0 +1,167 @@
+<!-- 简历页面模板 -->
+<% 
+// URL 安全验证函数 - 防止 URL 注入攻击
+function safeUrl(url) {
+  if (!url) return '#';
+  // 只允许 http:// 和 https:// 协议
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+  return '#';
+}
+%>
+<div class="resume-page">
+  <header class="resume-header">
+    <h1 class="resume-name"><%= page.name || config.author || '姓名' %></h1>
+    <% if (page.title || page.job_title) { %>
+    <p class="resume-title"><%= page.title || page.job_title %></p>
+    <% } %>
+    
+    <div class="resume-contact">
+      <% if (page.email) { %>
+      <a href="mailto:<%= page.email %>" class="contact-item">📧 <%= page.email %></a>
+      <% } %>
+      <% if (page.phone) { %>
+      <span class="contact-item">📱 <%= page.phone %></span>
+      <% } %>
+      <% if (page.location) { %>
+      <span class="contact-item">📍 <%= page.location %></span>
+      <% } %>
+      <% if (page.website) { %>
+      <a href="<%= safeUrl(page.website) %>" class="contact-item" target="_blank" rel="noopener noreferrer">🔗 <%= page.website %></a>
+      <% } %>
+      <% if (page.github) { %>
+      <a href="https://github.com/<%= page.github %>" class="contact-item" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <% } %>
+    </div>
+  </header>
+  
+  <div class="resume-content">
+    <%- page.content %>
+  </div>
+  
+  <footer class="resume-footer">
+    <p class="last-updated">最后更新：<%= date(page.updated || page.date, 'YYYY年MM月') %></p>
+  </footer>
+</div>
+
+<style>
+.resume-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.resume-header {
+  text-align: center;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: 2rem;
+}
+
+.resume-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.resume-title {
+  font-size: 1.25rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.resume-contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2rem;
+}
+
+.contact-item {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.contact-item:hover {
+  color: var(--color-accent);
+}
+
+.resume-content {
+  line-height: 1.8;
+}
+
+.resume-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.resume-content h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.resume-content ul {
+  margin: 0.5rem 0 1rem 1.5rem;
+}
+
+.resume-content li {
+  margin-bottom: 0.5rem;
+}
+
+.resume-content .experience-item,
+.resume-content .education-item,
+.resume-content .project-item {
+  margin-bottom: 1.5rem;
+}
+
+.resume-content .item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.resume-content .item-title {
+  font-weight: 600;
+}
+
+.resume-content .item-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.resume-content .item-date {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.resume-footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.last-updated {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 600px) {
+  .resume-name {
+    font-size: 2rem;
+  }
+  
+  .resume-contact {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+</style>

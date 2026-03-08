@@ -1,0 +1,56 @@
+<!-- 首页模板 -->
+<div class="home-page">
+  <section class="hero">
+    <h1 class="hero-title"><%= config.title %></h1>
+    <% if (config.subtitle) { %>
+    <p class="hero-subtitle"><%= config.subtitle %></p>
+    <% } %>
+  </section>
+  
+  <section class="posts-section">
+    <h2 class="section-title">最新文章</h2>
+    
+    <div class="post-cards">
+      <% page.posts.each(function(post) { %>
+      <article class="post-card">
+        <time class="post-date" datetime="<%= date(post.date, 'YYYY-MM-DD') %>">
+          <%= date(post.date, 'YYYY年MM月DD日') %>
+        </time>
+        <h3 class="post-title">
+          <a href="<%= url_for(post.path) %>"><%= post.title %></a>
+        </h3>
+        <% if (post.excerpt) { %>
+        <p class="post-excerpt"><%= strip_html(post.excerpt).substring(0, 150) %>...</p>
+        <% } else if (post.content) { %>
+        <p class="post-excerpt"><%= strip_html(post.content).substring(0, 150) %>...</p>
+        <% } %>
+        <div class="post-meta">
+          <% if (post.categories && post.categories.length) { %>
+          <span class="post-category">
+            <% post.categories.each(function(cat) { %>
+            <a href="<%= url_for(cat.path) %>"><%= cat.name %></a>
+            <% }); %>
+          </span>
+          <% } %>
+          <% if (post.tags && post.tags.length) { %>
+          <span class="post-tags">
+            <% post.tags.each(function(tag) { %>
+            <a href="<%= url_for(tag.path) %>#<%= tag.name %>">#<%= tag.name %></a>
+            <% }); %>
+          </span>
+          <% } %>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+    
+    <% if (page.total > 1) { %>
+    <nav class="pagination">
+      <%- paginator({
+        prev_text: '← 上一页',
+        next_text: '下一页 →'
+      }) %>
+    </nav>
+    <% } %>
+  </section>
+</div>

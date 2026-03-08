@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="<%= config.language || 'zh-CN' %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= page.title ? page.title + ' | ' + config.title : config.title %></title>
+  <meta name="description" content="<%= config.description %>">
+  <%- css('css/style') %>
+  <% if (theme.darkmode) { %>
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+  <% } %>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="logo"><%= config.title %></a>
+      <nav class="nav">
+        <% for (var name in theme.menu) { %>
+        <a href="<%= url_for(theme.menu[name]) %>" class="nav-link"><%= name %></a>
+        <% } %>
+      </nav>
+      <% if (theme.darkmode) { %>
+      <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <span class="icon-sun">☀️</span>
+        <span class="icon-moon">🌙</span>
+      </button>
+      <% } %>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <%- body %>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; <%= theme.footer.since || date(Date.now(), 'YYYY') %> <%= theme.footer.copyright || config.author %></p>
+      <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a></p>
+    </div>
+  </footer>
+
+  <% if (theme.darkmode) { %>
+  <script>
+    document.getElementById('themeToggle').addEventListener('click', function() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+  </script>
+  <% } %>
+  <%- js('js/main') %>
+</body>
+</html>
