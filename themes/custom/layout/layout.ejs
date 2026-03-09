@@ -21,7 +21,6 @@
 <body>
   <header class="header">
     <div class="container">
-      <a href="/" class="logo"><%= config.title %></a>
       <nav class="nav">
         <% for (var name in theme.menu) { %>
         <a href="<%= url_for(theme.menu[name]) %>" class="nav-link"><%= name %></a>
