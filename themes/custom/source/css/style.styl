@@ -224,7 +224,7 @@ img {
 /* 首页两栏布局 */
 .home-layout {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 400px;
   gap: 2rem;
   align-items: start;
 }
@@ -921,6 +921,18 @@ img {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.nonsense-list::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 2px;
+  background: var(--color-border);
 }
 
 .nonsense-item {
@@ -928,7 +940,21 @@ img {
   align-items: baseline;
   gap: 1rem;
   padding: 0.5rem 0;
+  position: relative;
   transition: background-color var(--transition);
+}
+
+.nonsense-item::before {
+  content: '';
+  position: absolute;
+  left: -1.5rem;
+  top: 0.75rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  border: 2px solid var(--color-accent);
+  z-index: 1;
 }
 
 .nonsense-item:hover {
@@ -937,6 +963,10 @@ img {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   border-radius: var(--radius);
+}
+
+.nonsense-item:hover::before {
+  background: var(--color-accent);
 }
 
 .nonsense-date {
