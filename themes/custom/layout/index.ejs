@@ -15,7 +15,11 @@
         <h2 class="section-title">最新文章</h2>
         
         <div class="post-cards">
-          <% page.posts.each(function(post) { %>
+          <% 
+          var postCount = 0;
+          page.posts.each(function(post) { 
+            if (postCount < 4) {
+          %>
           <article class="post-card">
             <time class="post-date" datetime="<%= date(post.date, 'YYYY-MM-DD') %>">
               <%= date(post.date, 'YYYY年MM月DD日') %>
@@ -45,7 +49,11 @@
               <% } %>
             </div>
           </article>
-          <% }); %>
+          <% 
+              postCount++;
+            }
+          }); 
+          %>
         </div>
         
         <% if (page.total > 1) { %>
