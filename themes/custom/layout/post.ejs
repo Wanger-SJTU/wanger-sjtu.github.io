@@ -1,59 +1,112 @@
 <!-- 文章页模板 -->
-<article class="post-page">
-  <header class="post-header">
-    <h1 class="post-title"><%= page.title %></h1>
-    <div class="post-meta">
-      <time class="post-date" datetime="<%= date(page.date, 'YYYY-MM-DD') %>">
-        📅 <%= date(page.date, 'YYYY年MM月DD日') %>
-      </time>
-      <% if (page.categories && page.categories.length) { %>
-      <span class="post-category">
-        📁 
-        <% page.categories.each(function(cat) { %>
-        <a href="<%= url_for(cat.path) %>"><%= cat.name %></a>
+<%
+// 获取相关文章（基于标签匹配）
+var relatedPosts = [];
+if (page.tags && page.tags.length) {
+  var currentTags = page.tags.map(function(tag) { return tag.name; });
+  var relatedMap = {};
+  
+  site.posts.each(function(post) {
+    if (post._id === page._id) return; // 排除当前文章
+    
+    if (post.tags && post.tags.length) {
+      post.tags.each(function(tag) {
+        if (currentTags.includes(tag.name)) {
+          if (!relatedMap[post._id]) {
+            relatedMap[post._id] = {
+              post: post,
+              score: 0
+            };
+          }
+          relatedMap[post._id].score++;
+        }
+      });
+    }
+  });
+  
+  // 按匹配分数排序，取前5篇
+  relatedPosts = Object.values(relatedMap)
+    .sort(function(a, b) { return b.score - a.score; })
+    .slice(0, 5)
+    .map(function(item) { return item.post; });
+}
+%>
+
+<div class="post-layout">
+  <article class="post-page">
+    <header class="post-header">
+      <h1 class="post-title"><%= page.title %></h1>
+      <div class="post-meta">
+        <time class="post-date" datetime="<%= date(page.date, 'YYYY-MM-DD') %>">
+          📅 <%= date(page.date, 'YYYY年MM月DD日') %>
+        </time>
+        <% if (page.categories && page.categories.length) { %>
+        <span class="post-category">
+          📁 
+          <% page.categories.each(function(cat) { %>
+          <a href="<%= url_for(cat.path) %>"><%= cat.name %></a>
+          <% }); %>
+        </span>
+        <% } %>
+        <% if (page.updated && page.updated.valueOf() !== page.date.valueOf()) { %>
+        <span class="post-updated">
+          ✏️ 更新于 <%= date(page.updated, 'YYYY年MM月DD日') %>
+        </span>
+        <% } %>
+      </div>
+    </header>
+    
+    <div class="post-content">
+      <%- page.content %>
+    </div>
+    
+    <% if (page.tags && page.tags.length) { %>
+    <footer class="post-footer">
+      <div class="post-tags">
+        <span class="tags-label">标签：</span>
+        <% page.tags.each(function(tag) { %>
+        <a href="<%= url_for(tag.path) %>" class="tag">#<%= tag.name %></a>
         <% }); %>
-      </span>
-      <% } %>
-      <% if (page.updated && page.updated.valueOf() !== page.date.valueOf()) { %>
-      <span class="post-updated">
-        ✏️ 更新于 <%= date(page.updated, 'YYYY年MM月DD日') %>
-      </span>
-      <% } %>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <%- page.content %>
-  </div>
-  
-  <% if (page.tags && page.tags.length) { %>
-  <footer class="post-footer">
-    <div class="post-tags">
-      <span class="tags-label">标签：</span>
-      <% page.tags.each(function(tag) { %>
-      <a href="<%= url_for(tag.path) %>" class="tag">#<%= tag.name %></a>
-      <% }); %>
-    </div>
-  </footer>
-  <% } %>
-  
-  <nav class="post-nav">
-    <% if (page.prev) { %>
-    <a href="<%= url_for(page.prev.path) %>" class="nav-prev">
-      <span class="nav-label">← 上一篇</span>
-      <span class="nav-title"><%= page.prev.title %></span>
-    </a>
-    <% } else { %>
-    <div class="nav-placeholder"></div>
+      </div>
+    </footer>
     <% } %>
     
-    <% if (page.next) { %>
-    <a href="<%= url_for(page.next.path) %>" class="nav-next">
-      <span class="nav-label">下一篇 →</span>
-      <span class="nav-title"><%= page.next.title %></span>
-    </a>
-    <% } else { %>
-    <div class="nav-placeholder"></div>
-    <% } %>
-  </nav>
-</article>
+    <nav class="post-nav">
+      <% if (page.prev) { %>
+      <a href="<%= url_for(page.prev.path) %>" class="nav-prev">
+        <span class="nav-label">← 上一篇</span>
+        <span class="nav-title"><%= page.prev.title %></span>
+      </a>
+      <% } else { %>
+      <div class="nav-placeholder"></div>
+      <% } %>
+      
+      <% if (page.next) { %>
+      <a href="<%= url_for(page.next.path) %>" class="nav-next">
+        <span class="nav-label">下一篇 →</span>
+        <span class="nav-title"><%= page.next.title %></span>
+      </a>
+      <% } else { %>
+      <div class="nav-placeholder"></div>
+      <% } %>
+    </nav>
+  </article>
+  
+  <% if (relatedPosts.length > 0) { %>
+  <aside class="related-posts-sidebar">
+    <div class="related-posts-widget">
+      <h3 class="widget-title">相关文章</h3>
+      <ul class="related-posts-list">
+        <% relatedPosts.forEach(function(post) { %>
+        <li class="related-post-item">
+          <a href="<%= url_for(post.path) %>" class="related-post-link">
+            <span class="related-post-title"><%= post.title %></span>
+            <time class="related-post-date"><%= date(post.date, 'YYYY-MM-DD') %></time>
+          </a>
+        </li>
+        <% }); %>
+      </ul>
+    </div>
+  </aside>
+  <% } %>
+</div>

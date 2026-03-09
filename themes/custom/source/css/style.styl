@@ -838,3 +838,119 @@ img {
     font-size: 0.8rem;
   }
 }
+
+/* ============================================
+   Related Posts Sidebar
+   ============================================ */
+.post-layout {
+  display: flex;
+  gap: 2rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+.post-layout .post-page {
+  flex: 1;
+  min-width: 0;
+  max-width: var(--content-width);
+}
+
+.related-posts-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 5rem;
+}
+
+.related-posts-widget {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.widget-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.related-posts-list {
+  list-style: none;
+}
+
+.related-post-item {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.related-post-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.related-post-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.related-post-link:hover {
+  opacity: 1;
+}
+
+.related-post-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.4;
+  transition: color var(--transition);
+}
+
+.related-post-link:hover .related-post-title {
+  color: var(--color-accent);
+}
+
+.related-post-date {
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+}
+
+/* 响应式布局 */
+@media (max-width: 1024px) {
+  .post-layout {
+    flex-direction: column;
+  }
+  
+  .related-posts-sidebar {
+    width: 100%;
+    position: static;
+    margin-top: 2rem;
+  }
+  
+  .related-posts-widget {
+    max-width: var(--content-width);
+    margin: 0 auto;
+  }
+  
+  .related-posts-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .related-post-item {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    background: var(--color-hover);
+    padding: 0.75rem;
+    border-radius: var(--radius);
+  }
+}
