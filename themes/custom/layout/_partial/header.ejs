@@ -20,8 +20,6 @@
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <a href="<%= url_for() %>" class="site-title"><%= config.title %></a>
-      
       <nav class="site-nav">
         <% for (var name in theme.menu) { %>
         <a href="<%= url_for(theme.menu[name]) %>" class="nav-link<% if (is_current(theme.menu[name])) { %> active<% } %>"><%= name %></a>
