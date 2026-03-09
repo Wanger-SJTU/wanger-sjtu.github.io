@@ -221,6 +221,23 @@ img {
   color: var(--color-text-secondary);
 }
 
+/* 首页两栏布局 */
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.posts-main {
+  min-width: 0;
+}
+
+.nonsense-sidebar {
+  position: sticky;
+  top: 90px;
+}
+
 /* Section */
 .section-title {
   font-size: 1.5rem;
@@ -887,7 +904,6 @@ img {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 1.5rem;
-  margin-bottom: 2rem;
 }
 
 .nonsense-section .nonsense-title {
@@ -957,6 +973,21 @@ img {
   
   .nonsense-date {
     min-width: auto;
+  }
+}
+
+/* 首页两栏布局响应式 */
+@media (max-width: 900px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .nonsense-sidebar {
+    position: static;
+  }
+  
+  .nonsense-section {
+    margin-bottom: 2rem;
   }
 }
 
