@@ -7,32 +7,37 @@
     <% } %>
   </header>
   
-  <!-- 日历组件 -->
-  <div class="calendar-container">
-    <div class="calendar-header">
-      <button class="calendar-nav" id="prevMonth" aria-label="上个月">‹</button>
-      <h3 class="calendar-title" id="calendarTitle"></h3>
-      <button class="calendar-nav" id="nextMonth" aria-label="下个月">›</button>
-    </div>
-    <div class="calendar-grid">
-      <div class="calendar-weekdays">
-        <span>日</span>
-        <span>一</span>
-        <span>二</span>
-        <span>三</span>
-        <span>四</span>
-        <span>五</span>
-        <span>六</span>
+  <div class="flow-layout">
+    <!-- 日历组件（左侧） -->
+    <div class="calendar-sidebar">
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <button class="calendar-nav" id="prevMonth" aria-label="上个月">‹</button>
+          <h3 class="calendar-title" id="calendarTitle"></h3>
+          <button class="calendar-nav" id="nextMonth" aria-label="下个月">›</button>
+        </div>
+        <div class="calendar-grid">
+          <div class="calendar-weekdays">
+            <span>日</span>
+            <span>一</span>
+            <span>二</span>
+            <span>三</span>
+            <span>四</span>
+            <span>五</span>
+            <span>六</span>
+          </div>
+          <div class="calendar-days" id="calendarDays"></div>
+        </div>
+        <div class="filter-status" id="filterStatus" style="display: none;">
+          <span class="filter-text" id="filterText"></span>
+          <button class="clear-filter-btn" id="clearFilter">清除</button>
+        </div>
       </div>
-      <div class="calendar-days" id="calendarDays"></div>
     </div>
-    <div class="filter-status" id="filterStatus" style="display: none;">
-      <span class="filter-text" id="filterText"></span>
-      <button class="clear-filter-btn" id="clearFilter">清除过滤</button>
-    </div>
-  </div>
-  
-  <div class="timeline" id="timeline">
+    
+    <!-- 时间线内容（右侧） -->
+    <div class="timeline-wrapper">
+      <div class="timeline" id="timeline">
     <% 
     // 从 page.flows 或 front-matter 获取时间线数据
     var flows = page.flows || [];
@@ -76,12 +81,14 @@
         <%- page.content %>
       </div>
     <% } %>
+      </div>
+    </div>
   </div>
 </div>
 
 <style>
 .flow-page {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -91,24 +98,36 @@
   margin-bottom: 2rem;
 }
 
+/* 两列布局 */
+.flow-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.calendar-sidebar {
+  position: sticky;
+  top: 90px;
+}
+
 /* 日历样式 */
 .calendar-container {
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  padding: 1rem;
 }
 
 .calendar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .calendar-title {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-text);
 }
@@ -116,10 +135,10 @@
 .calendar-nav {
   background: var(--color-hover);
   border: 1px solid var(--color-border);
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  font-size: 1.25rem;
+  font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -141,36 +160,39 @@
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  margin-bottom: 0.5rem;
+  gap: 2px;
+  margin-bottom: 0.25rem;
 }
 
 .calendar-weekdays span {
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 500;
   color: var(--color-text-secondary);
-  padding: 0.5rem;
+  padding: 0.25rem;
 }
 
 .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  gap: 2px;
 }
 
 .calendar-day {
   aspect-ratio: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
-  border-radius: 50%;
+  font-size: 0.8rem;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: var(--color-text);
+  color: var(--color-text-secondary);
   background: transparent;
   border: none;
+  position: relative;
+  padding: 4px 0;
 }
 
 .calendar-day:hover {
@@ -179,21 +201,44 @@
 
 .calendar-day.other-month {
   color: var(--color-text-tertiary);
+  opacity: 0.5;
+}
+
+.calendar-day.no-content {
+  color: var(--color-text-tertiary);
 }
 
 .calendar-day.has-content {
-  background: var(--color-accent);
-  color: var(--color-bg);
+  color: var(--color-text);
   font-weight: 600;
 }
 
+.calendar-day.has-content::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
 .calendar-day.has-content:hover {
-  opacity: 0.85;
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.calendar-day.has-content:hover::after {
+  background: var(--color-bg);
 }
 
 .calendar-day.selected {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.calendar-day.selected::after {
+  background: var(--color-bg);
 }
 
 /* 过滤状态样式 */
@@ -201,23 +246,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
   border-top: 1px solid var(--color-border);
 }
 
 .filter-text {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--color-text-secondary);
 }
 
 .clear-filter-btn {
   background: var(--color-hover);
   border: 1px solid var(--color-border);
-  padding: 0.4rem 1rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   color: var(--color-text);
@@ -227,6 +272,11 @@
   background: var(--color-accent);
   color: var(--color-bg);
   border-color: var(--color-accent);
+}
+
+/* 时间线包装器 */
+.timeline-wrapper {
+  min-width: 0;
 }
 
 /* 时间线样式 */
@@ -341,6 +391,22 @@
   display: none;
 }
 
+/* 响应式布局 */
+@media (max-width: 900px) {
+  .flow-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .calendar-sidebar {
+    position: static;
+  }
+  
+  .calendar-container {
+    max-width: 360px;
+    margin: 0 auto 2rem;
+  }
+}
+
 @media (max-width: 600px) {
   .timeline {
     padding-left: 1.5rem;
@@ -357,7 +423,7 @@
   }
   
   .calendar-day {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 }
 </style>
@@ -427,7 +493,11 @@
     var btn = document.createElement('button');
     btn.className = 'calendar-day';
     if (isOtherMonth) btn.classList.add('other-month');
-    if (hasContent) btn.classList.add('has-content');
+    if (hasContent) {
+      btn.classList.add('has-content');
+    } else if (!isOtherMonth) {
+      btn.classList.add('no-content');
+    }
     btn.textContent = day;
     
     if (hasContent && dateStr) {
