@@ -224,7 +224,7 @@ img {
 /* 首页两栏布局 */
 .home-layout {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
   align-items: start;
 }
@@ -937,9 +937,9 @@ img {
 
 .nonsense-item {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   gap: 1rem;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
   position: relative;
   transition: background-color var(--transition);
 }
@@ -948,7 +948,7 @@ img {
   content: '';
   position: absolute;
   left: -1.5rem;
-  top: 0.75rem;
+  top: 1rem;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -974,16 +974,35 @@ img {
   color: var(--color-text-tertiary);
   min-width: 40px;
   font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+.nonsense-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .nonsense-title-text {
   font-size: 0.95rem;
   font-weight: 500;
   line-height: 1.4;
+  margin-bottom: 0.25rem;
 }
 
 .nonsense-title-text a {
   color: var(--color-text);
+}
+
+.nonsense-title-text a:hover {
+  color: var(--color-accent);
+  opacity: 1;
+}
+
+.nonsense-excerpt {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
 }
 
 .nonsense-title-text a:hover {
