@@ -1,0 +1,31 @@
+<% // 获取"废话"分类的文章，最多显示5篇
+var nonsensePosts = [];
+site.posts.sort('-date').each(function(post) {
+  if (post.categories && post.categories.length) {
+    post.categories.each(function(cat) {
+      if (cat.name === '废话') {
+        nonsensePosts.push(post);
+      }
+    });
+  }
+});
+nonsensePosts = nonsensePosts.slice(0, 5);
+%>
+
+<% if (nonsensePosts.length > 0) { %>
+<section class="nonsense-section">
+  <h2 class="section-title nonsense-title">废话</h2>
+  <div class="nonsense-list">
+    <% nonsensePosts.forEach(function(post) { %>
+    <article class="nonsense-item">
+      <time class="nonsense-date" datetime="<%= date(post.date, 'YYYY-MM-DD') %>">
+        <%= date(post.date, 'MM.DD') %>
+      </time>
+      <h3 class="nonsense-title-text">
+        <a href="<%= url_for(post.path) %>"><%= post.title %></a>
+      </h3>
+    </article>
+    <% }); %>
+  </div>
+</section>
+<% } %>
