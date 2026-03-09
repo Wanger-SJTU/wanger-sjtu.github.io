@@ -105,12 +105,15 @@ img {
   justify-content: flex-start;
   height: 72px;
   gap: 2rem;
+  flex-wrap: nowrap;
 }
 
 .site-nav {
   display: flex;
   align-items: center;
   gap: 2.5rem;
+  flex: 1;
+  justify-content: center;
 }
 
 .nav-link {
@@ -157,6 +160,7 @@ img {
   align-items: center;
   gap: 0.75rem;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .search-toggle,
@@ -173,6 +177,7 @@ img {
   justify-content: center;
   width: 40px;
   height: 40px;
+  flex-shrink: 0;
 }
 
 .search-toggle:hover,
