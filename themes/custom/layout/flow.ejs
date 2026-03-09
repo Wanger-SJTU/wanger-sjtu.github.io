@@ -45,8 +45,8 @@
     
     <% if (flows.length > 0) { %>
       <% flows.forEach(function(item, index) { %>
-      <article class="timeline-item" data-date="<%= item.date %>">
-        <time class="timeline-date" datetime="<%= item.date %>">
+      <article class="timeline-item" data-date="<%= date(item.date, 'YYYY-MM-DD') %>">
+        <time class="timeline-date" datetime="<%= date(item.date, 'YYYY-MM-DD') %>">
           <%= date(item.date, 'YYYY年MM月DD日') %>
         </time>
         <div class="timeline-content">

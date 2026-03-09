@@ -2,8 +2,6 @@
 title: 废话
 layout: flow
 description: 记录一些碎碎念、日常想法和随笔
----
-
 flows:
   - date: 2026-03-08
     title: 博客上线了
@@ -38,3 +36,4 @@ flows:
     tags:
       - 读书
       - 推荐
+---
