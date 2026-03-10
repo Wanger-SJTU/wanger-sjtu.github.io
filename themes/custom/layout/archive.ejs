@@ -2,14 +2,29 @@
 <div class="archive-page">
   <h1 class="page-title">归档</h1>
   
+  <% 
+  // 过滤掉废话文章
+  var filteredPosts = site.posts.filter(function(post) {
+    var isNonsense = false;
+    if (post.categories && post.categories.length) {
+      post.categories.each(function(cat) {
+        if (cat.name === '废话') {
+          isNonsense = true;
+        }
+      });
+    }
+    return !isNonsense;
+  });
+  %>
+  
   <div class="archive-stats">
-    <span class="stat-item">共 <%= site.posts.length %> 篇文章</span>
+    <span class="stat-item">共 <%= filteredPosts.length %> 篇文章</span>
   </div>
   
   <div class="archive-list">
     <% 
     var years = {};
-    site.posts.sort('date', -1).each(function(post) {
+    filteredPosts.sort('date', -1).each(function(post) {
       var year = date(post.date, 'YYYY');
       if (!years[year]) years[year] = [];
       years[year].push(post);
