@@ -7,76 +7,76 @@ category:
 date: 2024-09-22 21:18:46
 ---
 本文转载自：https://www.owlfox.org/blog/2019-11-25-coding-for-SSD-part-2/
-# 緣由
+# 缘由
 
 
-這篇主要談論 Nand flash 的不同 cell type，基本的 SSD 系統架構，及如何做 SSD 效能評定（Benchmarking）。作者是在 booking.com 上班的軟體工程師。有用過應該就知道這是很大的旅遊訂房行程規劃服務網站，在這類工作環境可能需要對底層的效能有深入解快，才能解決工作上的實務問題。我覺得這類軟體從業人員提供的觀點對自己來說幫助很大，所以翻譯/兼做做筆記。
+这篇主要谈论 Nand flash 的不同 cell type，基本的 SSD 系统架构，及如何做 SSD 效能评定（Benchmarking）。作者是在 booking.com 上班的软体工程师。有用过应该就知道这是很大的旅游订房行程规划服务网站，在这类工作环jing可能需要对底层的效能有深入解快，才能解决工作上的实务问题。我觉得这类软体从业人员提供的观点对自己来说帮助很大，所以翻译/兼做做笔记。
 
 # SSD ？
-Solid state drives，顧名思義 SSD 設計裡去除了傳統硬碟裡不 solid，會動的部分，改善了噪音、震動、讀寫速度慢、易損壞及資料分散時需要硬碟重組來改善讀取時間等缺點。
-SSD 作為儲存裝置：
-* 優點：
-  * 隨機存取快、且存取時間固定，HDD 的 seek time ？ 沒這毛病！
-  * 體積小，看看這些愈來愈小的筆記型電腦、移動裝置、SD卡
-  * 少了傳統硬碟機械故障、硬碟重組等煩惱。
-* 缺點：
-  * Cell 有讀寫次數限制(wearing off/wear-out)
-  > 但對於 IT 人員來說， HDD 也是有看人品、需買高階型號跟擺乖乖才能保證資料安全的問題。 ![乖乖 LOGO, kuai.com.tw](https://comet.noonspace.com/w61NoonSpace/kuai/MsgInfo/LogoKuai.png)
-  * bit/$ 較高, (TODO)
+Solid state drives，顾名思义 SSD 设计里去除了传统硬碟里不 solid，会动的部分，改善了噪音、震动、读写速度慢、易损坏及资料分散时需要硬碟重组来改善读取时间等缺点。
+SSD 作为储存装置：
+* 优点：
+  * 随机存取快、且存取时间固定，HDD 的 seek time ？ 没这毛病！
+  * 体积小，看看这些愈来愈小的笔记型电腦、移动装置、SD卡
+  * 少了传统硬碟机械故障、硬碟重组等烦恼。
+* 缺点：
+  * Cell 有读写次数限制(wearing off/wear-out)
+  > 但对于 IT 人员来说， HDD 也是有看人品、需买高阶型号跟摆乖乖才能保证资料安全的问题。 ![乖乖 LOGO, kuai.com.tw](https://comet.noonspace.com/w61NoonSpace/kuai/MsgInfo/LogoKuai.png)
+  * bit/$ 较高, (TODO)
 
-## NAND flash 種類
-依各個 block 可儲存的資料多寡，可分為：
+## NAND flash 种类
+依各个 block 可储存的资料多寡，可分为：
 SLC, MLC, eMLC, TLC, QLC, 3D NAND, see this [link](https://searchstorage.techtarget.com/definition/flash-memory) for ref
 
-關於製程資訊（floating gate, charge trap) 見 [3
-](#快閃記憶體的路線之爭)
+关于制程资讯（floating gate, charge trap) 见 [3
+](#快闪记忆体的路线之争)
 
-> 關於 IC / PCB / SMT 的製程可能要補文章（TODO）
+> 关于 IC / PCB / SMT 的制程可能要补文章（TODO）
 
 
 ## 存取介面
-目前看到的 SSD 架構 =  SSD controller 晶片 + RAM + NAND flash
-controll 支援多種不同的 host interface 指令格式
+目前看到的 SSD 架构 =  SSD controller 晶片 + RAM + NAND flash
+controll 支援多种不同的 host interface 指令格式
 * Serial ATA (SATA), 3.0 ~ 6GBit/s
 * PCI Express (PCIe), 3.0 ~ 8Gbit/s per lane, 4 lanes max
 * [nvme](https://nvmexpress.org/)
 * Serial Attached SCSI interface (SAS), ~ 12 Gbit/s
 
-> 也有看到 open channel SSD 將主控權交給作業系統，詳情可見 [2](#lightnvm, linux implementation of open channel SSD)。我覺得有點像是 zfs 捨棄 raid 卡讓檔案系統透過 HBA 卡接管硬碟所有資訊的作法。我覺的軟體定義的方式應該是終端用戶最後的選擇，畢竟免了 vendor lock in 的問題。
+> 也有看到 open channel SSD 将主控权交給作业系统，詳情可见 [2](#lightnvm, linux implementation of open channel SSD)。我觉得有点像是 zfs 捨棄 raid 卡让档案系统透过 HBA 卡接管硬碟所有资讯的作法。我觉的软体定义的方式应该是终端用戶最后的选擇，畢竟免了 vendor lock in 的问题。
  
-controller 把 NAND flash 的 block, page size, GC(garbage collection) 等細節藏起來，讓 host interface 及其上層作業系統有跟 HDD 一樣的存取介面。
+controller 把 NAND flash 的 block, page size, GC(garbage collection) 等細节藏起来，让 host interface 及其上层作业系统有跟 HDD 一样的存取介面。
 
 
-## 效能評定 Benchmarking
-原文作者有發現當時的 SSD 效能報告[亂象](http://blog.zorinaq.com/many-ssd-benchmark-reviews-contain-flaws/)，例如不同的 [LBA](https://gerardnico.com/io/drive/lba), 過於簡單的 [queue size](https://www.userbenchmark.com/Faq/What-is-queue-depth/41) 測試情節。文中也提到 SSD 的讀寫測試其實要在寫入一定的隨機資料[pre-conditioning, warm up](https://searchstorage.techtarget.com/feature/The-truth-about-SSD-performance-benchmarks)才有測出 controller GC 能力並具參考價值。而非當時很多資料是拿了新的 SSD 測了 happy path 很開心就把資料放出來這樣，文中舉的比較好的範例是這篇關於 samsung 840 pro 做的[評測](https://www.storagereview.com/samsung_ssd_840_pro_review)，可以很明顯看到讀寫效能(IOPS, Read/Write at different sizes/order)在一定的讀寫後明顯下降，文中也對其拿實際的應用案例如資料庫、網頁伺服器做了分析，並得到其在前述企業應用環境效能較差的結論。
+## 效能评定 Benchmarking
+原文作者有发现当时的 SSD 效能報gao[亂象](http://blog.zorinaq.com/many-ssd-benchmark-reviews-contain-flaws/)，例如不同的 [LBA](https://gerardnico.com/io/drive/lba), 过于簡单的 [queue size](https://www.userbenchmark.com/Faq/What-is-queue-depth/41) 测试情节。文中也提到 SSD 的读写测试其实要在写入一定的随机资料[pre-conditioning, warm up](https://searchstorage.techtarget.com/feature/The-truth-about-SSD-performance-benchmarks)才有测出 controller GC 能力并具参考價值。而非当时很多资料是拿了新的 SSD 测了 happy path 很开心就把资料放出来这样，文中舉的比较好的範例是这篇关于 samsung 840 pro 做的[评测](https://www.storagereview.com/samsung_ssd_840_pro_review)，可以很明顯看到读写效能(IOPS, Read/Write at different sizes/order)在一定的读写后明顯下降，文中也对其拿实际的应用案例如资料库、网页伺服器做了分析，并得到其在前述企业应用环jing效能较差的结论。
 
-> `圖一堆，真是很有心 XD`
+> `图一堆，真是很有心 XD`
 
-目前不確定儲存裝置是否有個明確的效能評定規範（針對不同應用情境、不同裝置、不同 host interface）。但作者提出一套他的原則（2.3內容）：
-* workload type ，確定你的應用環境是哪種讀寫操作居多
-* percentage of read / write, 設定同步進行的讀寫操作比例，如 30% 讀 70% 寫
-* queue length，你有多少同步執行的執行緒(thread)在對儲存裝置下指令
-* size of data chunk, 你的應用環境的檔案讀寫大小（4KB, 8KB 之類的)
+目前不确定储存装置是否有个明确的效能评定规範（針对不同应用情jing、不同装置、不同 host interface）。但作者提出一套他的原则（2.3内容）：
+* workload type ，确定你的应用环jing是哪种读写操作居多
+* percentage of read / write, 设定同步进行的读写操作比例，如 30% 读 70% 写
+* queue length，你有多少同步执行的执行绪(thread)在对储存装置下指令
+* size of data chunk, 你的应用环jing的档案读写大小（4KB, 8KB 之类的)
 
-> 最後一點不太確定怎麼定義，如果你是跑 postgresql, mysql 那要怎麼知道大小？
+> 最后一点不太确定怎麼定义，如果你是跑 postgresql, mysql 那要怎麼知道大小？
 
-以及需要觀測的指標：
-* Throughput: KB/s, MB/s 資料轉換的效率，一般是 sequential 的評定會看
-* IOPS: 每秒可完成的 Input/Output（IO） 操作，這是以作業系統的觀點來看，通常是拿 4KB 的寫入來測，用來評定隨機操作的效能。
-> 應該是因為 4KB 是大部分作業系統 virtual memory 預設的 page size, 這也要因應使用情節而調整。
-* latency:  下指令到完成指令回傳結果需要的時間 μs, ms 
+以及需要观测的指标：
+* Throughput: KB/s, MB/s 资料轉換的效率，一般是 sequential 的评定会看
+* IOPS: 每秒可完成的 Input/Output（IO） 操作，这是以作业系统的观点来看，通常是拿 4KB 的写入来测，用来评定随机操作的效能。
+> 应该是因为 4KB 是大部分作业系统 virtual memory 預设的 page size, 这也要因应使用情节而调整。
+* latency:  下指令到完成指令回传结果需要的时间 μs, ms 
 
-IOPS 也可以換算成 throughput, 如 1000 IOPS 在 4KB 檔案大小下 就是 4 MB/s. 作者也舉了個可能的 logging 系統案例， 10k IOPS, log 檔四散各地，可能的 throughput 會是 20 MB/s 
+IOPS 也可以換算成 throughput, 如 1000 IOPS 在 4KB 档案大小下 就是 4 MB/s. 作者也舉了个可能的 logging 系统案例， 10k IOPS, log 档四散各地，可能的 throughput 会是 20 MB/s 
 
-另外 throughput 不等同於效能，假設你有個伺服器裝了個 10G 網卡，偏偏你的系統每次作業要跟 25 個 Database 拿資料，每個連線要花 20 ms 好死不死你還寫成 single blocked thread，每次處理一個網頁頁面至少都要多花 500 ms，這個就偏人的問題，而非系統效能瓶頸。
+另外 throughput 不等同于效能，假设你有个伺服器装了个 10G 网卡，偏偏你的系统每次作业要跟 25 个 Database 拿资料，每个连线要花 20 ms 好死不死你还写成 single blocked thread，每次处理一个网页页面至少都要多花 500 ms，这个就偏人的问题，而非系统效能瓶颈。
 
-> 所以我想一般都是在系統發展到一定規模，要做大、或是遇上應用程式端無法解決瓶頸時才會多考慮底層儲存系統選擇與設定。
+> 所以我想一般都是在系统发展到一定规模，要做大、或是遇上应用程式端无法解决瓶颈时才会多考慮底层储存系统选擇与设定。
 
-在確保自己的系統架構不會對儲存系統造成不必要的負擔之後，這三項指標（一起）是系統管理員、軟體工程師在評估自己的硬體是否符合需求時的常用指標。
+在确保自己的系统架构不会对储存系统造成不必要的负担之后，这三项指标（一起）是系统管理员、软体工程师在评估自己的硬体是否符合需求时的常用指标。
 
 
 
-# 參考資料
+# 参考资料
 ## coding for ssd part2
 [link](http://codecapsule.com/2014/02/12/coding-for-ssds-part-2-architecture-of-an-ssd-and-benchmarking/)
 
@@ -90,5 +90,5 @@ links:
 ## The Myth of HDD Endurance
 https://www.micron.com/about/blog/2016/february/the-myth-of-hdd-endurance
 
-## 快閃記憶體的路線之爭
+## 快闪记忆体的路线之争
 https://www.digitimes.com.tw/col/article.asp?id=717

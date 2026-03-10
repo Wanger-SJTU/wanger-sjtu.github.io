@@ -20,7 +20,7 @@ date: 2024-09-22 21:27:58
 
 * SSD 读取以分页 (page) 为基本单位，即便你只是要读一个 byte，还是会回传一个 page。
 * 写入也以 page 为单位，即便你只有写入小量资料，实际进行物理写入时 SSD 还是要写一个 page，此类现象也称为写入放大。 write, program 在 SSD 期刊上指的是同一件事。
-* copy-modify-write: 已有资料的 page 不能被直接复写，当需要更改 page 资料时，要不是写在該 blcok 空白/free 的 page 里，然后把該 page 标示为 stale，或是将整个 block 复制到 mem 修改，再写到其他空的 block 去。 stale 的 block 必须在其他时机点清空。
+* copy-modify-write: 已有资料的 page 不能被直接复写，当需要更改 page 资料时，要不是写在该 blcok 空白/free 的 page 里，然后把该 page 标示为 stale，或是将整个 block 复制到 mem 修改，再写到其他空的 block 去。 stale 的 block 必须在其他时机点清空。
 * 资料抹除必须以 block 为单位。一般使用者在读写资料时 SSD 不会实际把 stale 资料物理上抹除，SSD也只有进行 read/write 操作。SSD 只在 GC 判断需要清出空间时对 nand flash 执行抹除/erase 指令。
 
 ## 3.2 写入范例
