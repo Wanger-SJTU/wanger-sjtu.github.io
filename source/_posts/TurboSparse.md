@@ -34,7 +34,7 @@ $$
 \text{Combined dReLU} (x) := max(0, xW_{gate} ) \odot max(0, xW_{up} )
 $$
 
-![alt text](TurboSparse/image-2.png)
+![alt text](/2024/08/10/TurboSparse/image-2.png)
 
 从训练过程上来看，替换以后收敛性没有影响，结果的评价指标上也没有太大影响。
 
@@ -48,10 +48,10 @@ $$
 		\text{Gated-MLP}(x) := (\text{Combined}(x) ∗ \text{Mask}(x))W_{down}
 $$
 
-![alt text](TurboSparse/image-1.png)
+![alt text](/2024/08/10/TurboSparse/image-1.png)
 
 显然效果显著。不影响模型表现的情况下，稀疏到达到了80%，而牺牲一定精度的条件下可以到达**90%**
 
 ## Sparsity of Sparsifi ed Models
 
-![alt text](TurboSparse/image.png)
+![alt text](/2024/08/10/TurboSparse/image.png)

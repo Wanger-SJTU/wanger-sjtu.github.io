@@ -50,13 +50,13 @@ CAGRA构建的图有几个不同之处：
 
 ### 构建过程
 
-![alt text](CARGA/image.png)
+![alt text](/2024/06/16/CARGA/image.png)
 
 CAGRA算法的构建训练过程，先初始化一个knn graph，然后优化其中的边关系。
 1. 初始knn-graph创建：比较简单，这里实际上可以理论上依赖任何一种已有的算法，但在实现上选了IVF-PQ、和NN-Descent算法。这里就不过多展开了
 	> 步骤一结束后，每个节点都有k个邻居节点，并且通常按距离排序
 2. 基于**rank**的重排序：这里每个节点出边按照初始rank重新排序，并且过滤掉一些边
-	![alt text](CARGA/reorder.png)
+	![alt text](/2024/06/16/CARGA/reorder.png)
 	 - 左侧：来自节点X及其他相关边的初始排名。
 	 - 中间：可能的两跳路径（XAB、XBC、XCD、XAC、XDC），根据方程3被分类为可绕路和不可绕路的。我们使用排名代替距离。
 		 $$
@@ -73,7 +73,7 @@ CAGRA算法的构建训练过程，先初始化一个knn graph，然后优化其
 
 这里需要特别提一点就是这里的buffer。其实是两部分的，前半部分top-M的，我猜测是有序的，后半部是候选访问区，不必一定保证有序。
 
-![alt text](CARGA/query.png)
+![alt text](/2024/06/16/CARGA/query.png)
 
 计算过程：
 1. 随机选取E个节点，计算他们与 query 的距离，并存在 candidate buffer 中

@@ -29,7 +29,7 @@ Emmanuel Goossaert 是booking.com的工程师，他因为想拿SSD 做自己的 
 ## 文件系统
 zfs既有的档案系统阶层在效能上可能已经很优秀了，还送copy-on-write，容错机制，snapshot。
 
-![alt text](ssd-notes-01/image.png)
+![alt text](/2024/09/22/ssd-notes-01/image.png)
 
  http://www.brendangregg.com/blog/2008-07-22/zfs-l2arc.html
 

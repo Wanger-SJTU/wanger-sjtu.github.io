@@ -31,7 +31,7 @@ $ ssh-keygen -t rsa -b 4096 -C "$(git config user.email)" -f gh-pages -N ""
 1. 在 `Name` 输入框填写 `ACTIONS_DEPLOY_KEY`。
 2. 在 `secret`输入框填写  `gh-pages` 文件内容。
 
-![1693718105040](auto-deploy/1693718105040.png)
+![1693718105040](/2023/08/03/auto-deploy/1693718105040.png)
 
 
 
@@ -41,7 +41,7 @@ $ ssh-keygen -t rsa -b 4096 -C "$(git config user.email)" -f gh-pages -N ""
 2. 在 Key 输入框填写  gh-pages.pub 文件内容。
 3. 勾选 Allow write access 选项。
 
-![1693718293575](auto-deploy/1693718293575.png)
+![1693718293575](/2023/08/03/auto-deploy/1693718293575.png)
 
 
 

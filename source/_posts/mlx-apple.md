@@ -54,9 +54,9 @@ https://github.com/ml-explore/mlx/issues/12
 M2 Max
 
 FP16 10 token/s
-![](mlx-apple/20231213220124.png)
+![](/2023/12/13/mlx-apple/20231213220124.png)
 
-![](mlx-apple/20231213220841.png)
+![](/2023/12/13/mlx-apple/20231213220841.png)
 
 ## 可能的 Roadmap
 1. 有微调模型诉求的非算法人员。 比如lora、大模型的

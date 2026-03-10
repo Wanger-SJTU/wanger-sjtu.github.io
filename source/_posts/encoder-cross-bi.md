@@ -10,7 +10,7 @@ date: 2024-06-02 13:21:04
 
 Bi-encoder和Cross-encoder是在自然语言理解任务模型的两种不同方法，在信息检索和相似性搜索二者的使用更为广泛。在LLM大火的今天，RAG的pipe line中这两个模块作为提升检索精度的模块更是备受瞩目。
 
-![Bi_vs_Cross-Encoder](encoder-cross-bi/compare.png)
+![Bi_vs_Cross-Encoder](/2024/06/02/encoder-cross-bi/compare.png)
 
 |          | Bi-encoder                                                   | Cross-encoder                                                |
 | -------- | ------------------------------------------------------------ | ------------------------------------------------------------ |

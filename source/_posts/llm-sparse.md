@@ -6,7 +6,7 @@ category:
   - 技术
 date: 2024-09-09 22:16:19
 ---
-![alt text](llm-sparse/image.png)
+![alt text](/2024/09/09/llm-sparse/image.png)
 
 > Attention是时空力场（LLM只有时，Version存在空间力场），而FFN则是空间结构，并且代表了基于Knowledge的静态高纬字典，也有人用图书馆来比喻。   
 
