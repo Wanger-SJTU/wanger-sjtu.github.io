@@ -1,52 +1,52 @@
-<header class="site-header" id="site-header">
-  <div class="header-container">
-    <nav class="site-nav">
+  <header class="site-header" id="site-header">
+    <div class="header-container">
+      <nav class="site-nav">
+        <% for (var name in theme.menu) { %>
+        <a href="<%= url_for(theme.menu[name]) %>" class="nav-link<% if (is_current(theme.menu[name])) { %> active<% } %>"><%= name %></a>
+        <% } %>
+      </nav>
+      
+      <div class="header-actions">
+        <% if (theme.search !== false) { %>
+        <button class="header-action-btn search-toggle" id="search-toggle" aria-label="搜索">🔍</button>
+        <% } %>
+        <% if (theme.darkmode !== false) { %>
+        <button class="header-action-btn theme-toggle" id="theme-toggle" aria-label="切换主题">
+          <span class="icon-sun">☀️</span>
+          <span class="icon-moon">🌙</span>
+        </button>
+        <% } %>
+      </div>
+      
+      <button class="hamburger" id="hamburger" aria-label="菜单">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+  </header>
+  
+  <div class="mobile-menu" id="mobile-menu">
+    <nav class="mobile-nav">
       <% for (var name in theme.menu) { %>
-      <a href="<%= url_for(theme.menu[name]) %>" class="nav-link<% if (is_current(theme.menu[name])) { %> active<% } %>"><%= name %></a>
+      <a href="<%= url_for(theme.menu[name]) %>" class="mobile-nav-link<% if (is_current(theme.menu[name])) { %> active<% } %>"><%= name %></a>
       <% } %>
     </nav>
-    
-    <div class="header-actions">
-      <% if (theme.search !== false) { %>
-      <button class="header-action-btn search-toggle" id="search-toggle" aria-label="搜索">🔍</button>
+    <div class="mobile-actions">
+      <% if (theme.search) { %>
+      <button class="mobile-action-btn search-toggle-mobile" aria-label="搜索">🔍 搜索</button>
       <% } %>
-      <% if (theme.darkmode !== false) { %>
-      <button class="header-action-btn theme-toggle" id="theme-toggle" aria-label="切换主题">
-        <span class="icon-sun">☀️</span>
-        <span class="icon-moon">🌙</span>
+      <% if (theme.darkmode) { %>
+      <button class="mobile-action-btn theme-toggle-mobile" id="theme-toggle-mobile" aria-label="切换主题">
+        <span class="icon-sun">☀️</span> 浅色
+        <span class="icon-moon">🌙</span> 深色
       </button>
       <% } %>
     </div>
-    
-    <button class="hamburger" id="hamburger" aria-label="菜单">
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    </button>
   </div>
-</header>
-
-<div class="mobile-menu" id="mobile-menu">
-  <nav class="mobile-nav">
-    <% for (var name in theme.menu) { %>
-    <a href="<%= url_for(theme.menu[name]) %>" class="mobile-nav-link<% if (is_current(theme.menu[name])) { %> active<% } %>"><%= name %></a>
-    <% } %>
-  </nav>
-  <div class="mobile-actions">
-    <% if (theme.search !== false) { %>
-    <button class="mobile-action-btn search-toggle-mobile" aria-label="搜索">🔍 搜索</button>
-    <% } %>
-    <% if (theme.darkmode !== false) { %>
-    <button class="mobile-action-btn theme-toggle-mobile" id="theme-toggle-mobile" aria-label="切换主题">
-      <span class="icon-sun">☀️</span> 浅色
-      <span class="icon-moon">🌙</span> 深色
-    </button>
-    <% } %>
-  </div>
-</div>
-
-<div class="mobile-overlay" id="mobile-overlay"></div>
-
-<%- partial('_partial/search-modal') %>
-
-<script src="<%= url_for('js/navbar.js') %>"></script>
+  
+  <div class="mobile-overlay" id="mobile-overlay"></div>
+  
+  <%- partial('_partial/search-modal') %>
+  
+  <script src="<%= url_for('js/navbar.js') %>"></script>
