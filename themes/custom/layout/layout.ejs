@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= config.language || 'zh-CN' %>">
+<html lang="<%= (config && config.language) || 'zh-CN' %>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +10,9 @@
   <% if (theme.darkmode) { %>
   <script>
     (function() {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var savedTheme = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     })();
@@ -19,46 +20,16 @@
   <% } %>
 </head>
 <body>
-  <header class="header">
-    <div class="container">
-      <nav class="nav">
-        <% for (var name in theme.menu) { %>
-        <a href="<%= url_for(theme.menu[name]) %>" class="nav-link"><%= name %></a>
-        <% } %>
-      </nav>
-      <% if (theme.darkmode) { %>
-      <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
-        <span class="icon-sun">☀️</span>
-        <span class="icon-moon">🌙</span>
-      </button>
-      <% } %>
-    </div>
-  </header>
+  <%- partial('_partial/header') %>
 
-  <main class="main">
+  <main class="main-content">
     <div class="container">
       <%- body %>
     </div>
   </main>
 
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; <%= theme.footer.since || date(Date.now(), 'YYYY') %> <%= theme.footer.copyright || config.author %></p>
-      <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a></p>
-    </div>
-  </footer>
+  <%- partial('_partial/footer') %>
 
-  <% if (theme.darkmode) { %>
-  <script>
-    document.getElementById('themeToggle').addEventListener('click', function() {
-      const html = document.documentElement;
-      const currentTheme = html.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-    });
-  </script>
-  <% } %>
   <%- js('js/main') %>
 </body>
 </html>
