@@ -6,19 +6,9 @@
   'use strict';
 
   // ============================================
-  // Theme Toggle
+  // Theme Toggle (handled by navbar.js)
   // ============================================
-  var themeToggle = document.getElementById('theme-toggle');
-  
-  if (themeToggle) {
-    themeToggle.addEventListener('click', function() {
-      var currentTheme = document.documentElement.getAttribute('data-theme');
-      var newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-    });
-  }
+  // Theme toggle logic moved to navbar.js to avoid duplicate event listeners
 
   // ============================================
   // Smooth Scroll for Anchor Links
