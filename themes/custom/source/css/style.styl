@@ -114,11 +114,12 @@ img {
 .header-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   max-width: 1152px;
   margin: 0 auto;
   height: 64px;
   padding: 0 1.5rem;
+  position: relative;
 }
 
 .site-nav {
@@ -149,6 +150,8 @@ img {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  position: absolute;
+  right: 1.5rem;
 }
 
 .header-action-btn {
@@ -164,6 +167,11 @@ img {
   justify-content: center;
   width: 36px;
   height: 36px;
+  color: var(--color-text);
+}
+
+.header-action-btn:hover {
+  background: var(--color-hover);
 }
 
 .search-toggle,
