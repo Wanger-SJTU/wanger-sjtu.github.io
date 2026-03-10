@@ -465,6 +465,7 @@ body {
   line-height: 1.8;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .post-content h1,
@@ -477,6 +478,7 @@ body {
   letter-spacing: -0.01em;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .post-content h2 {
@@ -493,6 +495,7 @@ body {
   margin-bottom: 1.5rem;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .post-content ul,
@@ -505,6 +508,7 @@ body {
   margin-bottom: 0.5rem;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .post-content code {
@@ -515,6 +519,7 @@ body {
   border-radius: 3px;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 .post-content pre {
@@ -999,16 +1004,38 @@ body {
     font-size: 0.85rem;
     white-space: pre-wrap;
     word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
   
   .post-content pre code {
     white-space: pre-wrap;
     word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .post-content code {
+    word-break: break-all;
+    overflow-wrap: break-word;
   }
   
   .post-content ul,
   .post-content ol {
     padding-left: 1rem;
+  }
+  
+  .post-content table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .post-content a {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-all;
   }
   
   .post-nav {
