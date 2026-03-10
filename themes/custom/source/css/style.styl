@@ -463,6 +463,8 @@ body {
 .post-content {
   font-size: 1.1rem;
   line-height: 1.8;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .post-content h1,
@@ -473,6 +475,8 @@ body {
   margin-bottom: 1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .post-content h2 {
@@ -487,6 +491,8 @@ body {
 
 .post-content p {
   margin-bottom: 1.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .post-content ul,
@@ -497,6 +503,8 @@ body {
 
 .post-content li {
   margin-bottom: 0.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .post-content code {
@@ -505,6 +513,8 @@ body {
   background: var(--color-code-bg);
   padding: 0.2em 0.4em;
   border-radius: 3px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .post-content pre {
@@ -513,11 +523,13 @@ body {
   border-radius: var(--radius);
   overflow-x: auto;
   margin-bottom: 1.5rem;
+  -webkit-overflow-scrolling: touch;
 }
 
 .post-content pre code {
   background: none;
   padding: 0;
+  white-space: pre;
 }
 
 .post-content blockquote {
@@ -526,17 +538,24 @@ body {
   margin: 1.5rem 0;
   color: var(--color-text-secondary);
   font-style: italic;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .post-content img {
   border-radius: var(--radius);
   margin: 1.5rem 0;
+  max-width: 100%;
+  height: auto;
 }
 
 .post-content table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1.5rem;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .post-content th,
@@ -544,6 +563,8 @@ body {
   border: 1px solid var(--color-border);
   padding: 0.75rem;
   text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .post-content th {
@@ -959,6 +980,28 @@ body {
   
   .post-page .post-title {
     font-size: 1.75rem;
+  }
+  
+  .post-content {
+    font-size: 1rem;
+  }
+  
+  .post-content h2 {
+    font-size: 1.3rem;
+  }
+  
+  .post-content h3 {
+    font-size: 1.15rem;
+  }
+  
+  .post-content pre {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  .post-content ul,
+  .post-content ol {
+    padding-left: 1rem;
   }
   
   .post-nav {
