@@ -18,6 +18,20 @@
     })();
   </script>
   <% } %>
+  <% if (theme.math === true || (page.math !== false && theme.math !== false)) { %>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <% } %>
 </head>
 <body>
   <%- partial('_partial/header') %>
