@@ -10,14 +10,14 @@ date: 2024-09-22 21:18:46
 # 缘由
 
 
-这篇主要谈论 Nand flash 的不同 cell type，基本的 SSD 系统架构，及如何做 SSD 效能评定（Benchmarking）。作者是在 booking.com 上班的软体工程师。有用过应该就知道这是很大的旅游订房行程规划服务网站，在这类工作环jing可能需要对底层的效能有深入解快，才能解决工作上的实务问题。我觉得这类软体从业人员提供的观点对自己来说帮助很大，所以翻译/兼做做笔记。
+这篇主要谈论 Nand flash 的不同 cell type，基本的 SSD 系统架构，及如何做 SSD 效能评定（Benchmarking）。作者是在 booking.com 上班的软体工程师。有用过应该就知道这是很大的旅游订房行程规划服务网站，在这类工作环境可能需要对底层的效能有深入解快，才能解决工作上的实务问题。我觉得这类软体从业人员提供的观点对自己来说帮助很大，所以翻译/兼做做笔记。
 
 # SSD ？
 Solid state drives，顾名思义 SSD 设计里去除了传统硬碟里不 solid，会动的部分，改善了噪音、震动、读写速度慢、易损坏及资料分散时需要硬碟重组来改善读取时间等缺点。
 SSD 作为储存装置：
 * 优点：
   * 随机存取快、且存取时间固定，HDD 的 seek time ？ 没这毛病！
-  * 体积小，看看这些愈来愈小的笔记型电腦、移动装置、SD卡
+  * 体积小，看看这些愈来愈小的笔记型电脑、移动装置、SD卡
   * 少了传统硬碟机械故障、硬碟重组等烦恼。
 * 缺点：
   * Cell 有读写次数限制(wearing off/wear-out)
@@ -48,17 +48,17 @@ controller 把 NAND flash 的 block, page size, GC(garbage collection) 等細节
 
 
 ## 效能评定 Benchmarking
-原文作者有发现当时的 SSD 效能報gao[亂象](http://blog.zorinaq.com/many-ssd-benchmark-reviews-contain-flaws/)，例如不同的 [LBA](https://gerardnico.com/io/drive/lba), 过于簡单的 [queue size](https://www.userbenchmark.com/Faq/What-is-queue-depth/41) 测试情节。文中也提到 SSD 的读写测试其实要在写入一定的随机资料[pre-conditioning, warm up](https://searchstorage.techtarget.com/feature/The-truth-about-SSD-performance-benchmarks)才有测出 controller GC 能力并具参考價值。而非当时很多资料是拿了新的 SSD 测了 happy path 很开心就把资料放出来这样，文中舉的比较好的範例是这篇关于 samsung 840 pro 做的[评测](https://www.storagereview.com/samsung_ssd_840_pro_review)，可以很明顯看到读写效能(IOPS, Read/Write at different sizes/order)在一定的读写后明顯下降，文中也对其拿实际的应用案例如资料库、网页伺服器做了分析，并得到其在前述企业应用环jing效能较差的结论。
+原文作者有发现当时的 SSD 效能報gao[亂象](http://blog.zorinaq.com/many-ssd-benchmark-reviews-contain-flaws/)，例如不同的 [LBA](https://gerardnico.com/io/drive/lba), 过于簡单的 [queue size](https://www.userbenchmark.com/Faq/What-is-queue-depth/41) 测试情节。文中也提到 SSD 的读写测试其实要在写入一定的随机资料[pre-conditioning, warm up](https://searchstorage.techtarget.com/feature/The-truth-about-SSD-performance-benchmarks)才有测出 controller GC 能力并具参考價值。而非当时很多资料是拿了新的 SSD 测了 happy path 很开心就把资料放出来这样，文中舉的比较好的範例是这篇关于 samsung 840 pro 做的[评测](https://www.storagereview.com/samsung_ssd_840_pro_review)，可以很明顯看到读写效能(IOPS, Read/Write at different sizes/order)在一定的读写后明顯下降，文中也对其拿实际的应用案例如资料库、网页伺服器做了分析，并得到其在前述企业应用环境效能较差的结论。
 
 > `图一堆，真是很有心 XD`
 
 目前不确定储存装置是否有个明确的效能评定规範（針对不同应用情jing、不同装置、不同 host interface）。但作者提出一套他的原则（2.3内容）：
-* workload type ，确定你的应用环jing是哪种读写操作居多
+* workload type ，确定你的应用环境是哪种读写操作居多
 * percentage of read / write, 设定同步进行的读写操作比例，如 30% 读 70% 写
 * queue length，你有多少同步执行的执行绪(thread)在对储存装置下指令
-* size of data chunk, 你的应用环jing的档案读写大小（4KB, 8KB 之类的)
+* size of data chunk, 你的应用环境的档案读写大小（4KB, 8KB 之类的)
 
-> 最后一点不太确定怎麼定义，如果你是跑 postgresql, mysql 那要怎麼知道大小？
+> 最后一点不太确定怎么定义，如果你是跑 postgresql, mysql 那要怎么知道大小？
 
 以及需要观测的指标：
 * Throughput: KB/s, MB/s 资料轉換的效率，一般是 sequential 的评定会看

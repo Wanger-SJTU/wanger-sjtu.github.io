@@ -23,7 +23,7 @@ date: 2024-09-22 21:30:31
 2. 即便你只在作业系统读了一个 byte，SSD 的低消还是要读一个 page。
 3. 写入/write 一个 page 也称为 program，上面提到的为写一点资料要写一堆的现象也称为 write amplification / 写入放大。
 4. page 不能直接被复写。nand-flash 只有在进入 “free” state 才能被写。在我们写入一笔资料的时候我们需要先读出现有内容到暂存器/register，然后再写到其他的 free 的 page 里，原先的 page 会被进入 "stale" state，并等待被清理，这种操作模式称为 "copy-modify-write"
-> zfs 以及一些作业系统也有类似的术语 [copy-on-write](https://en.wikipedia.org/wiki/Copy-on-write)，没什麼相关就是了。
+> zfs 以及一些作业系统也有类似的术语 [copy-on-write](https://en.wikipedia.org/wiki/Copy-on-write)，没什么相关就是了。
 5. erase 必须以 block 为单位 (Erases are aligned on block size):
 page stale 之后必须要清除/erase 才能回到 free 状态
 
