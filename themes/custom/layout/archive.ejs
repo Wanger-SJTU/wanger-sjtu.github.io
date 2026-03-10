@@ -14,9 +14,12 @@
       if (!years[year]) years[year] = [];
       years[year].push(post);
     });
+    
+    // 按年份倒序排列（最新年份在前）
+    var sortedYears = Object.keys(years).sort(function(a, b) { return b - a; });
     %>
     
-    <% for (var year in years) { %>
+    <% sortedYears.forEach(function(year) { %>
     <section class="archive-year">
       <h2 class="year-header"><%= year %></h2>
       <ul class="archive-posts">
@@ -37,6 +40,6 @@
         <% }); %>
       </ul>
     </section>
-    <% } %>
+    <% }); %>
   </div>
 </div>
