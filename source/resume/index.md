@@ -1,13 +1,13 @@
 ---
 title: 简历
 layout: resume
-name: 你的名字
-job_title: 前端开发工程师
+name: 王二
+job_title: AI-infra 
 email: your.email@example.com
-phone: +86 138-xxxx-xxxx
+wechat: wanger-01
 location: 上海
-github: your-github
-website: https://your-domain.com
+github: https://github.com/Wanger-SJTU
+website: https://wanger-sjtu.github.io/
 updated: 2026-03-08
 ---
 
@@ -24,19 +24,12 @@ updated: 2026-03-08
 
 ## 工作经历
 
-### 高级前端开发工程师 | ABC 科技公司
-*2022.03 - 至今*
+### AI Infra 工程师 | XXX 半导体 技术有限公司
+*2020.04 - 至今*
 
 - 负责公司核心产品的前端架构设计与开发
 - 主导前端技术栈升级，将构建时间减少 40%
 - 搭建组件库，提升团队开发效率 30%
-
-### 前端开发工程师 | XYZ 互联网公司
-*2019.07 - 2022.02*
-
-- 参与电商平台前端开发，日均 PV 100 万+
-- 负责移动端 H5 页面开发与性能优化
-- 实现首屏加载时间从 3s 优化到 1.2s
 
 ## 项目经历
 
