@@ -4,6 +4,12 @@ layout: flow
 description: 记录一些碎碎念、日常想法和随笔
 flows:
   - date: 2026-03-14
+    title: 少年心气
+    text: 少年心气是不可再生之物。
+    tags:
+      - 思考
+
+  - date: 2026-03-14
     title: Chrome 远程调试
     text: Chrome 146 支持远程调试，AI Agent 可以直接控制浏览器，无需独立实例或扩展程序。开启方法：chrome://inspect/#remote-debugging。
     tags:
