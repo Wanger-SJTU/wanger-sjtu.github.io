@@ -3,6 +3,13 @@ title: 废话
 layout: flow
 description: 记录一些碎碎念、日常想法和随笔
 flows:
+  - date: 2026-03-14
+    title: 与AI共处
+    text: 向AI学习，理解它的本质，才能在它之上构建属于自己的认知闭环。
+    tags:
+      - 思考
+      - AI
+
   - date: 2026-03-12
     title: LLM与科层制
     text: LLM对工作的替代在于认知负载。科层制本质是隔离不同层级的信息，降低信息冲击，从而降低认知负载。
