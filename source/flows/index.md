@@ -5,19 +5,6 @@ description: 记录一些碎碎念、日常想法和随笔
 flows:
   - date: 2026-03-14
     title: 少年心气
-    text: 少年心气是不可再生之物。
-    tags:
-      - 思考
-
-  - date: 2026-03-14
-    title: Chrome 远程调试
-    text: Chrome 146 支持远程调试，AI Agent 可以直接控制浏览器，无需独立实例或扩展程序。开启方法：chrome://inspect/#remote-debugging。
-    tags:
-      - 技术
-      - AI
-
-  - date: 2026-03-14
-    title: Kimi Claw 爆发式增长
     text: Kimi Claw上线后，1月底以来20天收入超2025年全年。个人订阅用户1月支付订单数环比增长8280%。2C业务也还是酒香也怕巷子深，minimax就输在知名度了？
     tags:
       - AI
