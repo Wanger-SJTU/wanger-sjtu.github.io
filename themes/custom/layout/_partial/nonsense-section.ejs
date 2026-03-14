@@ -1,7 +1,17 @@
 <%
 // 获取 flows 页面数据
-var flowsPage = site.pages.findOne({path: 'flows/index'});
+var flowsPage = site.pages.findOne({path: 'flows'});
 var flowItems = [];
+
+if (!flowsPage) {
+  // 如果找不到，尝试遍历所有页面查找
+  site.pages.each(function(page) {
+    if (page.flows && page.flows.length > 0) {
+      flowsPage = page;
+      return false; // 停止遍历
+    }
+  });
+}
 
 if (flowsPage && flowsPage.flows) {
   flowItems = flowsPage.flows.slice().sort(function(a, b) {
