@@ -87,7 +87,7 @@ theme: custom
 # Deployment
 deploy:
   type: git
-  repo: https://github.com/Wanger-SJTU/claw_page.git
+  repo: git@github.com:Wanger-SJTU/claw_page.git
   branch: gh-pages
 
 # RSS
