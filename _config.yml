@@ -84,11 +84,8 @@ ignore:
 # Extensions
 theme: custom
 
-# Deployment
-deploy:
-  type: git
-  repo: git@github.com:Wanger-SJTU/wanger-sjtu.github.io.git
-  branch: gh-pages
+# Deployment - 使用 GitHub Actions 自动部署
+# 不再需要 hexo deploy 配置
 
 # RSS
 feed:
