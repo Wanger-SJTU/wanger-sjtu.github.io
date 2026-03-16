@@ -1,7 +1,7 @@
 # Hexo 配置文件
 # Site
-title: 我的博客
-subtitle: '技术分享 & 生活记录'
+title: 王二的数字花园
+subtitle: ''
 description: '一个简约的个人博客，记录技术与生活的点滴'
 keywords: '博客, 技术, 生活'
 author: Your Name
@@ -9,8 +9,8 @@ language: zh-CN
 timezone: 'Asia/Shanghai'
 
 # URL
-url: https://wanger-sjtu.github.io/claw_page
-root: /claw_page/
+url: https://wanger-sjtu.github.io
+root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -87,7 +87,7 @@ theme: custom
 # Deployment
 deploy:
   type: git
-  repo: git@github.com:Wanger-SJTU/claw_page.git
+  repo: git@github.com:Wanger-SJTU/wanger-sjtu.github.io.git
   branch: gh-pages
 
 # RSS
