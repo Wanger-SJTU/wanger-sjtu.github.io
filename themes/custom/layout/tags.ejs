@@ -1,19 +1,43 @@
 <!-- 标签列表页模板 -->
 <div class="tag-page">
   <h1 class="page-title">标签</h1>
-  
-  <div class="tag-cloud">
-    <% site.tags.sort('name').each(function(tag) { %>
-    <a href="<%= url_for(tag.path) %>" class="tag-item" style="font-size: <%= Math.min(1 + tag.posts.length * 0.1, 2) %>em">
-      <span class="tag-name"><%= tag.name %></span>
-      <span class="tag-count">(<%= tag.posts.length %>)</span>
+
+  <div class="tag-stats">
+    共 <span class="stat-number"><%= site.tags.length %></span> 个标签，
+    <span class="stat-number"><%= site.posts.length %></span> 篇文章
+  </div>
+
+  <div class="tag-grid">
+    <% site.tags.sort('posts.length', -1).each(function(tag) { %>
+    <a href="<%= url_for(tag.path) %>" class="tag-card">
+      <div class="tag-card-header">
+        <span class="tag-name"><%= tag.name %></span>
+        <span class="tag-count"><%= tag.posts.length %></span>
+      </div>
+      <div class="tag-card-footer">
+        <span class="tag-label">篇文章</span>
+      </div>
     </a>
     <% }); %>
   </div>
-  
-  <h2 class="page-title" style="margin-top: 3rem;">文章图谱</h2>
-  <div id="article-graph" style="width: 100%; height: 600px; border: 1px solid var(--color-border); border-radius: var(--radius); margin-top: 1rem;"></div>
+
+  <h2 class="page-title">文章图谱</h2>
+  <div id="article-graph"></div>
 </div>
+
+<style>
+.tag-page .page-title + .tag-stats {
+  margin-top: 1rem;
+}
+
+#article-graph {
+  width: 100%;
+  height: 600px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  margin-top: 1rem;
+}
+</style>
 
 <!-- Vis.js Network -->
 <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
