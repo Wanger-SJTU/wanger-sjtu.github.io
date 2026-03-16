@@ -1,513 +1,185 @@
-<!-- 时间线/废话页面模板 -->
-<h1><%= page.title %></h1>
-<p>测试页面</p>
-<p>页面内容: <%- page.content %></p>
-<p>Pages总数: <%= site.pages.length %></p>
+<div class="flow-page">
+  <h1><%- page.title %></h1>
+  <% if (page.description) { %>
+  <p class="flow-description"><%- page.description %></p>
+  <% } %>
+
+  <div class="flow-layout">
+    <div class="calendar-sidebar">
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <button class="calendar-nav" id="prevMonth">&lsaquo;</button>
+          <h3 class="calendar-title" id="calendarTitle"></h3>
+          <button class="calendar-nav" id="nextMonth">&rsaquo;</button>
+        </div>
+        <div class="calendar-grid">
+          <div class="calendar-weekdays">
+            <span>&#65288;</span><span>&#19968;</span><span>&#20108;</span><span>&#19977;</span><span>&#22235;</span><span>&#20116;</span><span>&#20845;</span>
+          </div>
+          <div class="calendar-days" id="calendarDays"></div>
+        </div>
+        <div class="filter-status" id="filterStatus" style="display: none;">
+          <span class="filter-text" id="filterText"></span>
+          <button class="clear-filter-btn" id="clearFilter">&#28165;&#38500;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-wrapper">
+      <div class="timeline" id="timeline">
+        <%
+          var flowPages = [];
+          site.pages.each(function(p) {
+            if (p.source && p.source.indexOf('flows/') === 0 && p.source !== 'flows/index.md') {
+              flowPages.push(p);
+            }
+          });
+          flowPages.sort(function(a, b) {
+            return new Date(b.date) - new Date(a.date);
+          });
+        %>
+        <% flowPages.forEach(function(p) { %>
+          <%
+            var d = new Date(p.date);
+            var dateStr = d.getFullYear() + '-' +
+              String(d.getMonth() + 1).padStart(2, '0') + '-' +
+              String(d.getDate()).padStart(2, '0');
+            var displayDate = d.getFullYear() + '年' +
+              String(d.getMonth() + 1).padStart(2, '0') + '月' +
+              String(d.getDate()).padStart(2, '0') + '日';
+          %>
+          <article class="timeline-item" data-date="<%= dateStr %>">
+            <time class="timeline-date"><%= displayDate %></time>
+            <div class="timeline-content">
+              <h3 class="timeline-title"><%- p.title %></h3>
+              <div class="timeline-body"><%- p.content %></div>
+              <% if (p.tags && p.tags.length > 0) { %>
+              <div class="timeline-tags">
+                <% p.tags.forEach(function(tag) { %>
+                <span class="timeline-tag">#<%= tag.name %></span>
+                <% }); %>
+              </div>
+              <% } %>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    </div>
+  </div>
+</div>
 
 <style>
-.flow-page {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.page-description {
-  color: var(--color-text-secondary);
-  margin-top: 0.5rem;
-  margin-bottom: 2rem;
-}
-
-/* 两列布局 */
-.flow-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 2rem;
-  align-items: start;
-}
-
-.calendar-sidebar {
-  position: sticky;
-  top: 90px;
-}
-
-/* 日历样式 */
-.calendar-container {
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-.calendar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-}
-
-.calendar-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.calendar-nav {
-  background: var(--color-hover);
-  border: 1px solid var(--color-border);
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  color: var(--color-text);
-}
-
-.calendar-nav:hover {
-  background: var(--color-accent);
-  color: var(--color-bg);
-  border-color: var(--color-accent);
-}
-
-.calendar-grid {
-  width: 100%;
-}
-
-.calendar-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-  margin-bottom: 0.25rem;
-}
-
-.calendar-weekdays span {
-  text-align: center;
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  padding: 0.25rem;
-}
-
-.calendar-days {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-}
-
-.calendar-day {
-  aspect-ratio: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--color-text-secondary);
-  background: transparent;
-  border: none;
-  position: relative;
-  padding: 4px 0;
-}
-
-.calendar-day:hover {
-  background: var(--color-hover);
-}
-
-.calendar-day.other-month {
-  color: var(--color-text-tertiary);
-  opacity: 0.5;
-}
-
-.calendar-day.no-content {
-  color: var(--color-text-tertiary);
-}
-
-.calendar-day.has-content {
-  color: var(--color-text);
-  font-weight: 600;
-}
-
-.calendar-day.has-content::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--color-accent);
-}
-
-.calendar-day.has-content:hover {
-  background: var(--color-accent);
-  color: var(--color-bg);
-}
-
-.calendar-day.has-content:hover::after {
-  background: var(--color-bg);
-}
-
-.calendar-day.selected {
-  background: var(--color-accent);
-  color: var(--color-bg);
-}
-
-.calendar-day.selected::after {
-  background: var(--color-bg);
-}
-
-/* 过滤状态样式 */
-.filter-status {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--color-border);
-}
-
-.filter-text {
-  font-size: 0.8rem;
-  color: var(--color-text-secondary);
-}
-
-.clear-filter-btn {
-  background: var(--color-hover);
-  border: 1px solid var(--color-border);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--color-text);
-}
-
-.clear-filter-btn:hover {
-  background: var(--color-accent);
-  color: var(--color-bg);
-  border-color: var(--color-accent);
-}
-
-/* 时间线包装器 */
-.timeline-wrapper {
-  min-width: 0;
-}
-
-/* 时间线样式 */
-.timeline {
-  position: relative;
-  padding-left: 2rem;
-}
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(
-    to bottom,
-    var(--color-border),
-    var(--color-accent),
-    var(--color-border)
-  );
-}
-
-.timeline-item {
-  position: relative;
-  padding-bottom: 2rem;
-  transition: opacity 0.3s ease;
-}
-
-.timeline-item:last-child {
-  padding-bottom: 0;
-}
-
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -2rem;
-  top: 0.5rem;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--color-bg);
-  border: 2px solid var(--color-accent);
-  transform: translateX(-5px);
-  z-index: 1;
-}
-
-.timeline-item:hover::before {
-  background: var(--color-accent);
-}
-
-.timeline-item.highlighted {
-  animation: highlight-pulse 0.5s ease;
-}
-
-@keyframes highlight-pulse {
-  0% { transform: translateX(0); }
-  50% { transform: translateX(8px); }
-  100% { transform: translateX(0); }
-}
-
-.timeline-date {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--color-text-secondary);
-  margin-bottom: 0.5rem;
-}
-
-.timeline-content {
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1.25rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.timeline-item:hover .timeline-content {
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.timeline-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-.timeline-body {
-  line-height: 1.7;
-}
-
-.timeline-body p:last-child {
-  margin-bottom: 0;
-}
-
-.timeline-tags {
-  margin-top: 0.75rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.timeline-tag {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  background: var(--color-hover);
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-}
-
-.timeline-item.hidden {
-  display: none;
-}
-
-/* 响应式布局 */
+.flow-page { max-width: 1200px; margin: 0 auto; }
+.flow-description { color: var(--color-text-secondary); margin-bottom: 2rem; }
+.flow-layout { display: grid; grid-template-columns: 280px 1fr; gap: 2rem; align-items: start; }
+.calendar-sidebar { position: sticky; top: 90px; }
+.calendar-container { background: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: 8px; padding: 1rem; }
+.calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+.calendar-title { font-size: 0.95rem; font-weight: 600; }
+.calendar-nav { background: var(--color-hover); border: 1px solid var(--color-border); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.calendar-nav:hover { background: var(--color-accent); color: var(--color-bg); }
+.calendar-grid { width: 100%; }
+.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 0.25rem; }
+.calendar-weekdays span { text-align: center; font-size: 0.7rem; color: var(--color-text-secondary); padding: 0.25rem; }
+.calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border-radius: 4px; cursor: pointer; position: relative; }
+.calendar-day.has-content { font-weight: 600; }
+.calendar-day.has-content::after { content: ''; position: absolute; bottom: 2px; width: 4px; height: 4px; border-radius: 50%; background: var(--color-accent); }
+.calendar-day.has-content:hover { background: var(--color-accent); color: var(--color-bg); }
+.calendar-day.selected { background: var(--color-accent); color: var(--color-bg); }
+.filter-status { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--color-border); }
+.clear-filter-btn { background: var(--color-hover); border: 1px solid var(--color-border); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
+.clear-filter-btn:hover { background: var(--color-accent); color: var(--color-bg); }
+.timeline-wrapper { min-width: 0; }
+.timeline { position: relative; padding-left: 2rem; }
+.timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--color-border), var(--color-accent), var(--color-border)); }
+.timeline-item { position: relative; padding-bottom: 2rem; }
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-item::before { content: ''; position: absolute; left: -2rem; top: 0.5rem; width: 12px; height: 12px; border-radius: 50%; background: var(--color-bg); border: 2px solid var(--color-accent); transform: translateX(-5px); }
+.timeline-item:hover::before { background: var(--color-accent); }
+.timeline-content { background: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: 8px; padding: 1.25rem; transition: transform 0.2s }
+.timeline-item:hover .timeline-content { transform: translateX(4px) }
+.timeline-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem }
+.timeline-body { line-height: 1.7 }
+.timeline-tags { margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem }
+.timeline-tag { font-size: 0.75rem; color: var(--color-text-secondary); background: var(--color-hover); padding: 0.2rem 0.5rem; border-radius: 4px }
+.timeline-item.hidden { display: none }
 @media (max-width: 900px) {
-  .flow-layout {
-    grid-template-columns: 1fr;
-  }
-  
-  .calendar-sidebar {
-    position: static;
-  }
-  
-  .calendar-container {
-    max-width: 360px;
-    margin: 0 auto 2rem;
-  }
-}
-
-@media (max-width: 600px) {
-  .timeline {
-    padding-left: 1.5rem;
-  }
-  
-  .timeline::before {
-    left: 0;
-  }
-  
-  .timeline-item::before {
-    left: -1.5rem;
-    width: 10px;
-    height: 10px;
-  }
-  
-  .calendar-day {
-    font-size: 0.75rem;
-  }
+  .flow-layout { grid-template-columns: 1fr }
+  .calendar-sidebar { position: static }
+  .calendar-container { max-width: 360px; margin: 0 auto 2rem }
 }
 </style>
 
 <script>
 (function() {
-  // 获取所有有内容的日期
-  var items = document.querySelectorAll('.timeline-item');
-  var contentDates = [];
+  var items = document.querySelectorAll('.timeline-item')
+  var contentDates = []
   items.forEach(function(item) {
-    var date = item.getAttribute('data-date');
-    if (date) {
-      contentDates.push(date);
-    }
-  });
-  
-  var currentDate = new Date();
-  var selectedDate = null;
-  
+    var date = item.getAttribute('data-date')
+    if (date) contentDates.push(date)
+  })
+  var currentDate = new Date()
+  var selectedDate = null
   function renderCalendar(date) {
-    var year = date.getFullYear();
-    var month = date.getMonth();
-    
-    // 更新标题
-    var title = document.getElementById('calendarTitle');
-    title.textContent = year + '年' + (month + 1) + '月';
-    
-    // 获取当月第一天和最后一天
-    var firstDay = new Date(year, month, 1);
-    var lastDay = new Date(year, month + 1, 0);
-    var daysInMonth = lastDay.getDate();
-    var startWeekday = firstDay.getDay();
-    
-    var daysContainer = document.getElementById('calendarDays');
-    daysContainer.innerHTML = '';
-    
-    // 上个月的日期
-    var prevMonthLastDay = new Date(year, month, 0).getDate();
+    var year = date.getFullYear()
+    var month = date.getMonth()
+    document.getElementById('calendarTitle').textContent = year + '&#24180;' + (month + 1) + '&#26376;'
+    var firstDay = new Date(year, month, 1)
+    var lastDay = new Date(year, month + 1, 0)
+    var daysInMonth = lastDay.getDate()
+    var startWeekday = firstDay.getDay()
+    var daysContainer = document.getElementById('calendarDays')
+    daysContainer.innerHTML = ''
     for (var i = startWeekday - 1; i >= 0; i--) {
-      var dayBtn = createDayButton(prevMonthLastDay - i, true);
-      daysContainer.appendChild(dayBtn);
+      var btn = document.createElement('button')
+      btn.className = 'calendar-day'
+      btn.style.opacity = '0.3'
+      btn.disabled = true
+      daysContainer.appendChild(btn)
     }
-    
-    // 当月日期
     for (var day = 1; day <= daysInMonth; day++) {
-      var dateStr = formatDate(year, month, day);
-      var hasContent = contentDates.indexOf(dateStr) !== -1;
-      var dayBtn = createDayButton(day, false, hasContent, dateStr);
-      
-      if (selectedDate === dateStr) {
-        dayBtn.classList.add('selected');
-      }
-      
-      daysContainer.appendChild(dayBtn);
-    }
-    
-    // 下个月的日期
-    var totalCells = startWeekday + daysInMonth;
-    var remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
-    for (var i = 1; i <= remaining; i++) {
-      var dayBtn = createDayButton(i, true);
-      daysContainer.appendChild(dayBtn);
+      var dateStr = formatDate(year, month, day)
+      var hasContent = contentDates.indexOf(dateStr) !== -1
+      var btn = document.createElement('button')
+      btn.className = 'calendar-day'
+      if (hasContent) btn.classList.add('has-content')
+      btn.textContent = day
+      if (hasContent) btn.addEventListener('click', function() { filterContent(dateStr) })
+      if (selectedDate === dateStr) btn.classList.add('selected')
+      daysContainer.appendChild(btn)
     }
   }
-  
-  function createDayButton(day, isOtherMonth, hasContent, dateStr) {
-    var btn = document.createElement('button');
-    btn.className = 'calendar-day';
-    if (isOtherMonth) btn.classList.add('other-month');
-    if (hasContent) {
-      btn.classList.add('has-content');
-    } else if (!isOtherMonth) {
-      btn.classList.add('no-content');
-    }
-    btn.textContent = day;
-    
-    if (hasContent && dateStr) {
-      btn.addEventListener('click', function() {
-        filterContent(dateStr);
-      });
-    }
-    
-    return btn;
-  }
-  
   function formatDate(year, month, day) {
-    return year + '-' + 
-           String(month + 1).padStart(2, '0') + '-' + 
-           String(day).padStart(2, '0');
+    return year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0')
   }
-  
   function filterContent(dateStr) {
-    // 清除之前的选择
-    document.querySelectorAll('.calendar-day.selected').forEach(function(el) {
-      el.classList.remove('selected');
-    });
-    document.querySelectorAll('.timeline-item.highlighted').forEach(function(el) {
-      el.classList.remove('highlighted');
-    });
-    
-    // 高亮选中的日期
-    selectedDate = dateStr;
+    document.querySelectorAll('.calendar-day.selected').forEach(function(el) { el.classList.remove('selected') })
+    selectedDate = dateStr
     document.querySelectorAll('.calendar-day').forEach(function(el) {
-      if (el.textContent === parseInt(dateStr.split('-')[2]) && el.classList.contains('has-content')) {
-        el.classList.add('selected');
-      }
-    });
-    
-    // 过滤时间线内容
-    var allItems = document.querySelectorAll('.timeline-item');
+      if (el.textContent === parseInt(dateStr.split('-')[2]) && el.classList.contains('has-content')) el.classList.add('selected')
+    })
+    var allItems = document.querySelectorAll('.timeline-item')
     allItems.forEach(function(item) {
-      if (item.getAttribute('data-date') === dateStr) {
-        item.classList.remove('hidden');
-        item.classList.add('highlighted');
-      } else {
-        item.classList.add('hidden');
-      }
-    });
-    
-    // 显示过滤状态
-    var filterStatus = document.getElementById('filterStatus');
-    var filterText = document.getElementById('filterText');
-    var parts = dateStr.split('-');
-    filterText.textContent = '已过滤：' + parts[0] + '年' + parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日';
-    filterStatus.style.display = 'flex';
-    
-    // 滚动到第一个匹配项
-    var targetItem = document.querySelector('.timeline-item[data-date="' + dateStr + '"]');
-    if (targetItem) {
-      targetItem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+      if (item.getAttribute('data-date') === dateStr) item.classList.remove('hidden')
+      else item.classList.add('hidden')
+    })
+    document.getElementById('filterStatus').style.display = 'flex'
   }
-  
   function clearFilter() {
-    selectedDate = null;
-    
-    // 清除日期选择
-    document.querySelectorAll('.calendar-day.selected').forEach(function(el) {
-      el.classList.remove('selected');
-    });
-    
-    // 显示所有时间线内容
-    document.querySelectorAll('.timeline-item').forEach(function(item) {
-      item.classList.remove('hidden');
-      item.classList.remove('highlighted');
-    });
-    
-    // 隐藏过滤状态
-    document.getElementById('filterStatus').style.display = 'none';
+    selectedDate = null
+    document.querySelectorAll('.timeline-item').forEach(function(item) { item.classList.remove('hidden') })
+    document.getElementById('filterStatus').style.display = 'none'
   }
-  
-  // 导航按钮事件
   document.getElementById('prevMonth').addEventListener('click', function() {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    renderCalendar(currentDate);
-  });
-  
+    currentDate.setMonth(currentDate.getMonth() - 1)
+    renderCalendar(currentDate)
+  })
   document.getElementById('nextMonth').addEventListener('click', function() {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendar(currentDate);
-  });
-  
-  // 清除过滤按钮
-  document.getElementById('clearFilter').addEventListener('click', clearFilter);
-  
-  // 初始渲染
-  renderCalendar(currentDate);
-})();
+    currentDate.setMonth(currentDate.getMonth() + 1)
+    renderCalendar(currentDate)
+  })
+  document.getElementById('clearFilter').addEventListener('click', clearFilter)
+  renderCalendar(currentDate)
+})()
 </script>
