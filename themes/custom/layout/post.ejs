@@ -92,9 +92,9 @@ if (page.tags && page.tags.length) {
     </nav>
   </article>
   
-  <% if (relatedPosts.length > 0) { %>
-  <aside class="related-posts-sidebar">
-    <div class="related-posts-widget">
+  <aside class="post-sidebar">
+    <% if (relatedPosts.length > 0) { %>
+    <div class="sidebar-widget related-posts-widget">
       <h3 class="widget-title">相关文章</h3>
       <ul class="related-posts-list">
         <% relatedPosts.forEach(function(post) { %>
@@ -107,6 +107,231 @@ if (page.tags && page.tags.length) {
         <% }); %>
       </ul>
     </div>
+    <% } %>
+
+    <div class="sidebar-widget article-graph-widget">
+      <h3 class="widget-title">知识图谱</h3>
+      <div id="article-graph-sidebar"></div>
+    </div>
   </aside>
-  <% } %>
 </div>
+
+<!-- Vis.js Network -->
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<script>
+<%
+// 获取当前文章的标签
+var currentTags = page.tags ? page.tags.toArray().map(function(t) { return t.name; }) : [];
+
+// 获取所有相关文章（共享至少一个标签）
+var relatedPostsMap = {};
+site.posts.each(function(post) {
+  if (post._id === page._id) return;
+
+  if (post.tags && post.tags.length) {
+    post.tags.each(function(tag) {
+      if (currentTags.includes(tag.name)) {
+        if (!relatedPostsMap[post._id]) {
+          relatedPostsMap[post._id] = {
+            post: post,
+            sharedTags: []
+          };
+        }
+        if (!relatedPostsMap[post._id].sharedTags.includes(tag.name)) {
+          relatedPostsMap[post._id].sharedTags.push(tag.name);
+        }
+      }
+    });
+  }
+});
+
+// 生成节点数据
+var nodes = [];
+
+// 当前文章节点
+nodes.push({
+  id: page._id,
+  label: page.title,
+  title: page.title,
+  value: (page.tags ? page.tags.length : 0) + 5,
+  url: null,
+  isCurrent: true
+});
+
+// 相关文章节点
+Object.keys(relatedPostsMap).forEach(function(postId) {
+  var item = relatedPostsMap[postId];
+  nodes.push({
+    id: postId,
+    label: item.post.title,
+    title: item.post.title + '\n相关标签: ' + item.sharedTags.join(', '),
+    value: item.sharedTags.length,
+    url: config.root + item.post.path,
+    isCurrent: false
+  });
+});
+
+// 生成边数据
+var edges = [];
+Object.keys(relatedPostsMap).forEach(function(postId) {
+  var item = relatedPostsMap[postId];
+  edges.push({
+    from: page._id,
+    to: postId,
+    value: item.sharedTags.length,
+    title: '共享标签: ' + item.sharedTags.join(', ')
+  });
+});
+%>
+
+// 获取当前主题
+var isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
+// 节点颜色
+var nodeColor = isDarkMode ? {
+  background: '#ffffff',
+  border: '#666666',
+  highlight: { background: '#f0f0f0', border: '#333333' },
+  hover: { background: '#e0e0e0', border: '#333333' }
+} : {
+  background: '#f8f8f8',
+  border: '#333333',
+  highlight: { background: '#e0e0e0', border: '#000000' },
+  hover: { background: '#d0d0d0', border: '#000000' }
+};
+
+// 当前文章节点颜色（更突出）
+var currentNodeColor = isDarkMode ? {
+  background: '#4CAF50',
+  border: '#45a049',
+  highlight: { background: '#66BB6A', border: '#4CAF50' },
+  hover: { background: '#81C784', border: '#4CAF50' }
+} : {
+  background: '#4CAF50',
+  border: '#45a049',
+  highlight: { background: '#66BB6A', border: '#4CAF50' },
+  hover: { background: '#81C784', border: '#45a049' }
+};
+
+// 为当前文章节点设置特殊颜色
+nodes.forEach(function(node) {
+  if (node.isCurrent) {
+    node.color = currentNodeColor;
+    node.font = { color: '#ffffff', size: 16 };
+  } else {
+    node.color = nodeColor;
+    node.font = { color: isDarkMode ? '#cccccc' : '#333333', size: 12 };
+  }
+});
+
+// 创建节点数据集
+var nodesDataset = new vis.DataSet(<%- JSON.stringify(nodes) %>);
+
+// 创建边数据集
+var edgesDataset = new vis.DataSet(<%- JSON.stringify(edges) %>);
+
+// 创建网络
+var container = document.getElementById('article-graph-sidebar');
+if (container) {
+  var data = {
+    nodes: nodesDataset,
+    edges: edgesDataset
+  };
+
+  var options = {
+    nodes: {
+      shape: 'dot',
+      borderWidth: 2,
+      shadow: false
+    },
+    edges: {
+      color: {
+        color: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)',
+        highlight: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)',
+        hover: isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)'
+      },
+      width: 0.5,
+      smooth: {
+        type: 'continuous'
+      }
+    },
+    physics: {
+      stabilization: true,
+      barnesHut: {
+        gravitationalConstant: -2000,
+        centralGravity: 0.3,
+        springLength: 150,
+        springConstant: 0.05
+      }
+    },
+    interaction: {
+      hover: true,
+      tooltipDelay: 200,
+      zoomView: false,
+      dragView: false
+    }
+  };
+
+  var network = new vis.Network(container, data, options);
+
+  // 点击节点跳转到文章
+  network.on('click', function(params) {
+    if (params.nodes.length > 0) {
+      var nodeId = params.nodes[0];
+      var node = nodesDataset.get(nodeId);
+      if (node.url) {
+        window.location.href = node.url;
+      }
+    }
+  });
+
+  // 监听主题变化
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.attributeName === 'data-theme') {
+        var newDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
+        var newNodeColor = newDarkMode ? {
+          background: '#ffffff',
+          border: '#666666'
+        } : {
+          background: '#f8f8f8',
+          border: '#333333'
+        };
+
+        var newCurrentNodeColor = {
+          background: '#4CAF50',
+          border: '#45a049'
+        };
+
+        var newEdgeColor = newDarkMode ? {
+          color: 'rgba(255, 255, 255, 0.3)'
+        } : {
+          color: 'rgba(0, 0, 0, 0.2)'
+        };
+
+        nodesDataset.forEach(function(node) {
+          if (node.isCurrent) {
+            nodesDataset.update({
+              id: node.id,
+              color: newCurrentNodeColor
+            });
+          } else {
+            nodesDataset.update({
+              id: node.id,
+              color: newNodeColor,
+              font: { color: newDarkMode ? '#cccccc' : '#333333' }
+            });
+          }
+        });
+
+        edgesDataset.forEach(function(edge) {
+          edgesDataset.update({ id: edge.id, color: newEdgeColor });
+        });
+      }
+    });
+  });
+
+  observer.observe(document.documentElement, { attributes: true });
+}
+</script>
