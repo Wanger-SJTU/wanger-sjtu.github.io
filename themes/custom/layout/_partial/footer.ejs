@@ -9,15 +9,13 @@
         <% if (theme.social) { %>
         <div class="social-links">
           <% if (theme.social.github) { %>
-          <% var githubUser = String(theme.social.github).replace(/[^a-zA-Z0-9_-]/g, ''); %>
-          <a href="https://github.com/<%= githubUser %>" target="_blank" rel="noopener noreferrer" class="social-link">GitHub</a>
+          <a href="<%= theme.social.github %>" target="_blank" rel="noopener noreferrer" class="social-link">GitHub</a>
           <% } %>
           <% if (theme.social.email) { %>
-          <a href="mailto:<%= theme.social.email %>" class="social-link">Email</a>
+          <a href="<%= theme.social.email %>" class="social-link">Email</a>
           <% } %>
           <% if (theme.social.weibo) { %>
-          <% var weiboUser = String(theme.social.weibo).replace(/[^a-zA-Z0-9_-]/g, ''); %>
-          <a href="https://weibo.com/<%= weiboUser %>" target="_blank" rel="noopener noreferrer" class="social-link">微博</a>
+          <a href="<%= theme.social.weibo %>" target="_blank" rel="noopener noreferrer" class="social-link">微博</a>
           <% } %>
         </div>
         <% } %>

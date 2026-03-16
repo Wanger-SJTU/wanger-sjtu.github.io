@@ -11,13 +11,13 @@ menu:
 
 # 社交链接
 social:
-  github: https://github.com/your-username
-  email: mailto:your-email@example.com
+  github: https://github.com/Wanger-SJTU
+  email: mailto:wanger@sjtu.edu.cn
 
 # 页脚信息
 footer:
   since: 2026
-  copyright: Your Name
+  copyright: wanger-sjtu
 
 # 功能开关
 darkmode: true
