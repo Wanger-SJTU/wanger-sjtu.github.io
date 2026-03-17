@@ -14,13 +14,13 @@
         </div>
         <div class="calendar-grid">
           <div class="calendar-weekdays">
-            <span>&#65288;</span><span>&#19968;</span><span>&#20108;</span><span>&#19977;</span><span>&#22235;</span><span>&#20116;</span><span>&#20845;</span>
+            <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
           </div>
           <div class="calendar-days" id="calendarDays"></div>
         </div>
         <div class="filter-status" id="filterStatus" style="display: none;">
           <span class="filter-text" id="filterText"></span>
-          <button class="clear-filter-btn" id="clearFilter">&#28165;&#38500;</button>
+          <button class="clear-filter-btn" id="clearFilter">清除</button>
         </div>
       </div>
     </div>
@@ -124,7 +124,7 @@
   function renderCalendar(date) {
     var year = date.getFullYear()
     var month = date.getMonth()
-    document.getElementById('calendarTitle').textContent = year + '&#24180;' + (month + 1) + '&#26376;'
+    document.getElementById('calendarTitle').textContent = year + '年' + (month + 1) + '月'
     var firstDay = new Date(year, month, 1)
     var lastDay = new Date(year, month + 1, 0)
     var daysInMonth = lastDay.getDate()
