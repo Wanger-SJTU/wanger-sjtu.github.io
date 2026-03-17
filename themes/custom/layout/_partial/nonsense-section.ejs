@@ -1,23 +1,22 @@
 <%
-// 获取 flows 页面数据
-var flowsPage = site.pages.findOne({path: 'flows'});
+// 获取所有flow页面（多文件结构）
 var flowItems = [];
+site.pages.each(function(p) {
+  if (p.source && p.source.indexOf('flows/') === 0 && p.source !== 'flows/index.md') {
+    flowItems.push({
+      title: p.title,
+      date: p.date,
+      content: p.content,
+      tags: p.tags || [],
+      path: p.path
+    });
+  }
+});
 
-if (!flowsPage) {
-  // 如果找不到，尝试遍历所有页面查找
-  site.pages.each(function(page) {
-    if (page.flows && page.flows.length > 0) {
-      flowsPage = page;
-      return false; // 停止遍历
-    }
-  });
-}
-
-if (flowsPage && flowsPage.flows) {
-  flowItems = flowsPage.flows.slice().sort(function(a, b) {
-    return new Date(b.date) - new Date(a.date);
-  }).slice(0, 5);
-}
+// 按日期排序（从新到旧），取最新5条
+flowItems = flowItems.sort(function(a, b) {
+  return new Date(b.date) - new Date(a.date);
+}).slice(0, 5);
 %>
 
 <% if (flowItems.length > 0) { %>
@@ -35,13 +34,13 @@ if (flowsPage && flowsPage.flows) {
         <% if (item.title) { %>
         <h3 class="nonsense-title-text"><%= item.title %></h3>
         <% } %>
-        <% if (item.text) { %>
-        <p class="nonsense-excerpt"><%= item.text.substring(0, 80) %><% if (item.text.length > 80) { %>...<% } %></p>
+        <% if (item.content) { %>
+        <p class="nonsense-excerpt"><%- strip_html(item.content).substring(0, 80) %><% if (strip_html(item.content).length > 80) { %>...<% } %></p>
         <% } %>
-        <% if (item.tags && item.tags.length) { %>
+        <% if (item.tags && item.tags.length > 0) { %>
         <div class="nonsense-tags">
           <% item.tags.forEach(function(tag) { %>
-          <span class="nonsense-tag">#<%= tag %></span>
+          <span class="nonsense-tag">#<%= tag.name %></span>
           <% }); %>
         </div>
         <% } %>
