@@ -109,28 +109,39 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('[Flow Calendar] DOMContentLoaded fired')
   var items = document.querySelectorAll('.timeline-item')
+  console.log('[Flow Calendar] Found timeline items:', items.length)
   var contentDates = []
   items.forEach(function(item) {
     var date = item.getAttribute('data-date')
     if (date) contentDates.push(date)
   })
+  console.log('[Flow Calendar] contentDates:', contentDates)
   // 按日期排序（从新到旧）
   contentDates.sort(function(a, b) {
     return new Date(b) - new Date(a)
   })
   // 使用最新的flow记录的日期来初始化日历
   var currentDate = contentDates.length > 0 ? new Date(contentDates[0]) : new Date()
+  console.log('[Flow Calendar] Initial calendar date:', currentDate.toISOString())
   var selectedDate = null
   function renderCalendar(date) {
+    console.log('[Flow Calendar] renderCalendar called with:', date.toISOString())
     var year = date.getFullYear()
     var month = date.getMonth()
+    console.log('[Flow Calendar] Rendering', year, 'year', month, 'month (0-indexed)')
     document.getElementById('calendarTitle').textContent = year + '年' + (month + 1) + '月'
     var firstDay = new Date(year, month, 1)
     var lastDay = new Date(year, month + 1, 0)
     var daysInMonth = lastDay.getDate()
     var startWeekday = firstDay.getDay()
+    console.log('[Flow Calendar] Month has', daysInMonth, 'days, starting on weekday', startWeekday)
     var daysContainer = document.getElementById('calendarDays')
+    if (!daysContainer) {
+      console.error('[Flow Calendar] ERROR: calendarDays container not found!')
+      return
+    }
     daysContainer.innerHTML = ''
     for (var i = startWeekday - 1; i >= 0; i--) {
       var btn = document.createElement('button')
@@ -139,9 +150,11 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.disabled = true
       daysContainer.appendChild(btn)
     }
+    var markedDays = 0
     for (var day = 1; day <= daysInMonth; day++) {
       var dateStr = formatDate(year, month, day)
       var hasContent = contentDates.indexOf(dateStr) !== -1
+      if (hasContent) markedDays++
       var btn = document.createElement('button')
       btn.className = 'calendar-day'
       if (hasContent) btn.classList.add('has-content')
@@ -150,21 +163,29 @@ document.addEventListener('DOMContentLoaded', function() {
       if (selectedDate === dateStr) btn.classList.add('selected')
       daysContainer.appendChild(btn)
     }
+    console.log('[Flow Calendar] Calendar rendered with', markedDays, 'marked days')
   }
   function formatDate(year, month, day) {
     return year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0')
   }
   function filterContent(dateStr) {
+    console.log('[Flow Calendar] filterContent called with:', dateStr)
     document.querySelectorAll('.calendar-day.selected').forEach(function(el) { el.classList.remove('selected') })
     selectedDate = dateStr
     document.querySelectorAll('.calendar-day').forEach(function(el) {
       if (el.textContent === parseInt(dateStr.split('-')[2]) && el.classList.contains('has-content')) el.classList.add('selected')
     })
     var allItems = document.querySelectorAll('.timeline-item')
+    var visibleCount = 0
     allItems.forEach(function(item) {
-      if (item.getAttribute('data-date') === dateStr) item.classList.remove('hidden')
-      else item.classList.add('hidden')
+      if (item.getAttribute('data-date') === dateStr) {
+        item.classList.remove('hidden')
+        visibleCount++
+      } else {
+        item.classList.add('hidden')
+      }
     })
+    console.log('[Flow Calendar] Filtered to show', visibleCount, 'items')
     document.getElementById('filterStatus').style.display = 'flex'
   }
   function clearFilter() {
