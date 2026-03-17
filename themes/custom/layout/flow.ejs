@@ -115,7 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var date = item.getAttribute('data-date')
     if (date) contentDates.push(date)
   })
-  var currentDate = new Date()
+  // 按日期排序（从新到旧）
+  contentDates.sort(function(a, b) {
+    return new Date(b) - new Date(a)
+  })
+  // 使用最新的flow记录的日期来初始化日历
+  var currentDate = contentDates.length > 0 ? new Date(contentDates[0]) : new Date()
   var selectedDate = null
   function renderCalendar(date) {
     var year = date.getFullYear()
