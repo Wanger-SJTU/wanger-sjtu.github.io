@@ -1,40 +1,90 @@
-<!-- 标签页模板 -->
+<!-- 单标签页模板 -->
 <div class="tag-page">
-  <h1 class="page-title">标签</h1>
-
-  <div class="tag-cloud">
-    <% site.tags.sort('name').each(function(tag) { %>
-    <% var isActive = page.tag && tag.name === page.tag; %>
-    <a href="<%= url_for(tag.path) %>" class="tag-item<%= isActive ? ' active' : '' %>" style="font-size: <%= Math.min(1 + tag.posts.length * 0.1, 2) %>em">
-      <span class="tag-name">#<%= tag.name %></span>
-      <span class="tag-count"><%= tag.posts.length %></span>
-    </a>
-    <% }); %>
+  <div class="tag-header">
+    <a href="<%= url_for('/tags') %>" class="back-link">← 返回标签列表</a>
+    <h1 class="page-title">#<%= page.tag %></h1>
+    <p class="tag-stats"><span class="stat-number"><%= page.posts.length %></span> 篇文章</p>
   </div>
 
   <% if (page.posts && page.posts.length > 0) { %>
-  <section class="tag-posts">
-    <h2 class="section-title">
-      #<%= page.tag %>
-      <span class="post-count">(<%= page.posts.length %> 篇)</span>
-    </h2>
-
-    <ul class="post-list">
-      <% page.posts.sort('date', -1).each(function(post) { %>
-      <li class="post-list-item">
-        <time class="post-date"><%= date(post.date, 'YYYY-MM-DD') %></time>
+  <div class="tag-posts-grid">
+    <% page.posts.sort('date', -1).each(function(post) { %>
+    <article class="post-card">
+      <time class="post-date" datetime="<%= date(post.date, 'YYYY-MM-DD') %>">
+        <%= date(post.date, 'YYYY年MM月DD日') %>
+      </time>
+      <h3 class="post-title">
         <a href="<%= url_for(post.path) %>"><%= post.title %></a>
-      </li>
-      <% }); %>
-    </ul>
-  </section>
+      </h3>
+      <% if (post.excerpt) { %>
+      <p class="post-excerpt"><%= strip_html(post.excerpt).substring(0, 150) %>...</p>
+      <% } else if (post.content) { %>
+      <p class="post-excerpt"><%= strip_html(post.content).substring(0, 150) %>...</p>
+      <% } %>
+      <div class="post-meta">
+        <% if (post.categories && post.categories.length) { %>
+        <span class="post-category">
+          <% post.categories.each(function(cat) { %>
+          <a href="<%= url_for(cat.path) %>"><%= cat.name %></a>
+          <% }); %>
+        </span>
+        <% } %>
+        <% if (post.tags && post.tags.length) { %>
+        <span class="post-tags">
+          <% post.tags.each(function(tag) { %>
+          <a href="<%= url_for(tag.path) %>" class="tag">#<%= tag.name %></a>
+          <% }); %>
+        </span>
+        <% } %>
+      </div>
+    </article>
+    <% }); %>
+  </div>
+  <% } else { %>
+  <p class="empty-message">该标签下暂无文章</p>
   <% } %>
 </div>
 
 <style>
-.tag-item.active {
-  background: var(--color-accent) !important;
-  color: var(--color-bg) !important;
-  font-weight: 600;
+.tag-header {
+  margin-bottom: 2rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.back-link:hover {
+  color: var(--color-accent);
+}
+
+.tag-header .page-title {
+  margin-bottom: 0.5rem;
+}
+
+.tag-stats {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
+
+.tag-posts-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.empty-message {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 3rem;
+}
+
+@media (min-width: 768px) {
+  .tag-posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
