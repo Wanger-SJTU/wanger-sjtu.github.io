@@ -26,7 +26,16 @@ flowItems = flowItems.sort(function(a, b) {
   </h2>
   <div class="nonsense-list">
     <% flowItems.forEach(function(item) { %>
-    <article class="nonsense-item" data-date="<%= date(item.date, 'YYYY-MM-DD') %>">
+    <%
+      // 提取标签名称数组
+      var tagNames = [];
+      if (item.tags && item.tags.length > 0) {
+        item.tags.forEach(function(tag) {
+          tagNames.push(typeof tag === 'string' ? tag : tag.name);
+        });
+      }
+    %>
+    <article class="nonsense-item" data-date="<%= date(item.date, 'YYYY-MM-DD') %>" data-tags="<%= tagNames.join(',') %>">
       <time class="nonsense-date" datetime="<%= date(item.date, 'YYYY-MM-DD') %>">
         <%= date(item.date, 'MM.DD') %>
       </time>
@@ -40,7 +49,8 @@ flowItems = flowItems.sort(function(a, b) {
         <% if (item.tags && item.tags.length > 0) { %>
         <div class="nonsense-tags">
           <% item.tags.forEach(function(tag) { %>
-          <span class="nonsense-tag">#<%= typeof tag === 'string' ? tag : tag.name %></span>
+          <% var tagName = typeof tag === 'string' ? tag : tag.name; %>
+          <span class="nonsense-tag" data-tag="<%= tagName %>" style="cursor: pointer;">#<%= tagName %></span>
           <% }); %>
         </div>
         <% } %>
@@ -48,5 +58,130 @@ flowItems = flowItems.sort(function(a, b) {
     </article>
     <% }); %>
   </div>
+  <div class="nonsense-filter-status" id="nonsenseFilterStatus" style="display: none;">
+    <span class="filter-text" id="nonsenseFilterText"></span>
+    <button class="clear-filter-btn" id="clearNonsenseFilter">清除</button>
+  </div>
 </section>
+
+<script>
+(function() {
+  var nonsenseSection = document.querySelector('.nonsense-section');
+  if (!nonsenseSection) return;
+
+  var selectedTag = null;
+
+  // 标签点击事件
+  nonsenseSection.addEventListener('click', function(e) {
+    if (e.target.classList.contains('nonsense-tag')) {
+      e.preventDefault();
+      var tagName = e.target.getAttribute('data-tag');
+      filterByTag(tagName);
+    }
+  });
+
+  function filterByTag(tagName) {
+    selectedTag = tagName;
+    var items = nonsenseSection.querySelectorAll('.nonsense-item');
+    var tags = nonsenseSection.querySelectorAll('.nonsense-tag');
+
+    // 更新标签选中状态
+    tags.forEach(function(tag) {
+      if (tag.getAttribute('data-tag') === tagName) {
+        tag.classList.add('active');
+      } else {
+        tag.classList.remove('active');
+      }
+    });
+
+    // 过滤项目
+    var visibleCount = 0;
+    items.forEach(function(item) {
+      var itemTags = item.getAttribute('data-tags');
+      if (itemTags && itemTags.split(',').indexOf(tagName) !== -1) {
+        item.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+
+    // 显示过滤状态
+    var statusEl = document.getElementById('nonsenseFilterStatus');
+    var textEl = document.getElementById('nonsenseFilterText');
+    if (statusEl && textEl) {
+      textEl.textContent = '标签: #' + tagName + ' (' + visibleCount + ')';
+      statusEl.style.display = 'flex';
+    }
+  }
+
+  // 清除过滤
+  function clearFilter() {
+    selectedTag = null;
+    var items = nonsenseSection.querySelectorAll('.nonsense-item');
+    var tags = nonsenseSection.querySelectorAll('.nonsense-tag');
+
+    items.forEach(function(item) {
+      item.classList.remove('hidden');
+    });
+
+    tags.forEach(function(tag) {
+      tag.classList.remove('active');
+    });
+
+    var statusEl = document.getElementById('nonsenseFilterStatus');
+    if (statusEl) {
+      statusEl.style.display = 'none';
+    }
+  }
+
+  // 绑定清除按钮
+  var clearBtn = document.getElementById('clearNonsenseFilter');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', clearFilter);
+  }
+})();
+</script>
+
+<style>
+.nonsense-item.hidden {
+  display: none !important;
+}
+
+.nonsense-tag.active {
+  background: var(--color-accent) !important;
+  color: var(--color-bg) !important;
+}
+
+.nonsense-filter-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.filter-text {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.clear-filter-btn {
+  background: var(--color-hover);
+  border: 1px solid var(--color-border);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.clear-filter-btn:hover {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border-color: var(--color-accent);
+}
+</style>
 <% } %>
