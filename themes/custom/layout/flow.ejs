@@ -40,13 +40,9 @@
         %>
         <% flowPages.forEach(function(p) { %>
           <%
-            var d = new Date(p.date);
-            var dateStr = d.getFullYear() + '-' +
-              String(d.getMonth() + 1).padStart(2, '0') + '-' +
-              String(d.getDate()).padStart(2, '0');
-            var displayDate = d.getFullYear() + '年' +
-              String(d.getMonth() + 1).padStart(2, '0') + '月' +
-              String(d.getDate()).padStart(2, '0') + '日';
+            // 使用 date helper 格式化，保持原始日期不变
+            var dateStr = date(p.date, 'YYYY-MM-DD');
+            var displayDate = date(p.date, 'YYYY年MM月DD日');
           %>
           <article class="timeline-item" data-date="<%= dateStr %>">
             <time class="timeline-date"><%= displayDate %></time>
