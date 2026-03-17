@@ -40,7 +40,7 @@ flowItems = flowItems.sort(function(a, b) {
         <% if (item.tags && item.tags.length > 0) { %>
         <div class="nonsense-tags">
           <% item.tags.forEach(function(tag) { %>
-          <span class="nonsense-tag">#<%= tag.name %></span>
+          <span class="nonsense-tag">#<%= typeof tag === 'string' ? tag : tag.name %></span>
           <% }); %>
         </div>
         <% } %>
