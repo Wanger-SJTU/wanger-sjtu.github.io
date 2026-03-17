@@ -112,7 +112,7 @@
 </style>
 
 <script>
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
   var items = document.querySelectorAll('.timeline-item')
   var contentDates = []
   items.forEach(function(item) {
@@ -181,5 +181,5 @@
   })
   document.getElementById('clearFilter').addEventListener('click', clearFilter)
   renderCalendar(currentDate)
-})()
+})
 </script>
