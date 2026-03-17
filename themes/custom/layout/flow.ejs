@@ -159,7 +159,15 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.className = 'calendar-day'
       if (hasContent) btn.classList.add('has-content')
       btn.textContent = day
-      if (hasContent) btn.addEventListener('click', function() { filterContent(dateStr) })
+      // 使用闭包正确捕获 dateStr 值
+      if (hasContent) {
+        (function(ds) {
+          btn.addEventListener('click', function() {
+            console.log('[Flow Calendar] Clicked date:', ds)
+            filterContent(ds)
+          })
+        })(dateStr)
+      }
       if (selectedDate === dateStr) btn.classList.add('selected')
       daysContainer.appendChild(btn)
     }
