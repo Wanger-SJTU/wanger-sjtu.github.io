@@ -43,8 +43,15 @@
             // 使用 date helper 格式化，保持原始日期不变
             var dateStr = date(p.date, 'YYYY-MM-DD');
             var displayDate = date(p.date, 'YYYY年MM月DD日');
+            // 提取标签名称
+            var tagNames = [];
+            if (p.tags && p.tags.length > 0) {
+              p.tags.forEach(function(tag) {
+                tagNames.push(typeof tag === 'string' ? tag : tag.name);
+              });
+            }
           %>
-          <article class="timeline-item" data-date="<%= dateStr %>">
+          <article class="timeline-item" data-date="<%= dateStr %>" data-tags="<%= tagNames.join(',') %>">
             <time class="timeline-date"><%= displayDate %></time>
             <div class="timeline-content">
               <h3 class="timeline-title"><%- p.title %></h3>
@@ -52,7 +59,8 @@
               <% if (p.tags && p.tags.length > 0) { %>
               <div class="timeline-tags">
                 <% p.tags.forEach(function(tag) { %>
-                <span class="timeline-tag">#<%= tag.name %></span>
+                <% var tagName = typeof tag === 'string' ? tag : tag.name; %>
+                <span class="timeline-tag" data-tag="<%= tagName %>">#<%= tagName %></span>
                 <% }); %>
               </div>
               <% } %>
@@ -211,5 +219,101 @@ document.addEventListener('DOMContentLoaded', function() {
   })
   document.getElementById('clearFilter').addEventListener('click', clearFilter)
   renderCalendar(currentDate)
+
+  // 标签过滤功能
+  var selectedTag = null
+  var timeline = document.getElementById('timeline')
+
+  timeline.addEventListener('click', function(e) {
+    if (e.target.classList.contains('timeline-tag')) {
+      e.preventDefault()
+      var tagName = e.target.getAttribute('data-tag')
+      filterByTag(tagName)
+    }
+  })
+
+  function filterByTag(tagName) {
+    console.log('[Flow Tags] Filtering by tag:', tagName)
+    selectedTag = tagName
+    var items = timeline.querySelectorAll('.timeline-item')
+    var tags = timeline.querySelectorAll('.timeline-tag')
+
+    // 更新标签选中状态
+    tags.forEach(function(tag) {
+      if (tag.getAttribute('data-tag') === tagName) {
+        tag.classList.add('active')
+      } else {
+        tag.classList.remove('active')
+      }
+    })
+
+    // 过滤项目
+    var visibleCount = 0
+    items.forEach(function(item) {
+      var itemTags = item.getAttribute('data-tags')
+      if (itemTags && itemTags.split(',').indexOf(tagName) !== -1) {
+        item.classList.remove('tag-hidden')
+        item.classList.remove('hidden') // 也移除日期过滤的hidden
+        visibleCount++
+      } else {
+        item.classList.add('tag-hidden')
+      }
+    })
+
+    // 显示过滤状态
+    var filterStatus = document.getElementById('filterStatus')
+    var filterText = document.getElementById('filterText')
+    if (filterStatus && filterText) {
+      filterText.textContent = '标签: #' + tagName + ' (' + visibleCount + ')'
+      filterStatus.style.display = 'flex'
+    }
+
+    console.log('[Flow Tags] Filtered to show', visibleCount, 'items')
+  }
+
+  function clearTagFilter() {
+    console.log('[Flow Tags] Clearing tag filter')
+    selectedTag = null
+    var items = timeline.querySelectorAll('.timeline-item')
+    var tags = timeline.querySelectorAll('.timeline-tag')
+
+    items.forEach(function(item) {
+      item.classList.remove('tag-hidden')
+    })
+
+    tags.forEach(function(tag) {
+      tag.classList.remove('active')
+    })
+  }
+
+  // 修改原有的clearFilter函数，同时清除日期和标签过滤
+  var originalClearFilter = clearFilter
+  clearFilter = function() {
+    originalClearFilter()
+    clearTagFilter()
+  }
 })
 </script>
+
+<style>
+.timeline-tag {
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.timeline-tag:hover {
+  background: var(--color-accent) !important;
+  color: var(--color-bg) !important;
+}
+
+.timeline-tag.active {
+  background: var(--color-accent) !important;
+  color: var(--color-bg) !important;
+  font-weight: 600;
+}
+
+.timeline-item.tag-hidden {
+  display: none !important;
+}
+</style>
+
