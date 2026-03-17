@@ -1,23 +1,24 @@
 <!-- 标签页模板 -->
 <div class="tag-page">
   <h1 class="page-title">标签</h1>
-  
+
   <div class="tag-cloud">
     <% site.tags.sort('name').each(function(tag) { %>
-    <a href="<%= url_for(tag.path) %>" class="tag-item" style="font-size: <%= Math.min(1 + tag.posts.length * 0.1, 2) %>em">
-      <span class="tag-name"><%= tag.name %></span>
+    <% var isActive = page.tag && tag.name === page.tag; %>
+    <a href="<%= url_for(tag.path) %>" class="tag-item<%= isActive ? ' active' : '' %>" style="font-size: <%= Math.min(1 + tag.posts.length * 0.1, 2) %>em">
+      <span class="tag-name">#<%= tag.name %></span>
       <span class="tag-count"><%= tag.posts.length %></span>
     </a>
     <% }); %>
   </div>
-  
+
   <% if (page.posts && page.posts.length > 0) { %>
   <section class="tag-posts">
     <h2 class="section-title">
-      标签：<%= page.tag %>
+      #<%= page.tag %>
       <span class="post-count">(<%= page.posts.length %> 篇)</span>
     </h2>
-    
+
     <ul class="post-list">
       <% page.posts.sort('date', -1).each(function(post) { %>
       <li class="post-list-item">
@@ -29,3 +30,11 @@
   </section>
   <% } %>
 </div>
+
+<style>
+.tag-item.active {
+  background: var(--color-accent) !important;
+  color: var(--color-bg) !important;
+  font-weight: 600;
+}
+</style>

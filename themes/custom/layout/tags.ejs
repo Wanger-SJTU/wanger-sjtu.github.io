@@ -11,7 +11,7 @@
     <% site.tags.sort('posts.length', -1).each(function(tag) { %>
     <a href="<%= url_for(tag.path) %>" class="tag-card">
       <div class="tag-card-header">
-        <span class="tag-name"><%= tag.name %></span>
+        <span class="tag-name">#<%= tag.name %></span>
         <span class="tag-count"><%= tag.posts.length %></span>
       </div>
       <div class="tag-card-footer">
