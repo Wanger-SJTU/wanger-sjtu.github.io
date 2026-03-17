@@ -1251,6 +1251,27 @@ body {
   margin: 0;
 }
 
+.nonsense-tags {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.nonsense-tag {
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  background: var(--color-hover);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color var(--transition);
+}
+
+.nonsense-tag:hover {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
 .nonsense-title-text a:hover {
   color: var(--color-accent);
   opacity: 1;
