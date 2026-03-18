@@ -4,7 +4,6 @@
 # 网站菜单
 menu:
   首页: /
-  简历: /resume
   归档: /archives
   标签: /tags
   废话: /flows
@@ -17,7 +16,7 @@ social:
 # 页脚信息
 footer:
   since: 2026
-  copyright: wanger-sjtu
+  copyright: wanger
 
 # 功能开关
 darkmode: true
