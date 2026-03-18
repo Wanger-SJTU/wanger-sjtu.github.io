@@ -64,6 +64,19 @@ default_category: uncategorized
 category_map:
 tag_map:
 
+# Markdown
+marked:
+  gfm: false
+  breaks: false
+  pedantic: false
+  sanitize: false
+  smartLists: true
+  smartypants: false
+markdown:
+  render_drafts: false
+  gfm: false
+  breaks: false
+
 # Metadata elements
 meta_generator: true
 
