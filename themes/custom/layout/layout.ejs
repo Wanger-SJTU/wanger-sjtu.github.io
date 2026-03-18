@@ -29,14 +29,14 @@
       },
       options: {
         skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-        ignoreHtmlClass: 'tex2jax_ignore',
-        processHtmlClass: 'tex2jax_process'
+        processHtmlClass: 'tex2jax_process',
+        ignoreHtmlClass: 'tex2jax_ignore'
       },
       startup: {
-        pageReady: () => {
-          return MathJax.startup.defaultPageReady().then(() => {
-            console.log('MathJax initial typesetting complete');
-          });
+        typeset: false,
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.typesetPromise();
         }
       }
     };
