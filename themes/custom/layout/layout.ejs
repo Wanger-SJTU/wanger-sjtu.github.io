@@ -26,13 +26,20 @@
         displayMath: [['$$', '$$'], ['\\[', '\\]']]
       },
       options: {
-        skipHtmlTags: ['noscript', 'style', 'textarea', 'pre']
+        skipHtmlTags: ['noscript', 'style', 'textarea', 'pre'],
+        processHtmlTags: {
+          cn: true,
+          include: []
+        }
       },
       startup: {
-        ready: () => {
+        ready() {
           MathJax.startup.defaultReady();
           MathJax.typesetPromise();
         }
+      },
+      svg: {
+        fontCache: 'global'
       }
     };
   </script>
