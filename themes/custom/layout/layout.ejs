@@ -26,7 +26,13 @@
         displayMath: [['$$', '$$'], ['\\[', '\\]']]
       },
       options: {
-        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        skipHtmlTags: ['noscript', 'style', 'textarea', 'pre']
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.typesetPromise();
+        }
       }
     };
   </script>
