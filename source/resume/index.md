@@ -2,11 +2,12 @@
 
 title: 简历
 layout: resume
+name: 王二
 job_title: AI Infra 工程师 (端侧推理与异构计算)
 email: wanger.infra@example.com
 wechat: wanger-01
 location: 上海
-github: Wanger-SJTU
+github: https://github.com/Wanger-SJTU
 website: https://wanger-sjtu.github.io/
 updated: 2026-03-18
 

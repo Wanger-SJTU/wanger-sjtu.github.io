@@ -13,8 +13,8 @@ function safeUrl(url) {
 <div class="resume-page">
   <header class="resume-header">
     <h1 class="resume-name"><%= page.name || config.author || '姓名' %></h1>
-    <% if (page.title || page.job_title) { %>
-    <p class="resume-title"><%= page.title || page.job_title %></p>
+    <% if (page.job_title) { %>
+    <p class="resume-title"><%= page.job_title %></p>
     <% } %>
     
     <div class="resume-contact">
@@ -31,7 +31,7 @@ function safeUrl(url) {
       <a href="<%= safeUrl(page.website) %>" class="contact-item" target="_blank" rel="noopener noreferrer">🔗 <%= page.website %></a>
       <% } %>
       <% if (page.github) { %>
-      <a href="https://github.com/<%= page.github %>" class="contact-item" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="<%= page.github %>" class="contact-item" target="_blank" rel="noopener noreferrer">GitHub</a>
       <% } %>
     </div>
   </header>
