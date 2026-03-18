@@ -1,4 +1,5 @@
 ---
+
 title: 简历
 layout: resume
 name: 王二
@@ -6,9 +7,10 @@ job_title: AI Infra 工程师 (端侧推理与异构计算)
 email: wanger.infra@example.com
 wechat: wanger-01
 location: 上海
-github: [https://github.com/Wanger-SJTU](https://github.com/Wanger-SJTU)
-website: [https://wanger-sjtu.github.io/](https://wanger-sjtu.github.io/)
+github: Wanger-SJTU
+website: https://wanger-sjtu.github.io/
 updated: 2026-03-18
+
 ---
 
 ## 个人简介
@@ -50,12 +52,17 @@ updated: 2026-03-18
 ## 教育背景
 
 ### 计算机科学与技术 | 上海交通大学 (SJTU)
-*2017 - 2020*
+*2015.09 - 2019.06*
 
-- 硕士
+- 本科 / 学士学位
 - 核心课程：计算机体系结构、操作系统原理、并行计算、编译原理
 
 ## 其他
 
 - **技术影响力**：长期维护个人技术博客，撰写多篇关于《UFS 4.0 协议分析》及《MoE 推理优化》的深度文章，行业关注度高。
 - **开源贡献**：活跃于 GitHub 社区，对某知名端侧推理框架提交过核心算子性能优化 PR。
+
+---
+
+**下一步建议：**
+如果你需要针对具体的岗位（比如更偏向**编译器优化**或者更偏向**大模型落地**）进行调整，我们可以针对工作经历中的“数据”部分再做一次精确挖掘。你想让我针对哪个细分领域再优化一下描述吗？
