@@ -87,12 +87,12 @@ theme: custom
 # Markdown renderer
 markdown:
   engine: kramed
-  gfm: false
+  gfm: true
   breaks: false
   plugins:
     - hexo-renderer-kramed
 kramed:
-  gfm: false
+  gfm: true
   breaks: false
   pedantic: false
 
