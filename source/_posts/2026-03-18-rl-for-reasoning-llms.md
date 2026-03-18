@@ -283,7 +283,7 @@ CISPO（Clipped Importance Sampling Policy Optimization）在 MiniMax-M1 报告 
 $$
 J^{\text{CISPO}}(\theta) =
 \mathbb{E}\left[
-\operatorname{sg}\!\left(\hat{\rho}_t(\theta)\right)\,\hat{A}_t\,\log \pi_\theta(a_t \mid s_t)
+\operatorname{sg}\left(\hat{\rho}_t(\theta)\right)\,\hat{A}_t\,\log \pi_\theta(a_t \mid s_t)
 \right],
 \qquad
 \hat{\rho}_t(\theta)=\operatorname{clip}\bigl(\rho_t(\theta), 1-\epsilon_{l}, 1+\epsilon_{h}\bigr),
