@@ -64,19 +64,6 @@ default_category: uncategorized
 category_map:
 tag_map:
 
-# Markdown
-marked:
-  gfm: false
-  breaks: false
-  pedantic: false
-  sanitize: false
-  smartLists: true
-  smartypants: false
-markdown:
-  render_drafts: false
-  gfm: false
-  breaks: false
-
 # Metadata elements
 meta_generator: true
 
@@ -96,6 +83,18 @@ ignore:
 
 # Extensions
 theme: custom
+
+# Markdown renderer
+markdown:
+  engine: kramed
+  gfm: false
+  breaks: false
+  plugins:
+    - hexo-renderer-kramed
+kramed:
+  gfm: false
+  breaks: false
+  pedantic: false
 
 # Deployment - 使用 GitHub Actions 自动部署
 # 不再需要 hexo deploy 配置
