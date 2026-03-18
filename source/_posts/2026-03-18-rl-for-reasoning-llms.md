@@ -149,7 +149,7 @@ GRPO 目标保持 PPO 风格的裁剪重要性采样，其原始形式包括 KL 
 
 其中 <script type="math/tex">\rho_i(\theta)=\frac{\pi_\theta(y_i \mid x)}{\pi_{\theta_{\text{old}}}(y_i \mid x)}</script>。
 
-组归一化有两个有用效果。减去均值使学习信号相对于提示词：如果该提示词的所有样本在 <script type="math/tex">[0.8, 1.0]</script> 中，奖励 $0.8$ 应该与在 <script type="math/tex">[0.2, 0.8]</script> 中时不同地解释。除以标准差使奖励尺度不太敏感，这在组合不同奖励范围的任务时有用。
+组归一化有两个有用效果。减去均值使学习信号相对于提示词：如果该提示词的所有样本在 <script type="math/tex">[0.8, 1.0]</script> 中，奖励 <script type="math/tex">0.8</script> 应该与在 <script type="math/tex">[0.2, 0.8]</script> 中时不同地解释。除以标准差使奖励尺度不太敏感，这在组合不同奖励范围的任务时有用。
 
 然而，GRPO 成功的更重要原因更简单：它移除了评论家。这大幅减少内存使用，使推理模型的大规模 RL 更容易运行。
 
@@ -195,7 +195,7 @@ DAPO（Decoupled Advantage Policy Optimization）[7] 是另一个对 GRPO 多个
 
 首先，DAPO 用 token 级别的聚合替代样本级平均（类似于 Dr. GRPO，但 DAPO 除以实际 token 数，而 Dr. GRPO 使用常数）。
 
-第二项改进针对裁剪机制：PPO 的对称比率裁剪对低概率 token 特别（过度）限制。例如，如果 token 概率为 $0.01$，那么用 <script type="math/tex">\epsilon = 0.2</script> 其概率在裁剪前只能上升到 $0.012$，几乎不改变其被采样的可能性。这可能抑制学习稀有但有用的推理延续。因此 DAPO 解耦裁剪边界并使用更大的上界 <script type="math/tex">\epsilon_{\text{high}} = 0.28</script>，保持 <script type="math/tex">\epsilon_{\text{low}} = 0.2</script>（非对称裁剪）。
+第二项改进针对裁剪机制：PPO 的对称比率裁剪对低概率 token 特别（过度）限制。例如，如果 token 概率为 <script type="math/tex">0.01</script>，那么用 <script type="math/tex">\epsilon = 0.2</script> 其概率在裁剪前只能上升到 <script type="math/tex">0.012</script>，几乎不改变其被采样的可能性。这可能抑制学习稀有但有用的推理延续。因此 DAPO 解耦裁剪边界并使用更大的上界 <script type="math/tex">\epsilon_{\text{high}} = 0.28</script>，保持 <script type="math/tex">\epsilon_{\text{low}} = 0.2</script>（非对称裁剪）。
 
 有了 token 级聚合和非对称裁剪，DAPO 目标变为：
 
