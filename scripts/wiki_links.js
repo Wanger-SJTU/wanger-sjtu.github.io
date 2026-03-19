@@ -3,36 +3,60 @@
  * 支持使用 [[文章名]] 格式创建内部链接
  */
 
-hexo.extend.filter.register('before_post_render', function(data) {
-  if (!data.content) return data;
-
-  // 获取所有文章的标题和URL映射
-  const posts = this.locals.posts;
+// 在生成前构建标题-URL映射
+hexo.extend.filter.register('before_generate', function() {
+  const posts = this.locals.get('posts');
   const titleMap = new Map();
 
   posts.forEach(post => {
-    // 使用标题作为键（去除可能的特殊字符）
     const normalizedTitle = post.title.trim();
     titleMap.set(normalizedTitle, post.permalink);
   });
 
-  // 匹配 [[文章名]] 格式
-  // 支持中英文标题，支持空格
-  const wikiLinkRegex = /\[\[([^\]]+)\]\]/g;
+  // 将映射存储到全局对象
+  hexo.wiki_links_titleMap = titleMap;
 
-  data.content = data.content.replace(wikiLinkRegex, function(match, title) {
+  console.log(`[Wiki Links] Built title map with ${titleMap.size} entries`);
+}, 1);
+
+hexo.extend.filter.register('before_post_render', function(data) {
+  if (!data.content) return data;
+
+  const titleMap = hexo.wiki_links_titleMap;
+
+  if (!titleMap || titleMap.size === 0) {
+    console.log('[Wiki Links] No title map available');
+    return data;
+  }
+
+  // 匹配 [[文章名]] 格式
+  const wikiLinkRegex = /\[\[([^\]]+)\]\]/g;
+  let matchCount = 0;
+
+  data.content = data.content.replace(wikiLinkRegex, (match, title) => {
+    // 跳过纯数字的引用（如 [[1]], [[1,5]]）
+    if (/^[\d\s,]+$/.test(title)) {
+      return match;
+    }
+
+    matchCount++;
     const trimmedTitle = title.trim();
     const url = titleMap.get(trimmedTitle);
 
     if (url) {
-      // 找到匹配的文章，生成带样式的链接
+      console.log(`[Wiki Links] Found link: [[${trimmedTitle}]] -> ${url}`);
+      // 找到匹配的文章，直接生成 HTML
       return `<a href="${url}" class="wiki-link">${trimmedTitle}</a>`;
     } else {
-      // 未找到匹配的文章，保持原样但添加警告样式
-      console.warn(`Wiki link not found: [[${trimmedTitle}]]`);
-      return `<span class="wiki-link broken" title="未找到文章: ${trimmedTitle}">${trimmedTitle}</span>`;
+      // 未找到匹配的文章
+      console.warn(`[Wiki Links] Not found: [[${trimmedTitle}]]`);
+      return match;
     }
   });
+
+  if (matchCount > 0) {
+    console.log(`[Wiki Links] Processed ${matchCount} wiki links in: ${data.title}`);
+  }
 
   return data;
 });
