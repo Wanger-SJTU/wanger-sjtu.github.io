@@ -145,6 +145,37 @@ img {
   color: var(--color-accent);
 }
 
+/* 知识图谱按钮样式 */
+.nav-link-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  padding: 8px 18px !important;
+  border-radius: 20px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.nav-link-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  filter: brightness(1.1);
+}
+
+.nav-link-button.active {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
+
+@media (max-width: 768px) {
+  .nav-link-button {
+    padding: 6px 14px !important;
+    font-size: 0.8rem;
+  }
+}
+
 .header-actions {
   display: flex;
   align-items: center;

@@ -2,7 +2,13 @@
     <div class="header-container">
       <nav class="site-nav">
         <% for (var name in theme.menu) { %>
+        <% if (name === '知识图谱') { %>
+        <a href="<%= url_for(theme.menu[name]) %>" class="nav-link nav-link-button<% if (is_current(theme.menu[name])) { %> active<% } %>">
+            🕸️ <%= name %>
+          </a>
+        <% } else { %>
         <a href="<%= url_for(theme.menu[name]) %>" class="nav-link<% if (is_current(theme.menu[name])) { %> active<% } %>"><%= name %></a>
+        <% } %>
         <% } %>
       </nav>
       
