@@ -35,74 +35,44 @@ console.log('=== Knowledge Graph Feature ===');
     }
   }
 
-  // 构建图谱数据（与小图保持一致：只显示相关文章）
+  // 构建图谱数据（显示所有文章及其关系）
   function buildGraphData(posts, currentUrl) {
     const currentNode = currentUrl.replace(/\/$/, '') || '/';
     const nodes = [];
     const links = [];
     const nodeMap = new Map();
 
-    // 找到当前文章
-    const currentPost = posts.find(post => {
-      const postUrl = post.url.replace(/\/$/, '');
-      return postUrl === currentNode || postUrl === currentNode + 'index.html';
-    });
+    // 添加所有文章为节点
+    posts.forEach((post, index) => {
+      const url = post.url.replace(/\/$/, '');
+      const isCurrent = url === currentNode || url === currentNode + 'index.html';
 
-    if (!currentPost) {
-      return { nodes: [], links: [] };
-    }
-
-    const currentTags = currentPost.tags || [];
-
-    // 找出与当前文章有共同标签的文章
-    const relatedPostsMap = new Map();
-
-    posts.forEach(post => {
-      const postUrl = post.url.replace(/\/$/, '');
-      if (postUrl === currentNode || postUrl === currentNode + 'index.html') {
-        return; // 跳过当前文章
-      }
-
-      const postTags = post.tags || [];
-      const commonTags = currentTags.filter(tag => postTags.includes(tag));
-
-      if (commonTags.length > 0) {
-        relatedPostsMap.set(postUrl, {
-          post: post,
-          commonTags: commonTags
-        });
-      }
-    });
-
-    // 当前文章节点
-    nodes.push({
-      id: 0,
-      title: currentPost.title,
-      url: currentPost.url,
-      tags: currentTags,
-      isCurrent: true
-    });
-
-    // 相关文章节点
-    let index = 1;
-    relatedPostsMap.forEach((data, url) => {
-      nodes.push({
+      nodeMap.set(url, {
         id: index,
-        title: data.post.title,
-        url: data.post.url,
-        tags: data.post.tags,
-        isCurrent: false
+        title: post.title,
+        url: post.url,
+        tags: post.tags || [],
+        isCurrent: isCurrent
       });
-
-      // 建立连接（从当前文章到相关文章）
-      links.push({
-        source: 0,
-        target: index,
-        tags: data.commonTags
-      });
-
-      index++;
+      nodes.push(nodeMap.get(url));
     });
+
+    // 基于共同标签建立连接（任意两篇有共同标签的文章都连接）
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const commonTags = nodes[i].tags.filter(tag =>
+          nodes[j].tags.includes(tag)
+        );
+
+        if (commonTags.length > 0) {
+          links.push({
+            source: i,
+            target: j,
+            tags: commonTags
+          });
+        }
+      }
+    }
 
     return { nodes, links };
   }
