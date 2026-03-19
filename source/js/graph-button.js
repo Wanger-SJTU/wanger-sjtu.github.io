@@ -84,6 +84,9 @@ console.log('=== Knowledge Graph Feature ===');
       existingModal.remove();
     }
 
+    // 检测当前主题
+    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
     const modal = document.createElement('div');
     modal.id = 'knowledge-graph-modal';
     modal.style.cssText = `
@@ -103,8 +106,9 @@ console.log('=== Knowledge Graph Feature ===');
 
     const content = document.createElement('div');
     content.className = 'graph-modal-content';
+    content.setAttribute('data-graph-modal', 'true');
     content.style.cssText = `
-      background: #1e1e1e;
+      background: ${isDarkMode ? '#1e1e1e' : '#ffffff'};
       border-radius: 12px;
       padding: 24px;
       width: 95vw;
@@ -112,29 +116,30 @@ console.log('=== Knowledge Graph Feature ===');
       max-height: 90vh;
       overflow: auto;
       position: relative;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, ${isDarkMode ? 0.5 : 0.2});
     `;
 
     // 标题栏
     const header = document.createElement('div');
     header.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="margin:0; font-size:1.5rem; color:#e0e0e0;">🕸️ 知识图谱</h2>
-        <button id="close-graph-modal" style="background:none; border:none; font-size:28px; cursor:pointer; padding:0; color:#e0e0e0;">×</button>
+        <h2 class="graph-modal-title" style="margin:0; font-size:1.5rem; color:${isDarkMode ? '#e0e0e0' : '#333'};">🕸️ 知识图谱</h2>
+        <button id="close-graph-modal" class="graph-modal-close" style="background:none; border:none; font-size:28px; cursor:pointer; padding:0; color:${isDarkMode ? '#e0e0e0' : '#333'};">×</button>
       </div>
-      <hr style="border:1px solid #333; margin:0;">
+      <hr class="graph-modal-hr" style="border:1px solid ${isDarkMode ? '#333' : '#e0e0e0'}; margin:0;">
     `;
     content.appendChild(header);
 
     // 图谱容器
     const graphContainer = document.createElement('div');
     graphContainer.id = 'knowledge-graph-container';
+    graphContainer.setAttribute('data-graph-container', 'true');
     graphContainer.style.cssText = `
       width: 100%;
       height: 600px;
-      border: 1px solid #333;
+      border: 1px solid ${isDarkMode ? '#333' : '#e0e0e0'};
       border-radius: 8px;
-      background: #2d2d2d;
+      background: ${isDarkMode ? '#2d2d2d' : '#fafafa'};
       margin: 20px 0;
       overflow: hidden;
     `;
@@ -142,7 +147,7 @@ console.log('=== Knowledge Graph Feature ===');
 
     // 相关文章列表
     const relatedSection = document.createElement('div');
-    relatedSection.innerHTML = '<h3 style="margin:20px 0 10px; font-size:1.1rem; color:#e0e0e0;">相关文章</h3>';
+    relatedSection.innerHTML = `<h3 class="graph-modal-section-title" style="margin:20px 0 10px; font-size:1.1rem; color:${isDarkMode ? '#e0e0e0' : '#333'};">相关文章</h3>`;
 
     const relatedList = document.createElement('div');
     relatedList.style.cssText = `
@@ -174,34 +179,37 @@ console.log('=== Knowledge Graph Feature ===');
       relatedPosts.forEach(post => {
         const item = document.createElement('a');
         item.href = post.url;
+        item.setAttribute('data-related-item', 'true');
         item.style.cssText = `
           display: block;
           padding: 12px;
-          border: 1px solid #333;
+          border: 1px solid ${isDarkMode ? '#333' : '#e0e0e0'};
           border-radius: 8px;
           text-decoration: none;
-          color: #b0b0b0;
+          color: ${isDarkMode ? '#b0b0b0' : '#555'};
           transition: all 0.2s;
-          background: #252525;
+          background: ${isDarkMode ? '#252525' : '#f5f5f5'};
         `;
         item.innerHTML = `
-          <div style="font-weight:600; margin-bottom:6px; color:#e0e0e0;">${post.title}</div>
-          <div style="font-size:12px; color:#888;">
+          <div style="font-weight:600; margin-bottom:6px; color:${isDarkMode ? '#e0e0e0' : '#333'};">${post.title}</div>
+          <div style="font-size:12px; color:${isDarkMode ? '#888' : '#999'};">
             共同标签: ${post.commonTags.map(t => '#' + t).join(' ')}
           </div>
         `;
         item.addEventListener('mouseenter', () => {
-          item.style.background = '#333';
-          item.style.borderColor = '#555';
+          const currentDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          item.style.background = currentDark ? '#333' : '#e8e8e8';
+          item.style.borderColor = currentDark ? '#555' : '#ccc';
         });
         item.addEventListener('mouseleave', () => {
-          item.style.background = '#252525';
-          item.style.borderColor = '#333';
+          const currentDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          item.style.background = currentDark ? '#252525' : '#f5f5f5';
+          item.style.borderColor = currentDark ? '#333' : '#e0e0e0';
         });
         relatedList.appendChild(item);
       });
     } else {
-      relatedList.innerHTML = '<div style="color:#888; padding:20px; text-align:center;">暂无相关文章</div>';
+      relatedList.innerHTML = `<div style="color:${isDarkMode ? '#888' : '#999'}; padding:20px; text-align:center;">暂无相关文章</div>`;
     }
 
     relatedSection.appendChild(relatedList);
@@ -237,6 +245,73 @@ console.log('=== Knowledge Graph Feature ===');
         setTimeout(() => modal.remove(), 300);
       }
     });
+
+    // 监听主题切换
+    const themeObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-theme') {
+          const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+          // 更新浮窗背景
+          content.style.background = isDark ? '#1e1e1e' : '#ffffff';
+          content.style.boxShadow = `0 8px 32px rgba(0, 0, 0, ${isDark ? 0.5 : 0.2})`;
+
+          // 更新标题
+          const title = content.querySelector('.graph-modal-title');
+          if (title) title.style.color = isDark ? '#e0e0e0' : '#333';
+
+          // 更新关闭按钮
+          const closeBtn = content.querySelector('.graph-modal-close');
+          if (closeBtn) closeBtn.style.color = isDark ? '#e0e0e0' : '#333';
+
+          // 更新分割线
+          const hr = content.querySelector('.graph-modal-hr');
+          if (hr) hr.style.border = `1px solid ${isDark ? '#333' : '#e0e0e0'}`;
+
+          // 更新相关文章标题
+          const sectionTitle = content.querySelector('.graph-modal-section-title');
+          if (sectionTitle) sectionTitle.style.color = isDark ? '#e0e0e0' : '#333';
+
+          // 更新图谱容器
+          const container = content.querySelector('[data-graph-container]');
+          if (container) {
+            container.style.background = isDark ? '#2d2d2d' : '#fafafa';
+            container.style.border = `1px solid ${isDark ? '#333' : '#e0e0e0'}`;
+          }
+
+          // 更新相关文章列表项
+          const items = content.querySelectorAll('[data-related-item]');
+          items.forEach(item => {
+            item.style.borderColor = isDark ? '#333' : '#e0e0e0';
+            item.style.color = isDark ? '#b0b0b0' : '#555';
+            item.style.background = isDark ? '#252525' : '#f5f5f5';
+
+            const titleDiv = item.querySelector('div:first-child');
+            if (titleDiv) titleDiv.style.color = isDark ? '#e0e0e0' : '#333';
+
+            const tagsDiv = item.querySelector('div:last-child');
+            if (tagsDiv) tagsDiv.style.color = isDark ? '#888' : '#999';
+          });
+
+          // 重新渲染图谱以更新颜色
+          const network = window.graphNetwork;
+          if (network) {
+            network.destroy();
+            renderGraph(graphContainer, graphData);
+          }
+
+          // 更新图例
+          const legend = graphContainer.querySelector('[data-graph-legend]');
+          if (legend) {
+            legend.style.background = isDark ? '#1e1e1e' : '#fff';
+            legend.style.border = `1px solid ${isDark ? '#333' : '#e0e0e0'}`;
+            legend.style.color = isDark ? '#b0b0b0' : '#666';
+          }
+        }
+      });
+    });
+
+    themeObserver.observe(document.documentElement, { attributes: true });
   }
 
   // 使用 vis.js Network 渲染图谱
@@ -258,12 +333,18 @@ console.log('=== Knowledge Graph Feature ===');
   }
 
   function renderVisGraph(container, data) {
+    // 检测当前主题
+    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
     // Obsidian 风格颜色
     const colors = [
       '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7',
       '#dfe6e9', '#fd79a8', '#a29bfe', '#6c5ce7', '#00b894',
       '#e17055', '#0984e3', '#b2bec3', '#636e72', '#fab1a0'
     ];
+
+    // 当前文章节点颜色
+    const currentArticleColor = '#4ecdc4';
 
     // 转换数据格式为 vis.js 格式
     const nodes = data.nodes.map((node, index) => {
@@ -272,7 +353,7 @@ console.log('=== Knowledge Graph Feature ===');
       ).length;
 
       const colorIndex = node.id % colors.length;
-      const color = node.isCurrent ? '#4ecdc4' : colors[colorIndex];
+      const color = node.isCurrent ? currentArticleColor : colors[colorIndex];
 
       return {
         id: node.id,
@@ -281,7 +362,7 @@ console.log('=== Knowledge Graph Feature ===');
         value: node.isCurrent ? 30 : 10 + connectionCount * 3,
         color: {
           background: color,
-          border: node.isCurrent ? '#fff' : color,
+          border: node.isCurrent ? (isDarkMode ? '#fff' : '#fff') : color,
           highlight: {
             background: color,
             border: '#fff'
@@ -292,7 +373,7 @@ console.log('=== Knowledge Graph Feature ===');
           }
         },
         font: {
-          color: '#e0e0e0',
+          color: isDarkMode ? '#e0e0e0' : '#333',
           size: node.isCurrent ? 16 : 12,
           face: 'Arial'
         },
@@ -307,9 +388,9 @@ console.log('=== Knowledge Graph Feature ===');
       title: '共同标签: ' + link.tags.join(', '),
       value: link.tags.length,
       color: {
-        color: 'rgba(255, 255, 255, 0.15)',
-        highlight: 'rgba(255, 255, 255, 0.3)',
-        hover: 'rgba(255, 255, 255, 0.25)'
+        color: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)',
+        highlight: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+        hover: isDarkMode ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
       },
       width: Math.max(0.5, link.tags.length * 0.5)
     }));
@@ -372,6 +453,9 @@ console.log('=== Knowledge Graph Feature ===');
       edges: edgesDataset
     }, options);
 
+    // 保存到全局变量以便主题切换时重新渲染
+    window.graphNetwork = network;
+
     // 点击节点跳转
     network.on('click', function(params) {
       if (params.nodes.length > 0) {
@@ -396,16 +480,17 @@ console.log('=== Knowledge Graph Feature ===');
 
     // 图例
     const legend = document.createElement('div');
+    legend.setAttribute('data-graph-legend', 'true');
     legend.style.cssText = `
       position: absolute;
       bottom: 10px;
       left: 10px;
       padding: 8px 12px;
-      background: #1e1e1e;
-      border: 1px solid #333;
+      background: ${isDarkMode ? '#1e1e1e' : '#fff'};
+      border: 1px solid ${isDarkMode ? '#333' : '#e0e0e0'};
       border-radius: 4px;
       font-size: 12px;
-      color: #b0b0b0;
+      color: ${isDarkMode ? '#b0b0b0' : '#666'};
       z-index: 10;
     `;
     legend.innerHTML = '🟢 当前文章 &nbsp; ⚪ 相关文章';
