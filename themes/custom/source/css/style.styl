@@ -74,6 +74,27 @@ a:hover {
   opacity: 0.7;
 }
 
+/* Wiki Links - 双链样式 */
+.wiki-link {
+  position: relative;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: linear-gradient(to bottom, transparent 60%, var(--color-accent) 60%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+}
+
+.wiki-link:hover {
+  opacity: 1;
+}
+
+.wiki-link.broken {
+  background: linear-gradient(to bottom, transparent 60%, var(--color-text-tertiary) 60%);
+  cursor: help;
+  opacity: 0.6;
+}
+
 img {
   max-width: 100%;
   height: auto;
