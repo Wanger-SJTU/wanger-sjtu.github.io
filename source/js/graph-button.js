@@ -17,13 +17,25 @@ console.log('=== Knowledge Graph Feature ===');
       entries.forEach(entry => {
         const title = entry.querySelector('title');
         const url = entry.querySelector('url');
-        const tags = entry.querySelector('tags');
+        const tagsContainer = entry.querySelector('tags');
 
         if (title && url) {
+          // 解析标签：从嵌套的 <tag> 元素中提取
+          const tags = [];
+          if (tagsContainer) {
+            const tagElements = tagsContainer.querySelectorAll('tag');
+            tagElements.forEach(tagEl => {
+              const tagName = tagEl.textContent.trim();
+              if (tagName) {
+                tags.push(tagName);
+              }
+            });
+          }
+
           posts.push({
             title: title.textContent.trim(),
             url: url.textContent.trim(),
-            tags: tags ? tags.textContent.split(',').filter(t => t.trim()) : []
+            tags: tags
           });
         }
       });
