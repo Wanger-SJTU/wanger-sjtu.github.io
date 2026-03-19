@@ -354,7 +354,7 @@ console.log('=== Knowledge Graph Feature ===');
     createGraphModal(posts, graphData);
   };
 
-  // 添加知识图谱按钮到文章标题下
+  // 初始化 - 只给侧边栏按钮添加事件
   async function init() {
     console.log('Initializing knowledge graph feature...');
 
@@ -364,89 +364,20 @@ console.log('=== Knowledge Graph Feature ===');
       return;
     }
 
-    const posts = await fetchAllPosts();
-    console.log('Loaded', posts.length, 'posts');
+    // 等待侧边栏按钮加载完成
+    const checkButton = setInterval(() => {
+      const sidebarBtn = document.getElementById('sidebar-graph-btn');
+      if (sidebarBtn) {
+        clearInterval(checkButton);
+        sidebarBtn.addEventListener('click', () => {
+          window.openKnowledgeGraphModal();
+        });
+        console.log('✅ Knowledge graph sidebar button initialized');
+      }
+    }, 100);
 
-    if (posts.length === 0) {
-      console.log('No posts found');
-      return;
-    }
-
-    // 查找文章标题
-    const postTitle = document.querySelector('.post-title');
-    if (!postTitle) {
-      console.log('Post title not found');
-      return;
-    }
-
-    // 创建按钮
-    const buttonContainer = document.createElement('div');
-    buttonContainer.style.cssText = `
-      margin: 15px 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    `;
-
-    const button = document.createElement('button');
-    button.id = 'knowledge-graph-btn';
-    button.innerHTML = '🕸️ 查看知识图谱';
-    button.style.cssText = `
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-      transition: all 0.3s ease;
-    `;
-
-    button.addEventListener('mouseenter', () => {
-      button.style.transform = 'translateY(-2px)';
-      button.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
-    });
-
-    button.addEventListener('mouseleave', () => {
-      button.style.transform = 'translateY(0)';
-      button.style.boxShadow = '0 2px 8px rgba(102, 126, 234, 0.3)';
-    });
-
-    // 点击事件
-    button.addEventListener('click', async () => {
-      button.disabled = true;
-      button.textContent = '⏳ 加载中...';
-
-      const graphData = buildGraphData(posts, window.location.pathname);
-      createGraphModal(posts, graphData);
-
-      button.disabled = false;
-      button.innerHTML = '🕸️ 查看知识图谱';
-    });
-
-    buttonContainer.appendChild(button);
-
-    // 插入到 post-header 内部的 meta 信息后面
-    const postHeader = document.querySelector('.post-header');
-    if (postHeader) {
-      postHeader.appendChild(buttonContainer);
-    }
-
-    console.log('✅ Knowledge graph button added');
-
-    // 给侧边栏按钮添加点击事件
-    const sidebarBtn = document.getElementById('sidebar-graph-btn');
-    if (sidebarBtn) {
-      sidebarBtn.addEventListener('click', () => {
-        window.openKnowledgeGraphModal();
-      });
-    }
+    // 5秒后停止检查
+    setTimeout(() => clearInterval(checkButton), 5000);
   }
 
   // 初始化
