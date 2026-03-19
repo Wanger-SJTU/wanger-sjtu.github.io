@@ -414,7 +414,10 @@
     }
 
     // 只在文章页面添加图谱按钮
-    if (!document.querySelector('.post-content, article')) return;
+    if (!document.querySelector('.post-page, .post-content, article')) {
+      console.log('Graph view: Not a post page, skipping');
+      return;
+    }
 
     // 获取当前文章URL
     const currentNode = window.location.pathname.replace(/\/$/, '') || '/';
@@ -440,10 +443,16 @@
         return posts;
       })
       .then(posts => {
-        if (!posts || posts.length === 0) return;
+        console.log('Graph view: Loaded', posts.length, 'posts');
+
+        if (!posts || posts.length === 0) {
+          console.log('Graph view: No posts found');
+          return;
+        }
 
         // 构建图谱数据
         const graphData = buildGraphData(posts);
+        console.log('Graph view: Built graph with', graphData.nodes.length, 'nodes and', graphData.links.length, 'links');
 
         // 创建图谱按钮
         const graphBtn = document.createElement('button');
@@ -492,6 +501,7 @@
         });
 
         document.body.appendChild(graphBtn);
+        console.log('Graph view: Button added to page');
       })
       .catch(err => {
         console.error('Failed to load graph data:', err);
