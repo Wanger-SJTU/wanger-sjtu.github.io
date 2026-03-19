@@ -110,7 +110,10 @@ if (page.tags && page.tags.length) {
     <% } %>
 
     <div class="sidebar-widget article-graph-widget">
-      <h3 class="widget-title">知识图谱</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 class="widget-title" style="margin:0; padding:0; border:none;">知识图谱</h3>
+        <button id="sidebar-graph-btn" style="padding:6px 12px; font-size:12px; border-radius:12px; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; border:none; cursor:pointer; white-space:nowrap;">查看大图</button>
+      </div>
       <div id="article-graph-sidebar"></div>
     </div>
   </aside>
@@ -335,6 +338,14 @@ Object.keys(relatedPostsMap).forEach(function(postId) {
     });
 
     observer.observe(document.documentElement, { attributes: true });
+
+    // 给侧边栏按钮添加点击事件
+    var sidebarBtn = document.getElementById('sidebar-graph-btn');
+    if (sidebarBtn && window.openKnowledgeGraphModal) {
+      sidebarBtn.addEventListener('click', function() {
+        window.openKnowledgeGraphModal();
+      });
+    }
   }
 });
 </script>

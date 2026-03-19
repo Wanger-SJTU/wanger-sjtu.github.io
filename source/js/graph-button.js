@@ -343,6 +343,17 @@ console.log('=== Knowledge Graph Feature ===');
     container.appendChild(legend);
   }
 
+  // 暴露函数到全局，供侧边栏按钮调用
+  window.openKnowledgeGraphModal = async function() {
+    const posts = await fetchAllPosts();
+    if (posts.length === 0) {
+      console.log('No posts found');
+      return;
+    }
+    const graphData = buildGraphData(posts, window.location.pathname);
+    createGraphModal(posts, graphData);
+  };
+
   // 添加知识图谱按钮到文章标题下
   async function init() {
     console.log('Initializing knowledge graph feature...');
@@ -428,6 +439,14 @@ console.log('=== Knowledge Graph Feature ===');
     }
 
     console.log('✅ Knowledge graph button added');
+
+    // 给侧边栏按钮添加点击事件
+    const sidebarBtn = document.getElementById('sidebar-graph-btn');
+    if (sidebarBtn) {
+      sidebarBtn.addEventListener('click', () => {
+        window.openKnowledgeGraphModal();
+      });
+    }
   }
 
   // 初始化
