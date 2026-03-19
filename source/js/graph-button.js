@@ -104,24 +104,25 @@ console.log('=== Knowledge Graph Feature ===');
     const content = document.createElement('div');
     content.className = 'graph-modal-content';
     content.style.cssText = `
-      background: var(--color-bg, #ffffff);
+      background: #1e1e1e;
       border-radius: 12px;
       padding: 24px;
-      max-width: 90vw;
-      max-height: 85vh;
+      width: 95vw;
+      max-width: 1600px;
+      max-height: 90vh;
       overflow: auto;
       position: relative;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     `;
 
     // 标题栏
     const header = document.createElement('div');
     header.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="margin:0; font-size:1.5rem;">🕸️ 知识图谱</h2>
-        <button id="close-graph-modal" style="background:none; border:none; font-size:28px; cursor:pointer; padding:0; color:var(--color-text);">×</button>
+        <h2 style="margin:0; font-size:1.5rem; color:#e0e0e0;">🕸️ 知识图谱</h2>
+        <button id="close-graph-modal" style="background:none; border:none; font-size:28px; cursor:pointer; padding:0; color:#e0e0e0;">×</button>
       </div>
-      <hr style="border:1px solid var(--color-border); margin:0;">
+      <hr style="border:1px solid #333; margin:0;">
     `;
     content.appendChild(header);
 
@@ -130,10 +131,10 @@ console.log('=== Knowledge Graph Feature ===');
     graphContainer.id = 'knowledge-graph-container';
     graphContainer.style.cssText = `
       width: 100%;
-      height: 500px;
-      border: 1px solid var(--color-border);
+      height: 600px;
+      border: 1px solid #333;
       border-radius: 8px;
-      background: var(--color-card-bg, #fafafa);
+      background: #2d2d2d;
       margin: 20px 0;
       overflow: hidden;
     `;
@@ -141,12 +142,12 @@ console.log('=== Knowledge Graph Feature ===');
 
     // 相关文章列表
     const relatedSection = document.createElement('div');
-    relatedSection.innerHTML = '<h3 style="margin:20px 0 10px; font-size:1.1rem;">相关文章</h3>';
+    relatedSection.innerHTML = '<h3 style="margin:20px 0 10px; font-size:1.1rem; color:#e0e0e0;">相关文章</h3>';
 
     const relatedList = document.createElement('div');
     relatedList.style.cssText = `
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 12px;
       max-height: 300px;
       overflow-y: auto;
@@ -176,28 +177,31 @@ console.log('=== Knowledge Graph Feature ===');
         item.style.cssText = `
           display: block;
           padding: 12px;
-          border: 1px solid var(--color-border);
+          border: 1px solid #333;
           border-radius: 8px;
           text-decoration: none;
-          color: var(--color-text);
+          color: #b0b0b0;
           transition: all 0.2s;
+          background: #252525;
         `;
         item.innerHTML = `
-          <div style="font-weight:600; margin-bottom:6px;">${post.title}</div>
-          <div style="font-size:12px; color:var(--color-text-secondary);">
+          <div style="font-weight:600; margin-bottom:6px; color:#e0e0e0;">${post.title}</div>
+          <div style="font-size:12px; color:#888;">
             共同标签: ${post.commonTags.map(t => '#' + t).join(' ')}
           </div>
         `;
         item.addEventListener('mouseenter', () => {
-          item.style.background = 'var(--color-hover, #f5f5f5)';
+          item.style.background = '#333';
+          item.style.borderColor = '#555';
         });
         item.addEventListener('mouseleave', () => {
-          item.style.background = 'transparent';
+          item.style.background = '#252525';
+          item.style.borderColor = '#333';
         });
         relatedList.appendChild(item);
       });
     } else {
-      relatedList.innerHTML = '<div style="color:var(--color-text-secondary); padding:20px; text-align:center;">暂无相关文章</div>';
+      relatedList.innerHTML = '<div style="color:#888; padding:20px; text-align:center;">暂无相关文章</div>';
     }
 
     relatedSection.appendChild(relatedList);
@@ -235,74 +239,120 @@ console.log('=== Knowledge Graph Feature ===');
     });
   }
 
-  // 渲染简单图谱
+  // 渲染 Obsidian 风格的力导向图谱
   function renderGraph(container, data) {
     const width = container.clientWidth - 40;
     const height = container.clientHeight - 40;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const radius = Math.min(width, height) * 0.35;
+
+    // Obsidian 风格颜色
+    const colors = [
+      '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7',
+      '#dfe6e9', '#fd79a8', '#a29bfe', '#6c5ce7', '#00b894',
+      '#e17055', '#0984e3', '#b2bec3', '#636e72', '#fab1a0'
+    ];
 
     // 创建SVG
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
+    svg.style.background = '#2d2d2d';
     container.appendChild(svg);
+
+    // 计算节点位置（模拟力导向布局）
+    const nodePositions = new Map();
+    const currentNode = data.nodes.find(n => n.isCurrent);
+
+    // 当前文章放在中心
+    if (currentNode) {
+      nodePositions.set(currentNode.id, { x: width / 2, y: height / 2 });
+    }
+
+    // 其他节点根据连接数分布在周围
+    data.nodes.forEach((node, index) => {
+      if (node.isCurrent) return;
+
+      const connectionCount = data.links.filter(l =>
+        l.source === node.id || l.target === node.id
+      ).length;
+
+      // 根据连接数确定距离中心的距离
+      const distance = 80 + connectionCount * 40;
+      const angle = ((index - (currentNode ? 1 : 0)) / (data.nodes.length - 1)) * 2 * Math.PI;
+
+      const x = width / 2 + Math.cos(angle) * distance;
+      const y = height / 2 + Math.sin(angle) * distance;
+
+      nodePositions.set(node.id, { x, y, connectionCount });
+    });
 
     // 绘制连接线
     data.links.forEach(link => {
-      const sourceNode = data.nodes[link.source];
-      const targetNode = data.nodes[link.target];
+      const sourcePos = nodePositions.get(link.source);
+      const targetPos = nodePositions.get(link.target);
 
-      // 计算位置
-      const angle1 = (sourceNode.id / data.nodes.length) * 2 * Math.PI - Math.PI / 2;
-      const angle2 = (targetNode.id / data.nodes.length) * 2 * Math.PI - Math.PI / 2;
-
-      const x1 = centerX + Math.cos(angle1) * radius;
-      const y1 = centerY + Math.sin(angle1) * radius;
-      const x2 = centerX + Math.cos(angle2) * radius;
-      const y2 = centerY + Math.sin(angle2) * radius;
+      if (!sourcePos || !targetPos) return;
 
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', x1);
-      line.setAttribute('y1', y1);
-      line.setAttribute('x2', x2);
-      line.setAttribute('y2', y2);
-      line.setAttribute('stroke', 'var(--color-border)');
-      line.setAttribute('stroke-width', Math.max(1, link.tags.length * 0.5));
-      line.setAttribute('opacity', '0.3');
+      line.setAttribute('x1', sourcePos.x);
+      line.setAttribute('y1', sourcePos.y);
+      line.setAttribute('x2', targetPos.x);
+      line.setAttribute('y2', targetPos.y);
+      line.setAttribute('stroke', '#666');
+      line.setAttribute('stroke-width', Math.max(0.5, link.tags.length * 0.3));
+      line.setAttribute('opacity', '0.2');
       svg.appendChild(line);
     });
 
     // 绘制节点
-    data.nodes.forEach((node, index) => {
-      const angle = (index / data.nodes.length) * 2 * Math.PI - Math.PI / 2;
-      const x = centerX + Math.cos(angle) * radius;
-      const y = centerY + Math.sin(angle) * radius;
-      const nodeRadius = node.isCurrent ? 18 : 12 + node.tags.length;
+    data.nodes.forEach((node) => {
+      const pos = nodePositions.get(node.id);
+      if (!pos) return;
+
+      const connectionCount = pos.connectionCount || 0;
+      const baseRadius = node.isCurrent ? 20 : 8;
+      const nodeRadius = baseRadius + connectionCount * 2;
 
       const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       g.style.cursor = node.isCurrent ? 'default' : 'pointer';
       g.style.transition = 'transform 0.2s';
 
+      // 节点外圈（当前文章更突出）
+      if (node.isCurrent) {
+        const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        glow.setAttribute('cx', pos.x);
+        glow.setAttribute('cy', pos.y);
+        glow.setAttribute('r', nodeRadius + 4);
+        glow.setAttribute('fill', 'none');
+        glow.setAttribute('stroke', '#4ecdc4');
+        glow.setAttribute('stroke-width', '3');
+        glow.setAttribute('opacity', '0.3');
+        g.appendChild(glow);
+      }
+
+      // 主节点
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('cx', x);
-      circle.setAttribute('cy', y);
+      circle.setAttribute('cx', pos.x);
+      circle.setAttribute('cy', pos.y);
       circle.setAttribute('r', nodeRadius);
-      circle.setAttribute('fill', node.isCurrent ? 'var(--color-accent)' : `hsl(${200 + index * 30}, 70%, 60%)`);
-      circle.setAttribute('stroke', 'white');
-      circle.setAttribute('stroke-width', '2');
+
+      const colorIndex = node.id % colors.length;
+      const color = node.isCurrent ? '#4ecdc4' : colors[colorIndex];
+      circle.setAttribute('fill', color);
+      circle.setAttribute('opacity', node.isCurrent ? '1' : '0.8');
+      circle.setAttribute('stroke', node.isCurrent ? '#fff' : color);
+      circle.setAttribute('stroke-width', node.isCurrent ? '3' : '2');
       g.appendChild(circle);
 
-      // 标题
-      if (node.isCurrent || node.tags.length <= 3) {
+      // 节点标题（只在较大的节点或当前文章显示）
+      if (node.isCurrent || connectionCount >= 2) {
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x);
-        text.setAttribute('y', y + nodeRadius + 14);
+        text.setAttribute('x', pos.x);
+        text.setAttribute('y', pos.y + nodeRadius + 16);
         text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('fill', 'var(--color-text)');
-        text.setAttribute('font-size', '10');
-        text.textContent = node.title.length > 12 ? node.title.substring(0, 12) + '...' : node.title;
+        text.setAttribute('fill', '#e0e0e0');
+        text.setAttribute('font-size', node.isCurrent ? '13' : '11');
+        text.setAttribute('font-weight', node.isCurrent ? '600' : '400');
+        text.textContent = node.title.length > 15 ? node.title.substring(0, 15) + '...' : node.title;
         g.appendChild(text);
       }
 
@@ -310,12 +360,12 @@ console.log('=== Knowledge Graph Feature ===');
       if (!node.isCurrent) {
         g.addEventListener('mouseenter', () => {
           circle.setAttribute('r', nodeRadius * 1.2);
-          circle.setAttribute('fill', 'var(--color-accent)');
+          circle.setAttribute('opacity', '1');
         });
 
         g.addEventListener('mouseleave', () => {
           circle.setAttribute('r', nodeRadius);
-          circle.setAttribute('fill', `hsl(${200 + index * 30}, 70%, 60%)`);
+          circle.setAttribute('opacity', '0.8');
         });
 
         g.addEventListener('click', () => {
@@ -333,13 +383,13 @@ console.log('=== Knowledge Graph Feature ===');
       bottom: 10px;
       left: 10px;
       padding: 8px 12px;
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
+      background: #1e1e1e;
+      border: 1px solid #333;
       border-radius: 4px;
       font-size: 12px;
-      color: var(--color-text-secondary);
+      color: #b0b0b0;
     `;
-    legend.innerHTML = '🔵 当前文章 &nbsp; ⚪ 相关文章';
+    legend.innerHTML = '🟢 当前文章 &nbsp; ⚪ 相关文章';
     container.appendChild(legend);
   }
 
