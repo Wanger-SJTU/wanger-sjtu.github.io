@@ -112,7 +112,7 @@ if (page.tags && page.tags.length) {
     <div class="sidebar-widget article-graph-widget">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <h3 class="widget-title" style="margin:0; padding:0; border:none;">知识图谱</h3>
-        <button id="sidebar-graph-btn" style="padding:6px 12px; font-size:12px; border-radius:12px; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; border:none; cursor:pointer; white-space:nowrap;">查看大图</button>
+        <button id="sidebar-graph-btn" style="padding:4px 10px; font-size:12px; border-radius:4px; background:transparent; color:var(--color-text-secondary, #666); border:1px solid var(--color-border, #e0e0e0); cursor:pointer; white-space:nowrap; transition:all 0.2s; font-weight:400;">查看大图</button>
       </div>
       <div id="article-graph-sidebar"></div>
     </div>
@@ -339,12 +339,28 @@ Object.keys(relatedPostsMap).forEach(function(postId) {
 
     observer.observe(document.documentElement, { attributes: true });
 
-    // 给侧边栏按钮添加点击事件
+    // 给侧边栏按钮添加点击事件和hover效果
     var sidebarBtn = document.getElementById('sidebar-graph-btn');
-    if (sidebarBtn && window.openKnowledgeGraphModal) {
-      sidebarBtn.addEventListener('click', function() {
-        window.openKnowledgeGraphModal();
+    if (sidebarBtn) {
+      // Hover效果
+      sidebarBtn.addEventListener('mouseenter', function() {
+        sidebarBtn.style.background = 'var(--color-hover, #f5f5f5)';
+        sidebarBtn.style.borderColor = 'var(--color-text, #333)';
+        sidebarBtn.style.color = 'var(--color-text, #333)';
       });
+
+      sidebarBtn.addEventListener('mouseleave', function() {
+        sidebarBtn.style.background = 'transparent';
+        sidebarBtn.style.borderColor = 'var(--color-border, #e0e0e0)';
+        sidebarBtn.style.color = 'var(--color-text-secondary, #666)';
+      });
+
+      // 点击事件
+      if (window.openKnowledgeGraphModal) {
+        sidebarBtn.addEventListener('click', function() {
+          window.openKnowledgeGraphModal();
+        });
+      }
     }
   }
 });
