@@ -138,3 +138,12 @@ mathjax:
       skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
     svg:
       fontCache: 'global'
+
+# Mermaid diagrams
+mermaid:
+  enable: true
+  version: 'latest'
+  options:
+    startOnLoad: true
+    theme: 'default'
+    securityLevel: 'loose'

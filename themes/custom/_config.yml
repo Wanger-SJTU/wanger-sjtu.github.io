@@ -24,6 +24,7 @@ darkmode: true
 search: true
 rss: true
 math: true  # 数学公式渲染支持（使用 MathJax）
+mermaid: true  # Mermaid 图表渲染支持
 
 # 样式配置
 color_scheme: minimal
