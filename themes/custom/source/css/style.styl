@@ -1463,10 +1463,31 @@ pre.mermaid:hover::after {
   align-items: flex-start;
 }
 
-.post-layout .post-page {
+.post-toc-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 5rem;
+}
+
+.post-main-content {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.post-main-content .post-page {
   max-width: var(--content-width);
+}
+
+.post-right-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .post-sidebar {
@@ -1616,7 +1637,22 @@ pre.mermaid:hover::after {
   .post-layout {
     flex-direction: column;
   }
-  
+
+  .post-toc-sidebar {
+    width: 100%;
+    position: static;
+    order: -1;
+    margin-bottom: 2rem;
+  }
+
+  .post-main-content {
+    gap: 2rem;
+  }
+
+  .post-right-sidebar {
+    width: 100%;
+  }
+
   .post-sidebar {
     width: 100%;
     position: static;
@@ -1627,7 +1663,7 @@ pre.mermaid:hover::after {
     max-width: var(--content-width);
     margin: 0 auto;
   }
-  
+
   .related-posts-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
