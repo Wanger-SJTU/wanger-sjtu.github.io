@@ -586,12 +586,171 @@ body {
   overflow-x: auto;
   margin-bottom: 1.5rem;
   -webkit-overflow-scrolling: touch;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 .post-content pre code {
   background: none;
   padding: 0;
   white-space: pre;
+  font-family: var(--font-mono);
+  font-size: inherit;
+}
+
+/* Highlight.js 代码块样式 */
+.highlight {
+  background: var(--color-code-bg);
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.highlight pre {
+  background: none;
+  padding: 1rem;
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.highlight code {
+  font-family: var(--font-mono);
+  font-size: inherit;
+  background: none;
+}
+
+/* 行号样式 */
+.highlight .gutter {
+  text-align: right;
+  padding-right: 1rem;
+  border-right: 1px solid var(--color-border);
+  user-select: none;
+}
+
+.highlight .gutter pre {
+  padding: 1rem 0.5rem 1rem 0;
+  color: var(--color-text-tertiary);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.highlight .code {
+  padding-left: 1rem;
+}
+
+.highlight .code pre {
+  padding: 1rem 0;
+  margin: 0;
+}
+
+/* 暗黑模式下的代码高亮颜色 */
+[data-theme="dark"] .highlight {
+  background: #1a1a1a;
+}
+
+[data-theme="dark"] .highlight .keyword,
+[data-theme="dark"] .highlight .selector-tag,
+[data-theme="dark"] .highlight .literal,
+[data-theme="dark"] .highlight .title {
+  color: #569cd6;
+}
+
+[data-theme="dark"] .highlight .string,
+[data-theme="dark"] .highlight .attr-value {
+  color: #ce9178;
+}
+
+[data-theme="dark"] .highlight .comment,
+[data-theme="dark"] .highlight .quote {
+  color: #6a9955;
+  font-style: italic;
+}
+
+[data-theme="dark"] .highlight .number,
+[data-theme="dark"] .highlight .symbol {
+  color: #b5cea8;
+}
+
+[data-theme="dark"] .highlight .function,
+[data-theme="dark"] .highlight .built_in {
+  color: #dcdcaa;
+}
+
+[data-theme="dark"] .highlight .class,
+[data-theme="dark"] .highlight .variable {
+  color: #4ec9b0;
+}
+
+[data-theme="dark"] .highlight .operator,
+[data-theme="dark"] .highlight .entity {
+  color: #d4d4d4;
+}
+
+[data-theme="dark"] .highlight .tag,
+[data-theme="dark"] .highlight .name {
+  color: #569cd6;
+}
+
+[data-theme="dark"] .highlight .attribute {
+  color: #9cdcfe;
+}
+
+[data-theme="dark"] .highlight .params {
+  color: #d4d4d4;
+}
+
+/* 亮色模式下的代码高亮颜色 */
+.highlight .keyword,
+.highlight .selector-tag,
+.highlight .literal,
+.highlight .title {
+  color: #0000ff;
+  font-weight: 600;
+}
+
+.highlight .string,
+.highlight .attr-value {
+  color: #a31515;
+}
+
+.highlight .comment,
+.highlight .quote {
+  color: #008000;
+  font-style: italic;
+}
+
+.highlight .number,
+.highlight .symbol {
+  color: #098658;
+}
+
+.highlight .function,
+.highlight .built_in {
+  color: #795e26;
+}
+
+.highlight .class,
+.highlight .variable {
+  color: #267f99;
+}
+
+.highlight .operator,
+.highlight .entity {
+  color: #000;
+}
+
+.highlight .tag,
+.highlight .name {
+  color: #800000;
+}
+
+.highlight .attribute {
+  color: #ff0000;
+}
+
+.highlight .params {
+  color: #000;
 }
 
 .post-content blockquote {

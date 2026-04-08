@@ -7,6 +7,7 @@
   <title><%= page.title ? page.title + ' | ' + config.title : config.title %></title>
   <meta name="description" content="<%= config.description %>">
   <link rel="stylesheet" href="<%= url_for('/css/style.css') %>?v=<%= Date.now() %>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
   <% if (theme.darkmode) { %>
   <script>
     (function() {
