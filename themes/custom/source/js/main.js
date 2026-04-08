@@ -128,16 +128,16 @@
   }
 
   // ============================================
-  // Table of Contents Highlight (optional)
+  // Table of Contents Highlight
   // ============================================
-  var tocLinks = document.querySelectorAll('.toc a');
-  var headings = document.querySelectorAll('.post-content h2, .post-content h3');
-  
+  var tocLinks = document.querySelectorAll('.toc-list a');
+  var headings = document.querySelectorAll('.post-content h2, .post-content h3, .post-content h4');
+
   if (tocLinks.length > 0 && headings.length > 0) {
     var observerOptions = {
       rootMargin: '-10% 0px -85% 0px'
     };
-    
+
     var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         var id = entry.target.getAttribute('id');
@@ -151,9 +151,24 @@
         }
       });
     }, observerOptions);
-    
+
     headings.forEach(function(heading) {
       observer.observe(heading);
+    });
+
+    // Smooth scroll for TOC links
+    tocLinks.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var targetId = this.getAttribute('href').substring(1);
+        var target = document.getElementById(targetId);
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
     });
   }
 

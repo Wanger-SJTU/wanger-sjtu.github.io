@@ -93,6 +93,13 @@ if (page.tags && page.tags.length) {
   </article>
   
   <aside class="post-sidebar">
+    <% if (page.toc !== false) { %>
+    <div class="sidebar-widget toc-widget">
+      <h3 class="widget-title">目录</h3>
+      <%- toc(page.content, {list_number: false, class: 'toc-list', max_depth: 3}) %>
+    </div>
+    <% } %>
+
     <% if (relatedPosts.length > 0) { %>
     <div class="sidebar-widget related-posts-widget">
       <h3 class="widget-title">相关文章</h3>
