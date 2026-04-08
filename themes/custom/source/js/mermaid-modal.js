@@ -34,6 +34,10 @@
     var minScale = 0.5;
     var maxScale = 3;
     var scaleStep = 0.2;
+    var translateX = 0;
+    var translateY = 0;
+    var mouseX = 0;
+    var mouseY = 0;
 
     // Add click handlers to all mermaid diagrams
     function addClickHandlers() {
@@ -58,7 +62,14 @@
 
         // Reset zoom
         currentScale = 1;
+        translateX = 0;
+        translateY = 0;
         updateTransform();
+
+        // Initialize mouse position to center of modal
+        var rect = modal.getBoundingClientRect();
+        mouseX = rect.left + rect.width / 2;
+        mouseY = rect.top + rect.height / 2;
 
         // Show modal
         modal.classList.add('active');
@@ -73,28 +84,60 @@
       modalDiagram.innerHTML = '';
     }
 
-    // Update transform based on current scale
+    // Update transform based on current scale and translation
     function updateTransform() {
-      modalContent.style.transform = 'scale(' + currentScale + ')';
+      modalContent.style.transform = 'translate(' + translateX + 'px, ' + translateY + 'px) scale(' + currentScale + ')';
     }
 
-    // Zoom functions
-    function zoomIn() {
-      if (currentScale < maxScale) {
-        currentScale = Math.min(currentScale + scaleStep, maxScale);
-        updateTransform();
-      }
+    // Zoom functions centered on mouse position
+    function zoomAtPoint(scaleChange, clientX, clientY) {
+      var oldScale = currentScale;
+      var newScale = Math.min(Math.max(currentScale + scaleChange, minScale), maxScale);
+
+      if (newScale === oldScale) return;
+
+      // Get content rect
+      var rect = modalContent.getBoundingClientRect();
+
+      // Calculate mouse position relative to content
+      var mouseXOnContent = clientX - rect.left;
+      var mouseYOnContent = clientY - rect.top;
+
+      // Calculate scale ratio
+      var scaleRatio = newScale / oldScale;
+
+      // Update translation to keep mouse position fixed
+      translateX = translateX - (mouseXOnContent * scaleRatio - mouseXOnContent);
+      translateY = translateY - (mouseYOnContent * scaleRatio - mouseYOnContent);
+
+      currentScale = newScale;
+      updateTransform();
     }
 
-    function zoomOut() {
-      if (currentScale > minScale) {
-        currentScale = Math.max(currentScale - scaleStep, minScale);
-        updateTransform();
+    function zoomIn(clientX, clientY) {
+      // If no coordinates provided, use center of modal
+      if (clientX === undefined || clientY === undefined) {
+        var rect = modal.getBoundingClientRect();
+        clientX = rect.left + rect.width / 2;
+        clientY = rect.top + rect.height / 2;
       }
+      zoomAtPoint(scaleStep, clientX, clientY);
+    }
+
+    function zoomOut(clientX, clientY) {
+      // If no coordinates provided, use center of modal
+      if (clientX === undefined || clientY === undefined) {
+        var rect = modal.getBoundingClientRect();
+        clientX = rect.left + rect.width / 2;
+        clientY = rect.top + rect.height / 2;
+      }
+      zoomAtPoint(-scaleStep, clientX, clientY);
     }
 
     function resetZoom() {
       currentScale = 1;
+      translateX = 0;
+      translateY = 0;
       updateTransform();
     }
 
@@ -107,12 +150,18 @@
       }
     });
 
+    // Track mouse position for zoom centering
+    modalContent.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
     // Control buttons
     document.querySelectorAll('.mermaid-modal-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
+      btn.addEventListener('click', function(e) {
         var action = this.dataset.action;
-        if (action === 'zoomIn') zoomIn();
-        else if (action === 'zoomOut') zoomOut();
+        if (action === 'zoomIn') zoomIn(mouseX, mouseY);
+        else if (action === 'zoomOut') zoomOut(mouseX, mouseY);
         else if (action === 'reset') resetZoom();
       });
     });
@@ -124,23 +173,23 @@
       if (e.key === 'Escape') {
         closeModal();
       } else if (e.key === '+' || e.key === '=') {
-        zoomIn();
+        zoomIn(mouseX, mouseY);
       } else if (e.key === '-' || e.key === '_') {
-        zoomOut();
+        zoomOut(mouseX, mouseY);
       } else if (e.key === '0') {
         resetZoom();
       }
     });
 
-    // Mouse wheel zoom
+    // Mouse wheel zoom centered on cursor
     modal.addEventListener('wheel', function(e) {
       if (!modal.classList.contains('active')) return;
 
       e.preventDefault();
       if (e.deltaY < 0) {
-        zoomIn();
+        zoomIn(e.clientX, e.clientY);
       } else {
-        zoomOut();
+        zoomOut(e.clientX, e.clientY);
       }
     }, { passive: false });
 
