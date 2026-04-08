@@ -911,6 +911,129 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
+/* ============================================
+   Mermaid Modal
+   ============================================ */
+.mermaid-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1001;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.mermaid-modal.active {
+  display: flex;
+}
+
+.mermaid-modal-content {
+  background: var(--color-bg);
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
+}
+
+.mermaid-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--color-hover);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.mermaid-modal-close:hover {
+  background: var(--color-border);
+}
+
+.mermaid-modal-controls {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.mermaid-modal-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.mermaid-modal-btn:hover {
+  background: var(--color-hover);
+}
+
+.mermaid-modal-btn.active {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+/* Make mermaid diagrams clickable */
+pre.mermaid {
+  cursor: pointer;
+  position: relative;
+  padding: 1rem;
+  background: var(--color-code-bg);
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+pre.mermaid:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+pre.mermaid::after {
+  content: '点击放大';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 12px;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+pre.mermaid:hover::after {
+  opacity: 1;
+}
+
 .search-input-wrapper {
   display: flex;
   align-items: center;
