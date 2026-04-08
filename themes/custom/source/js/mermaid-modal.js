@@ -13,11 +13,6 @@
         <div class="mermaid-modal-content" id="mermaidModalContent">
           <button class="mermaid-modal-close" id="mermaidModalClose">&times;</button>
           <div id="mermaidModalDiagram"></div>
-          <div class="mermaid-modal-controls">
-            <button class="mermaid-modal-btn" data-action="zoomOut">缩小</button>
-            <button class="mermaid-modal-btn" data-action="reset">重置</button>
-            <button class="mermaid-modal-btn" data-action="zoomIn">放大</button>
-          </div>
         </div>
       </div>
     `;
@@ -134,17 +129,6 @@
       if (modal.classList.contains('active')) {
         updateZoomOrigin(e.clientX, e.clientY);
       }
-    });
-
-    // Control buttons
-    document.querySelectorAll('.mermaid-modal-btn').forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
-        var action = this.dataset.action;
-        // Buttons zoom from current origin (last mouse position)
-        if (action === 'zoomIn') zoomIn();
-        else if (action === 'zoomOut') zoomOut();
-        else if (action === 'reset') resetZoom();
-      });
     });
 
     // Keyboard shortcuts
