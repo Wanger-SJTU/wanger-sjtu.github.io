@@ -1468,26 +1468,21 @@ pre.mermaid:hover::after {
   flex-shrink: 0;
   position: sticky;
   top: 5rem;
+  align-self: flex-start;
 }
 
-.post-main-content {
+.post-layout .post-page {
   flex: 1;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.post-main-content .post-page {
   max-width: var(--content-width);
 }
 
 .post-right-sidebar {
   width: 280px;
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  position: sticky;
+  top: 5rem;
+  align-self: flex-start;
 }
 
 .post-sidebar {
@@ -1645,12 +1640,11 @@ pre.mermaid:hover::after {
     margin-bottom: 2rem;
   }
 
-  .post-main-content {
-    gap: 2rem;
-  }
-
   .post-right-sidebar {
     width: 100%;
+    position: static;
+    order: 1;
+    margin-top: 2rem;
   }
 
   .post-sidebar {

@@ -42,64 +42,63 @@ if (page.tags && page.tags.length) {
     <% } %>
   </aside>
 
-  <div class="post-main-content">
-    <article class="post-page">
-    <header class="post-header">
-      <h1 class="post-title"><%= page.title %></h1>
-      <div class="post-meta">
-        <time class="post-date" datetime="<%= date(page.date, 'YYYY-MM-DD') %>">
-          📅 <%= date(page.date, 'YYYY年MM月DD日') %>
-        </time>
-        <% if (page.categories && page.categories.length) { %>
-        <span class="post-category">
-          📁 
-          <% page.categories.each(function(cat) { %>
-          <a href="<%= url_for(cat.path) %>"><%= cat.name %></a>
-          <% }); %>
-        </span>
-        <% } %>
-        <% if (page.updated && page.updated.valueOf() !== page.date.valueOf()) { %>
-        <span class="post-updated">
-          ✏️ 更新于 <%= date(page.updated, 'YYYY年MM月DD日') %>
-        </span>
-        <% } %>
-      </div>
-    </header>
-    
-    <div class="post-content">
-      <%- page.content %>
-    </div>
-    
-    <% if (page.tags && page.tags.length) { %>
-    <footer class="post-footer">
-      <div class="post-tags">
-        <span class="tags-label">标签：</span>
-        <% page.tags.each(function(tag) { %>
-        <a href="<%= url_for(tag.path) %>" class="tag">#<%= tag.name %></a>
+  <article class="post-page">
+  <header class="post-header">
+    <h1 class="post-title"><%= page.title %></h1>
+    <div class="post-meta">
+      <time class="post-date" datetime="<%= date(page.date, 'YYYY-MM-DD') %>">
+        📅 <%= date(page.date, 'YYYY年MM月DD日') %>
+      </time>
+      <% if (page.categories && page.categories.length) { %>
+      <span class="post-category">
+        📁
+        <% page.categories.each(function(cat) { %>
+        <a href="<%= url_for(cat.path) %>"><%= cat.name %></a>
         <% }); %>
-      </div>
-    </footer>
+      </span>
+      <% } %>
+      <% if (page.updated && page.updated.valueOf() !== page.date.valueOf()) { %>
+      <span class="post-updated">
+        ✏️ 更新于 <%= date(page.updated, 'YYYY年MM月DD日') %>
+      </span>
+      <% } %>
+    </div>
+  </header>
+
+  <div class="post-content">
+    <%- page.content %>
+  </div>
+
+  <% if (page.tags && page.tags.length) { %>
+  <footer class="post-footer">
+    <div class="post-tags">
+      <span class="tags-label">标签：</span>
+      <% page.tags.each(function(tag) { %>
+      <a href="<%= url_for(tag.path) %>" class="tag">#<%= tag.name %></a>
+      <% }); %>
+    </div>
+  </footer>
+  <% } %>
+
+  <nav class="post-nav">
+    <% if (page.prev) { %>
+    <a href="<%= url_for(page.prev.path) %>" class="nav-prev">
+      <span class="nav-label">← 上一篇</span>
+      <span class="nav-title"><%= page.prev.title %></span>
+    </a>
+    <% } else { %>
+    <div class="nav-placeholder"></div>
     <% } %>
-    
-    <nav class="post-nav">
-      <% if (page.prev) { %>
-      <a href="<%= url_for(page.prev.path) %>" class="nav-prev">
-        <span class="nav-label">← 上一篇</span>
-        <span class="nav-title"><%= page.prev.title %></span>
-      </a>
-      <% } else { %>
-      <div class="nav-placeholder"></div>
-      <% } %>
-      
-      <% if (page.next) { %>
-      <a href="<%= url_for(page.next.path) %>" class="nav-next">
-        <span class="nav-label">下一篇 →</span>
-        <span class="nav-title"><%= page.next.title %></span>
-      </a>
-      <% } else { %>
-      <div class="nav-placeholder"></div>
-      <% } %>
-    </nav>
+
+    <% if (page.next) { %>
+    <a href="<%= url_for(page.next.path) %>" class="nav-next">
+      <span class="nav-label">下一篇 →</span>
+      <span class="nav-title"><%= page.next.title %></span>
+    </a>
+    <% } else { %>
+    <div class="nav-placeholder"></div>
+    <% } %>
+  </nav>
   </article>
 
   <aside class="post-right-sidebar">
@@ -127,7 +126,6 @@ if (page.tags && page.tags.length) {
       <div id="article-graph-sidebar"></div>
     </div>
   </aside>
-</div>
 </div>
 
 <!-- Vis.js Network -->
