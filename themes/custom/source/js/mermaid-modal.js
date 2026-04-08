@@ -26,8 +26,8 @@
     var closeBtn = document.getElementById('mermaidModalClose');
 
     var currentScale = 1;
-    var minScale = 0.5;
-    var maxScale = 3;
+    var minScale = 0.1;
+    var maxScale = Infinity;
     var scaleStep = 0.2;
     var originX = '50%';
     var originY = '50%';
