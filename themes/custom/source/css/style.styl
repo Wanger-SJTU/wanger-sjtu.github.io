@@ -1712,6 +1712,12 @@ ol.toc-list li {
   color: var(--color-text-secondary) !important;
 }
 
+/* 确保一级标题链接不加粗 */
+.toc-list-item-level-1 a,
+.toc-list-item-level-1 .toc-list-link {
+  font-weight: normal !important;
+}
+
 /* 确保一级标题不显示任何列表标记 */
 .toc-list-item-level-1 {
   list-style: none !important;
