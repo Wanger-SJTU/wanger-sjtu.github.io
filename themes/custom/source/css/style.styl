@@ -670,6 +670,13 @@ body {
   word-break: break-word !important;
 }
 
+/* 确保 hljs 内的 span 标签也能正确换行 */
+code.hljs span {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  display: inline;
+}
+
 /* 暗黑模式下的代码高亮颜色 */
 [data-theme="dark"] .highlight {
   background: #1e1e1e;
