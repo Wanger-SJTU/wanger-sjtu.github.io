@@ -561,6 +561,16 @@ body {
   padding-left: 1.5rem;
 }
 
+/* 目录导航移除序号 */
+.post-content ul li:has(a[href^="#"]) {
+  list-style: none;
+}
+
+.post-content ul:has(li:has(a[href^="#"])) {
+  list-style: none;
+  padding-left: 0;
+}
+
 .post-content li {
   margin-bottom: 0.5rem;
   word-wrap: break-word;
