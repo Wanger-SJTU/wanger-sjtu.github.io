@@ -593,7 +593,7 @@ body {
 .post-content pre code {
   background: none;
   padding: 0;
-  white-space: pre;
+  white-space: pre-wrap;
   font-family: var(--font-mono);
   font-size: inherit;
 }
@@ -603,16 +603,12 @@ body {
   background: var(--color-code-bg);
   border-radius: var(--radius);
   margin-bottom: 1.5rem;
-  overflow-x: auto;
-}
-
-.highlight table {
-  width: auto;
+  padding: 1rem;
 }
 
 .highlight pre {
   background: none;
-  padding: 1rem;
+  padding: 0;
   margin: 0;
   font-size: 0.85rem;
   line-height: 1.5;
@@ -622,33 +618,8 @@ body {
   font-family: var(--font-mono);
   font-size: inherit;
   background: none;
-  white-space: pre;
+  white-space: pre-wrap;
   display: block;
-}
-
-/* 行号样式 */
-.highlight .gutter {
-  text-align: right;
-  padding-right: 1rem;
-  border-right: 1px solid var(--color-border);
-  user-select: none;
-}
-
-.highlight .gutter pre {
-  padding: 1rem 0.5rem 1rem 0;
-  color: var(--color-text-tertiary);
-  font-size: 0.8rem;
-  line-height: 1.5;
-}
-
-.highlight .code {
-  padding-left: 1rem;
-}
-
-.highlight .code pre {
-  padding: 1rem 0;
-  margin: 0;
-  white-space: pre;
 }
 
 /* 暗黑模式下的代码高亮颜色 */
@@ -1376,13 +1347,13 @@ pre.mermaid:hover::after {
   .post-content pre {
     padding: 0.75rem;
     font-size: 0.85rem;
-    white-space: pre;
+    white-space: pre-wrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
   .post-content pre code {
-    white-space: pre;
+    white-space: pre-wrap;
   }
   
   .post-content code {

@@ -45,7 +45,7 @@ highlight:
   line_number: false
   auto_detect: false
   tab_replace: ''
-  wrap: true
+  wrap: false
   hljs: true
 prismjs:
   enable: false
