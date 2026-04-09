@@ -57,6 +57,13 @@
   </script>
   <% } %>
   <% if (config.highlight.enable && config.highlight.hljs) { %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+  <style>
+    /* 覆盖外部 CSS，保持原始换行 */
+    .highlight pre, .highlight code {
+      white-space: pre !important;
+    }
+  </style>
   <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
