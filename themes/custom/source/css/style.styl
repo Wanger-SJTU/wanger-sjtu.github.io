@@ -623,8 +623,9 @@ body {
   font-size: inherit;
   background: none;
   color: inherit;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
 }
 
 .highlight table {
@@ -635,6 +636,12 @@ body {
 
 .highlight td {
   padding: 0;
+}
+
+/* 强制所有hljs代码换行 */
+.hljs {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
 }
 
 /* 行号样式 */
