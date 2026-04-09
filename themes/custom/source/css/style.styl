@@ -612,12 +612,14 @@ body {
   margin: 0;
   font-size: 0.85rem;
   line-height: 1.5;
+  color: #24292e; /* 默认黑色 */
 }
 
 .highlight code {
   font-family: var(--font-mono);
   font-size: inherit;
   background: none;
+  color: inherit;
 }
 
 /* 行号样式 */
@@ -646,14 +648,19 @@ body {
 
 /* 暗黑模式下的代码高亮颜色 */
 [data-theme="dark"] .highlight {
-  background: #1a1a1a;
+  background: #1e1e1e;
+}
+
+[data-theme="dark"] .highlight pre {
+  color: #d4d4d4;
 }
 
 [data-theme="dark"] .highlight .keyword,
 [data-theme="dark"] .highlight .selector-tag,
 [data-theme="dark"] .highlight .literal,
 [data-theme="dark"] .highlight .title {
-  color: #569cd6;
+  color: #c586c0;
+  font-weight: 500;
 }
 
 [data-theme="dark"] .highlight .string,
@@ -700,57 +707,77 @@ body {
   color: #d4d4d4;
 }
 
-/* 亮色模式下的代码高亮颜色 */
+[data-theme="dark"] .highlight .property {
+  color: #9cdcfe;
+}
+
+[data-theme="dark"] .highlight .type {
+  color: #4ec9b0;
+}
+
+/* 亮色模式下的代码高亮颜色 - GitHub Dark Dimmed 风格 */
+.highlight {
+  background: #f6f8fa;
+}
+
 .highlight .keyword,
 .highlight .selector-tag,
 .highlight .literal,
 .highlight .title {
-  color: #0000ff;
+  color: #cf222e;
   font-weight: 600;
 }
 
 .highlight .string,
 .highlight .attr-value {
-  color: #a31515;
+  color: #0a3069;
 }
 
 .highlight .comment,
 .highlight .quote {
-  color: #008000;
+  color: #6e7781;
   font-style: italic;
 }
 
 .highlight .number,
 .highlight .symbol {
-  color: #098658;
+  color: #0550ae;
 }
 
 .highlight .function,
 .highlight .built_in {
-  color: #795e26;
+  color: #8250df;
 }
 
 .highlight .class,
 .highlight .variable {
-  color: #267f99;
+  color: #116329;
 }
 
 .highlight .operator,
 .highlight .entity {
-  color: #000;
+  color: #24292f;
 }
 
 .highlight .tag,
 .highlight .name {
-  color: #800000;
+  color: #22863a;
 }
 
 .highlight .attribute {
-  color: #ff0000;
+  color: #953800;
 }
 
 .highlight .params {
-  color: #000;
+  color: #24292f;
+}
+
+.highlight .property {
+  color: #6f42c1;
+}
+
+.highlight .type {
+  color: #953800;
 }
 
 .post-content blockquote {
