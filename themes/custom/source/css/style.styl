@@ -1681,6 +1681,22 @@ ol.toc-list > li {
   list-style: none !important;
 }
 
+ol.toc-list li,
+ol.toc-list > li {
+  list-style: none !important;
+  padding-left: 0 !important;
+}
+
+/* 移除所有嵌套的序号 */
+ol.toc-list-child {
+  list-style: none !important;
+  padding-left: 1rem !important;
+}
+
+ol.toc-list-child li {
+  list-style: none !important;
+}
+
 ol.toc-list li {
   margin-bottom: 0.5rem;
 }
