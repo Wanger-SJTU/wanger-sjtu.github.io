@@ -1703,15 +1703,17 @@ ol.toc-list li {
 }
 
 /* 调整一级标题样式，使其与二级标题一致 */
-.toc-list-item-level-1 {
-  font-size: 0.875rem;
-  font-weight: 500;
+.toc-list-item-level-1,
+.toc-list-item-level-1 > a,
+.toc-list-item-level-1 .toc-list-link {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: var(--color-text-secondary) !important;
 }
 
-.toc-list-item-level-1 > a {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
+/* 调整一级标题的嵌套列表缩进 */
+.toc-list-item-level-1 > .toc-list-child {
+  padding-left: 0 !important;
 }
 
 .toc-list li {
