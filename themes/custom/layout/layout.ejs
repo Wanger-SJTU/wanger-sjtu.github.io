@@ -56,6 +56,15 @@
     });
   </script>
   <% } %>
+  <% if (config.highlight.enable && config.highlight.hljs) { %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      hljs.highlightAll();
+    });
+  </script>
+  <% } %>
 </head>
 <body>
   <%- partial('_partial/header') %>
