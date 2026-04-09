@@ -608,9 +608,17 @@ body {
 }
 
 .highlight table {
-  width: auto;
-  display: table;
-  overflow-x: visible;
+  width: 100% !important;
+  max-width: 100% !important;
+  display: table !important;
+  table-layout: fixed !important;
+  overflow-x: visible !important;
+}
+
+.highlight td {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: pre-wrap !important;
 }
 
 .highlight pre {
