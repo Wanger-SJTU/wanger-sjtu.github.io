@@ -604,7 +604,7 @@ body {
   background: var(--color-code-bg);
   border-radius: var(--radius);
   margin-bottom: 1.5rem;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .highlight pre {
@@ -625,6 +625,16 @@ body {
   color: inherit;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+.highlight table {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.highlight td {
+  padding: 0;
 }
 
 /* 行号样式 */
