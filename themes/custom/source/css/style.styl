@@ -593,8 +593,7 @@ body {
 .post-content pre code {
   background: none;
   padding: 0;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  white-space: pre;
   font-family: var(--font-mono);
   font-size: inherit;
 }
@@ -604,21 +603,11 @@ body {
   background: var(--color-code-bg);
   border-radius: var(--radius);
   margin-bottom: 1.5rem;
-  overflow-wrap: break-word;
+  overflow-x: auto;
 }
 
 .highlight table {
-  width: 100% !important;
-  max-width: 100% !important;
-  display: table !important;
-  table-layout: fixed !important;
-  overflow-x: visible !important;
-}
-
-.highlight td {
-  word-wrap: break-word !important;
-  overflow-wrap: break-word !important;
-  white-space: pre-wrap !important;
+  width: auto;
 }
 
 .highlight pre {
@@ -633,7 +622,7 @@ body {
   font-family: var(--font-mono);
   font-size: inherit;
   background: none;
-  white-space: pre-wrap;
+  white-space: pre;
   display: block;
 }
 
@@ -654,19 +643,12 @@ body {
 
 .highlight .code {
   padding-left: 1rem;
-  width: 100%;
-  max-width: 0;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
 }
 
 .highlight .code pre {
   padding: 1rem 0;
   margin: 0;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  width: 100%;
+  white-space: pre;
 }
 
 /* 暗黑模式下的代码高亮颜色 */
@@ -1394,13 +1376,13 @@ pre.mermaid:hover::after {
   .post-content pre {
     padding: 0.75rem;
     font-size: 0.85rem;
-    white-space: pre-wrap;
+    white-space: pre;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
   .post-content pre code {
-    white-space: pre-wrap;
+    white-space: pre;
   }
   
   .post-content code {
