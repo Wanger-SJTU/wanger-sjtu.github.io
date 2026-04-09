@@ -1723,10 +1723,17 @@ pre.mermaid:hover::after {
 }
 
 .toc-list {
-  list-style: none;
+  list-style: none !important;
   margin: 0;
   padding: 0;
-  
+}
+
+.toc-list li {
+  list-style: none !important;
+}
+
+.toc-list li::before {
+  content: '' !important;
 }
 
 
@@ -1757,11 +1764,19 @@ pre.mermaid:hover::after {
 }
 
 .toc-list ul {
-  list-style: none;
+  list-style: none !important;
   margin: 0.5rem 0 0.5rem 0;
   padding: 0;
   padding-left: 1rem;
   border-left: 1px solid var(--color-border);
+}
+
+.toc-list ul li {
+  list-style: none !important;
+}
+
+.toc-list ul li::before {
+  content: '' !important;
 }
 
 .toc-list ul li a {
