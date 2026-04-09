@@ -1702,13 +1702,19 @@ ol.toc-list li {
   margin-bottom: 0.5rem;
 }
 
-/* 调整一级标题样式，使其与二级标题一致 */
+/* 调整一级标题样式，使其与二级标题完全一致 */
 .toc-list-item-level-1,
 .toc-list-item-level-1 > a,
-.toc-list-item-level-1 .toc-list-link {
+.toc-list-item-level-1 .toc-list-link,
+.toc-list-item-level-1 .toc-list-text {
   font-size: 0.875rem !important;
-  font-weight: 500 !important;
+  font-weight: normal !important;
   color: var(--color-text-secondary) !important;
+}
+
+/* 确保一级标题不显示任何列表标记 */
+.toc-list-item-level-1 {
+  list-style: none !important;
 }
 
 /* 调整一级标题的嵌套列表缩进 */
