@@ -634,24 +634,6 @@ body {
   table-layout: fixed;
 }
 
-.highlight td {
-  padding: 0;
-  max-width: 0; /* 强制td遵守table-layout: fixed */
-}
-
-.highlight .code {
-  max-width: 100%;
-  overflow: hidden;
-  padding-left: 1rem;
-}
-
-/* 强制所有hljs代码换行 */
-.hljs {
-  white-space: pre-wrap !important;
-  word-break: break-word !important;
-}
-
-/* 行号样式 */
 .highlight .gutter {
   text-align: right;
   padding-right: 1rem;
@@ -668,11 +650,24 @@ body {
   white-space: pre;
 }
 
+.highlight .code {
+  max-width: 100%;
+  overflow: hidden;
+  padding-left: 1rem;
+  width: auto;
+}
+
 .highlight .code pre {
   padding: 1rem 0;
   margin: 0;
   white-space: pre-wrap !important;
   word-wrap: break-word !important;
+}
+
+/* 强制所有hljs代码换行 */
+.hljs {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
 }
 
 /* 暗黑模式下的代码高亮颜色 */
