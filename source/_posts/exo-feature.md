@@ -7,32 +7,6 @@ tags: [exo, libp2p, P2P, 功能列表]
 
 本文档详细列出了 exo 实现的所有功能。
 
-## 📋 目录
-
-<style>
-.toc-no-bullets {
-  list-style: none;
-  padding-left: 0;
-}
-.toc-no-bullets li {
-  list-style: none;
-  padding-left: 0;
-}
-</style>
-
-<ul class="toc-no-bullets">
-<li><a href="#核心功能">核心功能</a></li>
-<li><a href="#模型推理">模型推理</a></li>
-<li><a href="#设备发现与网络">设备发现与网络</a></li>
-<li><a href="#集群管理">集群管理</a></li>
-<li><a href="#API-兼容性">API 兼容性</a></li>
-<li><a href="#监控与信息收集">监控与信息收集</a></li>
-<li><a href="#模型管理">模型管理</a></li>
-<li><a href="#前端-dashboard">前端 Dashboard</a></li>
-<li><a href="#分布式系统特性">分布式系统特性</a></li>
-<li><a href="#配置与扩展">配置与扩展</a></li>
-</ul>
-
 ---
 
 ## 核心功能
