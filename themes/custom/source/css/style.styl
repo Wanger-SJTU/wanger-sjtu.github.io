@@ -636,6 +636,12 @@ body {
 
 .highlight td {
   padding: 0;
+  max-width: 0; /* 强制td遵守table-layout: fixed */
+}
+
+.highlight .code {
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* 强制所有hljs代码换行 */
