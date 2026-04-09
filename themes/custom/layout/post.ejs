@@ -41,6 +41,19 @@ if (page.tags && page.tags.length) {
     </div>
     <% } %>
   </aside>
+  <script>
+    // 修复URL编码的锚点链接
+    document.addEventListener('DOMContentLoaded', function() {
+      var tocLinks = document.querySelectorAll('.toc-list a');
+      tocLinks.forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href && href.includes('%')) {
+          // 解码URL编码的锚点链接
+          link.setAttribute('href', decodeURIComponent(href));
+        }
+      });
+    });
+  </script>
 
   <article class="post-page">
   <header class="post-header">
