@@ -4,7 +4,26 @@ console.log('=== Knowledge Graph Feature ===');
 (function() {
   'use strict';
 
-  // 获取所有文章数据
+  // 从 search.xml 的 content 字段中提取双链引用
+  function extractPostLinksFromContent(content) {
+    const links = [];
+    if (!content) return links;
+
+    // 匹配 {% post_link 'filename' %} 或 {% post_link filename %} 或 {% post_link 'filename' 'text' %}
+    const postLinkRegex = /\{%\s*post_link\s+['"]?([^'"')} \s]+)['"]?(?:\s+['"][^'"]+['"])?\s*%}/g;
+    let match;
+
+    while ((match = postLinkRegex.exec(content)) !== null) {
+      const filename = match[1];
+      if (filename && !links.includes(filename)) {
+        links.push(filename);
+      }
+    }
+
+    return links;
+  }
+
+  // 获取所有文章数据（包括双链）
   async function fetchAllPosts() {
     try {
       const response = await fetch('/search.xml');
@@ -14,10 +33,14 @@ console.log('=== Knowledge Graph Feature ===');
       const entries = doc.querySelectorAll('entry');
       const posts = [];
 
+      // 构建文件名到URL的映射
+      const filenameToUrl = new Map();
+
       entries.forEach(entry => {
         const title = entry.querySelector('title');
         const url = entry.querySelector('url');
         const tagsContainer = entry.querySelector('tags');
+        const content = entry.querySelector('content');
 
         if (title && url) {
           // 解析标签：从嵌套的 <tag> 元素中提取
@@ -32,13 +55,51 @@ console.log('=== Knowledge Graph Feature ===');
             });
           }
 
-          posts.push({
+          // 从URL提取文件名
+          const urlText = url.textContent.trim();
+          const filenameMatch = urlText.match(/\/([^/]+\.md)$/);
+          const filename = filenameMatch ? filenameMatch[1] : '';
+
+          // 从内容中提取双链引用
+          const linkedPosts = extractPostLinksFromContent(
+            content ? content.textContent : ''
+          );
+
+          const postData = {
             title: title.textContent.trim(),
-            url: url.textContent.trim(),
-            tags: tags
-          });
+            url: urlText,
+            filename: filename,
+            tags: tags,
+            linkedPosts: linkedPosts
+          };
+
+          posts.push(postData);
+          if (filename) {
+            filenameToUrl.set(filename.replace('.md', ''), urlText);
+          }
         }
       });
+
+      // 将文件名映射为URL
+      console.log('🔗 Resolving post links...');
+      posts.forEach(post => {
+        if (post.linkedPosts && post.linkedPosts.length > 0) {
+          post.linkedPosts = post.linkedPosts.map(filename => {
+            // 尝试从映射中查找URL
+            const targetUrl = filenameToUrl.get(filename);
+            if (targetUrl) {
+              return targetUrl;
+            }
+            // 如果找不到，返回null（后续会过滤掉）
+            return null;
+          }).filter(url => url !== null);  // 过滤掉无效链接
+
+          if (post.linkedPosts.length > 0) {
+            console.log(`  ✅ ${post.title}: ${post.linkedPosts.length} links`);
+          }
+        }
+      });
+      console.log(`✅ Resolved links for ${posts.length} posts`);
 
       return posts;
     } catch (error) {
@@ -64,12 +125,13 @@ console.log('=== Knowledge Graph Feature ===');
         title: post.title,
         url: post.url,
         tags: post.tags || [],
+        linkedPosts: post.linkedPosts || [],
         isCurrent: isCurrent
       });
       nodes.push(nodeMap.get(url));
     });
 
-    // 基于共同标签建立连接（任意两篇有共同标签的文章都连接）
+    // 1. 基于共同标签建立连接（任意两篇有共同标签的文章都连接）
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         const commonTags = nodes[i].tags.filter(tag =>
@@ -80,11 +142,48 @@ console.log('=== Knowledge Graph Feature ===');
           links.push({
             source: i,
             target: j,
+            type: 'tag',  // 标签连接
             tags: commonTags
           });
         }
       }
     }
+
+    // 2. 基于双链引用建立连接
+    const linkSet = new Set();  // 用于去重
+    nodes.forEach((sourceNode, sourceIndex) => {
+      if (sourceNode.linkedPosts && sourceNode.linkedPosts.length > 0) {
+        sourceNode.linkedPosts.forEach(targetUrl => {
+          // 查找目标文章
+          const targetNode = nodes.find(n => {
+            const nodeUrl = n.url.replace(/\/$/, '');
+            // 尝试多种匹配方式
+            return nodeUrl === targetUrl ||
+                   nodeUrl === targetUrl.replace(/\/$/, '') ||
+                   n.url === targetUrl ||
+                   n.url === targetUrl + '/';
+          });
+
+          if (targetNode) {
+            const targetIndex = targetNode.id;
+            // 创建唯一的链接标识（避免重复）
+            const linkId = [sourceIndex, targetIndex].sort().join('-');
+
+            if (!linkSet.has(linkId)) {
+              linkSet.add(linkId);
+              links.push({
+                source: sourceIndex,
+                target: targetIndex,
+                type: 'link',  // 双链连接
+                tags: []
+              });
+            }
+          }
+        });
+      }
+    });
+
+    console.log(`📊 Graph: ${nodes.length} nodes, ${links.length} links (${links.filter(l => l.type === 'tag').length} tag-based, ${links.filter(l => l.type === 'link').length} link-based)`);
 
     return { nodes, links };
   }
@@ -143,6 +242,28 @@ console.log('=== Knowledge Graph Feature ===');
     `;
     content.appendChild(header);
 
+    // 统计信息
+    const stats = document.createElement('div');
+    stats.style.cssText = `
+      display: flex;
+      gap: 20px;
+      margin: 20px 0;
+      font-size: 14px;
+      color: ${isDarkMode ? '#b0b0b0' : '#666'};
+      flex-wrap: wrap;
+    `;
+
+    const tagLinkCount = graphData.links.filter(l => l.type === 'tag').length;
+    const directLinkCount = graphData.links.filter(l => l.type === 'link').length;
+
+    stats.innerHTML = `
+      <div>📊 <strong>${posts.length}</strong> 篇文章</div>
+      <div>🔗 <strong>${graphData.links.length}</strong> 个关联</div>
+      <div style="color: ${isDarkMode ? '#4ecdc4' : '#00b8b8'};">📎 <strong>${directLinkCount}</strong> 个双链</div>
+      <div>🏷️ <strong>${tagLinkCount}</strong> 个标签关联</div>
+    `;
+    content.appendChild(stats);
+
     // 图谱容器
     const graphContainer = document.createElement('div');
     graphContainer.id = 'knowledge-graph-container';
@@ -181,11 +302,20 @@ console.log('=== Knowledge Graph Feature ===');
         return sourceUrl === currentNode || targetUrl === currentNode;
       })
       .map(link => {
-        const relatedNode = link.source === graphData.nodes.findIndex(n => n.url.replace(/\/$/, '') === currentNode) ?
-          graphData.nodes[link.target] : graphData.nodes[link.source];
-        return { ...relatedNode, commonTags: link.tags };
+        const isSource = graphData.nodes[link.source].url.replace(/\/$/, '') === currentNode;
+        const relatedNode = isSource ? graphData.nodes[link.target] : graphData.nodes[link.source];
+        return {
+          ...relatedNode,
+          linkType: link.type,
+          commonTags: link.tags || []
+        };
       })
-      .sort((a, b) => b.commonTags.length - a.commonTags.length)
+      .sort((a, b) => {
+        // 双链引用优先，然后按共同标签数量排序
+        if (a.linkType === 'link' && b.linkType !== 'link') return -1;
+        if (b.linkType === 'link' && a.linkType !== 'link') return 1;
+        return b.commonTags.length - a.commonTags.length;
+      })
       .slice(0, 8);
 
     if (relatedPosts.length > 0) {
@@ -193,31 +323,44 @@ console.log('=== Knowledge Graph Feature ===');
         const item = document.createElement('a');
         item.href = post.url;
         item.setAttribute('data-related-item', 'true');
+        const isDirectLink = post.linkType === 'link';
+
         item.style.cssText = `
           display: block;
           padding: 12px;
-          border: 1px solid ${isDarkMode ? '#333' : '#e0e0e0'};
+          border: 2px solid ${isDirectLink ? (isDarkMode ? 'rgba(78, 205, 196, 0.5)' : 'rgba(78, 205, 196, 0.5)') : (isDarkMode ? '#333' : '#e0e0e0')};
           border-radius: 8px;
           text-decoration: none;
           color: ${isDarkMode ? '#b0b0b0' : '#555'};
           transition: all 0.2s;
           background: ${isDarkMode ? '#252525' : '#f5f5f5'};
+          ${isDirectLink ? 'box-shadow: 0 2px 8px rgba(78, 205, 196, 0.2);' : ''}
         `;
+
+        const relationIcon = isDirectLink ? '📎' : '🏷️';
+        const relationText = isDirectLink ? '双链引用' : `共同标签: ${post.commonTags.map(t => '#' + t).join(' ')}`;
+
         item.innerHTML = `
-          <div style="font-weight:600; margin-bottom:6px; color:${isDarkMode ? '#e0e0e0' : '#333'};">${post.title}</div>
-          <div style="font-size:12px; color:${isDarkMode ? '#888' : '#999'};">
-            共同标签: ${post.commonTags.map(t => '#' + t).join(' ')}
+          <div style="font-weight:600; margin-bottom:6px; color:${isDarkMode ? '#e0e0e0' : '#333'};">
+            ${relationIcon} ${post.title}
+          </div>
+          <div style="font-size:12px; color:${isDirectLink ? (isDarkMode ? '#4ecdc4' : '#00b8b8') : (isDarkMode ? '#888' : '#999')};">
+            ${relationText}
           </div>
         `;
         item.addEventListener('mouseenter', () => {
           const currentDark = document.documentElement.getAttribute('data-theme') === 'dark';
           item.style.background = currentDark ? '#333' : '#e8e8e8';
-          item.style.borderColor = currentDark ? '#555' : '#ccc';
+          item.style.borderColor = isDirectLink ?
+            (currentDark ? 'rgba(78, 205, 196, 0.8)' : 'rgba(78, 205, 196, 0.8)') :
+            (currentDark ? '#555' : '#ccc');
         });
         item.addEventListener('mouseleave', () => {
           const currentDark = document.documentElement.getAttribute('data-theme') === 'dark';
           item.style.background = currentDark ? '#252525' : '#f5f5f5';
-          item.style.borderColor = currentDark ? '#333' : '#e0e0e0';
+          item.style.borderColor = isDirectLink ?
+            (currentDark ? 'rgba(78, 205, 196, 0.5)' : 'rgba(78, 205, 196, 0.5)') :
+            (currentDark ? '#333' : '#e0e0e0');
         });
         relatedList.appendChild(item);
       });
@@ -395,18 +538,42 @@ console.log('=== Knowledge Graph Feature ===');
       };
     });
 
-    const edges = data.links.map(link => ({
-      from: link.source,
-      to: link.target,
-      title: '共同标签: ' + link.tags.join(', '),
-      value: link.tags.length,
-      color: {
-        color: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)',
-        highlight: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-        hover: isDarkMode ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
-      },
-      width: Math.max(0.5, link.tags.length * 0.5)
-    }));
+    const edges = data.links.map(link => {
+      const isTagLink = link.type === 'tag';
+      const isDirectLink = link.type === 'link';
+
+      // 双链连接使用更醒目的颜色和粗细
+      if (isDirectLink) {
+        return {
+          from: link.source,
+          to: link.target,
+          title: '📎 双链引用',
+          value: 3,  // 更粗的线
+          color: {
+            color: isDarkMode ? 'rgba(78, 205, 196, 0.6)' : 'rgba(78, 205, 196, 0.6)',
+            highlight: isDarkMode ? 'rgba(78, 205, 196, 0.9)' : 'rgba(78, 205, 196, 0.9)',
+            hover: isDarkMode ? 'rgba(78, 205, 196, 0.8)' : 'rgba(78, 205, 196, 0.8)'
+          },
+          width: 2.5,  // 固定粗细
+          dashes: false  // 实线
+        };
+      }
+
+      // 标签连接使用原来的样式
+      return {
+        from: link.source,
+        to: link.target,
+        title: '🏷️ 共同标签: ' + link.tags.join(', '),
+        value: link.tags.length,
+        color: {
+          color: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)',
+          highlight: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+          hover: isDarkMode ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
+        },
+        width: Math.max(0.5, link.tags.length * 0.5),
+        dashes: true  // 虚线
+      };
+    });
 
     // 创建 vis.js 数据集
     const nodesDataset = new vis.DataSet(nodes);
@@ -498,15 +665,34 @@ console.log('=== Knowledge Graph Feature ===');
       position: absolute;
       bottom: 10px;
       left: 10px;
-      padding: 8px 12px;
+      padding: 10px 14px;
       background: ${isDarkMode ? '#1e1e1e' : '#fff'};
       border: 1px solid ${isDarkMode ? '#333' : '#e0e0e0'};
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 12px;
       color: ${isDarkMode ? '#b0b0b0' : '#666'};
       z-index: 10;
+      line-height: 1.6;
     `;
-    legend.innerHTML = '🟢 当前文章 &nbsp; ⚪ 相关文章';
+    legend.innerHTML = `
+      <div style="margin-bottom: 4px; font-weight: 600;">📊 图谱说明</div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="display: inline-block; width: 12px; height: 12px; background: ${currentArticleColor}; border-radius: 50%;"></span>
+        <span>当前文章</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="display: inline-block; width: 12px; height: 12px; background: #999; border-radius: 50%;"></span>
+        <span>相关文章</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+        <span style="display: inline-block; width: 30px; height: 2px; background: rgba(78, 205, 196, 0.6);"></span>
+        <span>📎 双链引用</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="display: inline-block; width: 30px; height: 2px; background: ${isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'}; border-bottom: 1px dashed ${isDarkMode ? '#fff' : '#000'};"></span>
+        <span>🏷️ 共同标签</span>
+      </div>
+    `;
     container.appendChild(legend);
   }
 
