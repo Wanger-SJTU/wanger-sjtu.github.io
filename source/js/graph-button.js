@@ -4,19 +4,49 @@ console.log('=== Knowledge Graph Feature ===');
 (function() {
   'use strict';
 
-  // 从 search.xml 的 content 字段中提取双链引用
-  function extractPostLinksFromContent(content) {
+  // 从 HTML 内容中提取内部链接（双链引用）
+  function extractPostLinksFromHTML(htmlContent, currentUrl) {
     const links = [];
-    if (!content) return links;
+    if (!htmlContent) return links;
 
-    // 匹配 {% post_link 'filename' %} 或 {% post_link filename %} 或 {% post_link 'filename' 'text' %}
-    const postLinkRegex = /\{%\s*post_link\s+['"]?([^'"')} \s]+)['"]?(?:\s+['"][^'"]+['"])?\s*%}/g;
-    let match;
+    // 创建一个临时 DOM 元素来解析 HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
 
-    while ((match = postLinkRegex.exec(content)) !== null) {
-      const filename = match[1];
-      if (filename && !links.includes(filename)) {
-        links.push(filename);
+    // 查找所有 <a> 标签
+    const anchorTags = tempDiv.querySelectorAll('a[href]');
+
+    // 查找"相关阅读"部分
+    const allHeadings = tempDiv.querySelectorAll('h2, h3');
+    let relatedReadingSection = null;
+
+    for (const heading of allHeadings) {
+      if (heading.textContent.includes('相关阅读') || heading.textContent.includes('扩展阅读')) {
+        relatedReadingSection = heading;
+        break;
+      }
+    }
+
+    if (relatedReadingSection) {
+      // 获取"相关阅读"部分的所有链接
+      let nextElement = relatedReadingSection.nextElementSibling;
+      while (nextElement) {
+        // 如果遇到下一个标题，停止
+        if (nextElement.tagName.match(/^H[2-6]$/)) {
+          break;
+        }
+
+        // 查找这个元素中的链接
+        const anchors = nextElement.querySelectorAll('a[href]');
+        anchors.forEach(anchor => {
+          const href = anchor.getAttribute('href');
+          if (href && !href.startsWith('http') && !href.startsWith('//')) {
+            // 是内部链接
+            links.push(href);
+          }
+        });
+
+        nextElement = nextElement.nextElementSibling;
       }
     }
 
@@ -33,8 +63,15 @@ console.log('=== Knowledge Graph Feature ===');
       const entries = doc.querySelectorAll('entry');
       const posts = [];
 
-      // 构建文件名到URL的映射
-      const filenameToUrl = new Map();
+      // 构建URL集合用于验证
+      const allUrls = new Set();
+
+      entries.forEach(entry => {
+        const url = entry.querySelector('url');
+        if (url) {
+          allUrls.add(url.textContent.trim());
+        }
+      });
 
       entries.forEach(entry => {
         const title = entry.querySelector('title');
@@ -55,44 +92,41 @@ console.log('=== Knowledge Graph Feature ===');
             });
           }
 
-          // 从URL提取文件名
           const urlText = url.textContent.trim();
-          const filenameMatch = urlText.match(/\/([^/]+\.md)$/);
-          const filename = filenameMatch ? filenameMatch[1] : '';
 
-          // 从内容中提取双链引用
-          const linkedPosts = extractPostLinksFromContent(
-            content ? content.textContent : ''
-          );
+          // 从 HTML 内容中提取双链引用
+          const htmlContent = content ? content.textContent : '';
+          const linkedPosts = extractPostLinksFromHTML(htmlContent, urlText);
 
           const postData = {
             title: title.textContent.trim(),
             url: urlText,
-            filename: filename,
             tags: tags,
             linkedPosts: linkedPosts
           };
 
           posts.push(postData);
-          if (filename) {
-            filenameToUrl.set(filename.replace('.md', ''), urlText);
-          }
         }
       });
 
-      // 将文件名映射为URL
+      // 验证并过滤链接
       console.log('🔗 Resolving post links...');
       posts.forEach(post => {
         if (post.linkedPosts && post.linkedPosts.length > 0) {
-          post.linkedPosts = post.linkedPosts.map(filename => {
-            // 尝试从映射中查找URL
-            const targetUrl = filenameToUrl.get(filename);
-            if (targetUrl) {
-              return targetUrl;
+          // 过滤掉指向自己的链接和不存在的链接
+          post.linkedPosts = post.linkedPosts.filter(linkUrl => {
+            // 标准化 URL
+            const normalizedLink = linkUrl.replace(/\/$/, '');
+            const normalizedSelf = post.url.replace(/\/$/, '');
+
+            // 不指向自己
+            if (normalizedLink === normalizedSelf) {
+              return false;
             }
-            // 如果找不到，返回null（后续会过滤掉）
-            return null;
-          }).filter(url => url !== null);  // 过滤掉无效链接
+
+            // 链接存在
+            return allUrls.has(linkUrl) || allUrls.has(normalizedLink);
+          });
 
           if (post.linkedPosts.length > 0) {
             console.log(`  ✅ ${post.title}: ${post.linkedPosts.length} links`);
