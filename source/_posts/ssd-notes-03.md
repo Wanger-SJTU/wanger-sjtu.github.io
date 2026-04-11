@@ -1,7 +1,9 @@
 ---
 title: ssd_notes_03
 tags:
-  - ssd
+  - SSD
+  - 存储
+  - FTL
 category:
   - 转载
 date: 2024-09-22 21:27:58
@@ -110,3 +112,11 @@ flash 还有一个特性是 read disturb，常读一个 block 的资料会造成
 0. [coding for ssd part 3](http://codecapsule.com/2014/02/12/coding-for-ssds-part-3-pages-blocks-and-the-flash-translation-layer/)
 
 其他有编号参考资料请至原文观赏：[link](http://codecapsule.com/2014/02/12/coding-for-ssds-part-3-pages-blocks-and-the-flash-translation-layer/#ref)
+
+## 相关阅读
+
+- {% post_link ssd-notes-01 'SSD 笔记 - 第一篇：引言' %}
+- {% post_link ssd-notes-02 'SSD 笔记 - 第二篇：SSD 结构与性能评估概述' %}
+- {% post_link ssd-notes-04 'SSD 笔记 - 第四篇：高级功能与内部并行' %}
+- {% post_link ssd-notes-05 'SSD 笔记 - 第五篇：访问模式与系统优化' %}
+- {% post_link ssd-notes-06 'SSD 笔记 - 第六篇：ZFS 缓存' %}

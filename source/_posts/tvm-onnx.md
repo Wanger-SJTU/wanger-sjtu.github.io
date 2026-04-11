@@ -63,3 +63,10 @@ run();
 get_output(0, y);
 
 ```
+
+## 相关阅读
+
+- {% post_link VectorizeLoop 'TVM 源码阅读 PASS — VectorizeLoop' %}
+- {% post_link packfunc 'TVM PackedFunc 机制' %}
+- {% post_link tvm-onnx-to-relay 'TVM ONNX to Relay 转换' %}
+- {% post_link mlc-llm 'TVM - MLC LLM 调优方案' %}

@@ -1,7 +1,8 @@
 ---
 title: 端侧 LLM 的PD分离技术之稀疏性
 tags:
-  - llm
+  - LLM
+  - 模型优化
 category:
   - 技术
 date: 2024-09-09 22:16:19
@@ -16,4 +17,12 @@ date: 2024-09-09 22:16:19
 
 既然是查找过程，就存在选择，也就有了稀疏性。有了稀疏性指引，那很多工作就可以优化了。
 比如：Attention部分kvcache 走以查代算、DRAM到GPU HBM的动态加卸载等等
+
+## 相关阅读
+
+- {% post_link LLM_SD_Basic '了解 LLM —— LLM && SD 基本概念' %}
+- {% post_link LoRA '了解 LLM —— LoRA（参数高效微调方法）' %}
+- {% post_link TurboSparse 'Turbo Sparse：通过激活函数替换提升模型稀疏性' %}
+- {% post_link contextpilot-analysis 'ContextPilot：基于上下文复用的长上下文推理加速' %}
+- {% post_link mlc-llm 'TVM - MLC LLM 调优方案' %}
 

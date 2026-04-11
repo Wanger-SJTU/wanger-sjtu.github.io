@@ -1,7 +1,9 @@
 ---
 title: SSD笔记- 第一篇引言
 tags:
-  - ssd
+  - SSD
+  - 存储
+  - 文件系统
 category:
   - 转载
 date: 2024-09-22 21:15:14
@@ -36,3 +38,11 @@ zfs既有的档案系统阶层在效能上可能已经很优秀了，还送copy-
 zfs 也开始可以在linux 上面使用，Ubuntu 19.10 也有直接把zfs 装成roo FS 的选项。 如果是一般server、文书、游戏使用我会以后装个zfs 就好了。
 
 至于更高端的选择.. 可能是建cepf cluster，或是open-channel SSD 等特殊解法？
+
+## 相关阅读
+
+- {% post_link ssd-notes-02 'SSD 笔记 - 第二篇：SSD 结构与性能评估概述' %}
+- {% post_link ssd-notes-03 'SSD 笔记 - 第三篇：读写操作与 FTL' %}
+- {% post_link ssd-notes-04 'SSD 笔记 - 第四篇：高级功能与内部并行' %}
+- {% post_link ssd-notes-05 'SSD 笔记 - 第五篇：访问模式与系统优化' %}
+- {% post_link ssd-notes-06 'SSD 笔记 - 第六篇：ZFS 缓存' %}

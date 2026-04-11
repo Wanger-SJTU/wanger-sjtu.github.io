@@ -88,4 +88,10 @@ void** tls; /* thread-local storage area */
 char dlerror_buffer[__BIONIC_DLERROR_BUFFER_SIZE];
 
 } pthread_internal_t;
+
+## 相关阅读
+
+- {% post_link packfunc 'TVM PackedFunc 机制' %}
+- {% post_link VectorizeLoop 'TVM 源码阅读 PASS — VectorizeLoop' %}
+- {% post_link cpp-构造函数 'C++ 构造函数' %}
 ```

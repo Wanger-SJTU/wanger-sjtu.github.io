@@ -326,4 +326,11 @@ int TVMFuncRegisterGlobal(const char* name, TVMFunctionHandle f, int override) {
       .set_body(*static_cast<tvm::runtime::PackedFunc*>(f));
   API_END();
 }
+
+## 相关阅读
+
+- {% post_link VectorizeLoop 'TVM 源码阅读 PASS — VectorizeLoop' %}
+- {% post_link mlc-llm 'TVM - MLC LLM 调优方案' %}
+- {% post_link tvm-onnx 'TVM ONNX 模型加载' %}
+- {% post_link ndk-pid 'NDK std_thread 获取 pid' %}
 ```

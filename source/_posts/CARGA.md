@@ -1,7 +1,10 @@
 ---
 title: Nivdia向量数据库图检索最新标杆——CAGRA
 tags:
-  - ANNs
+  - ANN
+  - 向量检索
+  - GPU
+  - RAFT
 category:
   - 技术
 date: 2024-06-16 18:45:44
@@ -87,3 +90,9 @@ CAGRA算法的构建训练过程，先初始化一个knn graph，然后优化其
 1. https://github.dev/facebookresearch/faiss
 2. https://arxiv.org/pdf/2308.15136
 3. kimi_chat
+
+## 相关阅读
+
+- {% post_link ANN-algo '从向量数据库到 ANN search' %}
+- {% post_link RAG系统构建-技术文档中句子嵌入的挑战 'RAG 系统构建：技术文档中句子嵌入的挑战' %}
+- {% post_link encoder-cross-bi 'Bi-encoder vs Cross-encoder：何时使用哪个？' %}

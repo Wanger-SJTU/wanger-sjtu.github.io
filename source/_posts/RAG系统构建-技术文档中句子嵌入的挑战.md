@@ -28,6 +28,14 @@ date: 2024-06-02 22:09:52
   | H4 基于句子的相似度更好             | 基于句子和不同段落的相似度检索可以为生成器提供更详细的上下文 | ID F1 - Table 2 (8 of 10 queries)           |
   | H5 生成器对基于句子的相似度         | 使用基于句子的相似度和基于段落的检索生成的答案更好           | 8 of 10 queries (App. Table 3 - ID F1)      |
   | H6 包含缩写词的定义表现不佳         | 生成的答案常常只是展开或提供缩写词，这并不有用               | 15 of 16 queries (App. Table 3 - ID F2, F3) |
+
+## 相关阅读
+
+- {% post_link ANN-algo '从向量数据库到 ANN search' %}
+- {% post_link CARGA 'Nvidia 向量数据库图检索最新标杆——CAGRA' %}
+- {% post_link encoder-cross-bi 'Bi-encoder vs Cross-encoder：何时使用哪个？' %}
+- {% post_link LoRA '了解 LLM —— LoRA（参数高效微调方法）' %}
+- {% post_link contextpilot-analysis 'ContextPilot：基于上下文复用的长上下文推理加速' %}
   | H7 检索段落的顺序对生成器结果的影响 | 实验中我们没有观察到检索段落的顺序对生成器结果产生影响       | NA                                          |
 
   这个表格展示了作者们在实验中提出的七个假设以及通过实验得到的观察结果。每个假设后面都列出了支持该假设的样本查询数量和具体ID。例如，假设H1表明，如果将定义和定义词分开进行检索，可以提高查询的性能，这一点在30个查询中的22个得到了验证（具体查询ID为2和3）。

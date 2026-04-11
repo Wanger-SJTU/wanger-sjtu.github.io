@@ -27,6 +27,13 @@ Bi-encoder和Cross-encoder是在自然语言理解任务模型的两种不同方
 
 - Cross-encoder：当捕获**查询和文档之间的交互对于您的任务至关重要**时，请选择Cross-encoder。它们在**计算上更为密集**，但可以在理解查询和文档之间的上下文或关系至关重要的场景中提供更好的性能。
 
+## 相关阅读
+
+- {% post_link ANN-algo '从向量数据库到 ANN search' %}
+- {% post_link CARGA 'Nvidia 向量数据库图检索最新标杆——CAGRA' %}
+- {% post_link RAG系统构建-技术文档中句子嵌入的挑战 'RAG 系统构建：技术文档中句子嵌入的挑战' %}
+- {% post_link LLM_SD_Basic '了解 LLM —— LLM && SD 基本概念' %}
+
 
 
 ## 讨论

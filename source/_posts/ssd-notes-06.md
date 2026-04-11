@@ -1,7 +1,9 @@
 ---
 title: SSD笔记 - 第六篇 结论
 tags:
-  - ssd
+  - SSD
+  - 存储
+  - ZFS
 category:
   - 转载
 date: 2024-09-22 21:30:31
@@ -91,3 +93,11 @@ http://codecapsule.com/2014/02/12/coding-for-ssds-part-6-a-summary-what-every-pr
 
 #### zfs cache-l2arc
 http://www.brendangregg.com/blog/2008-07-22/zfs-l2arc.html
+
+## 相关阅读
+
+- {% post_link ssd-notes-01 'SSD 笔记 - 第一篇：引言' %}
+- {% post_link ssd-notes-02 'SSD 笔记 - 第二篇：SSD 结构与性能评估概述' %}
+- {% post_link ssd-notes-03 'SSD 笔记 - 第三篇：读写操作与 FTL' %}
+- {% post_link ssd-notes-04 'SSD 笔记 - 第四篇：高级功能与内部并行' %}
+- {% post_link ssd-notes-05 'SSD 笔记 - 第五篇：访问模式与系统优化' %}

@@ -99,3 +99,9 @@ TimeKeeper time_keeper{     {}};
 TimeKeeper time_keeper( /*Avoid MVP*/ (Timer())); // 增加一个括号
 TimeKeeper time_keeper = TimeKeeper(Timer());  // c++ 17 拷贝运算可以被优化
 ```
+
+## 相关阅读
+
+- {% post_link cpp-初始化列表 'C++ 初始化列表' %}
+- {% post_link cpp-构造函数 'C++ 构造函数' %}
+- {% post_link compile-time-map '一种编译期 Map 的实现' %}

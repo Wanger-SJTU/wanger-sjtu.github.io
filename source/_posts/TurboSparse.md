@@ -2,10 +2,12 @@
 title: Turbo Sparse
 tags:
   - LLM
+  - 模型优化
+  - 稀疏计算
 category:
   - paper
 date: 2024-08-10 23:04:02
-mathjax: true 
+mathjax: true
 ---
 
 ## 关于llama稀疏性的观察
@@ -55,3 +57,11 @@ $$
 ## Sparsity of Sparsifi ed Models
 
 ![alt text](/2024/08/10/TurboSparse/image.png)
+
+## 相关阅读
+
+- {% post_link LLM_SD_Basic '了解 LLM —— LLM && SD 基本概念' %}
+- {% post_link LoRA '了解 LLM —— LoRA（参数高效微调方法）' %}
+- {% post_link llm-sparse '端侧 LLM 的 PD 分离技术之稀疏性' %}
+- {% post_link contextpilot-analysis 'ContextPilot：基于上下文复用的长上下文推理加速' %}
+- {% post_link fast-dequant 'Nvidia 的快速反量化操作' %}

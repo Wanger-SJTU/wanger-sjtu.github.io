@@ -1,7 +1,8 @@
 ---
-title: c++构造函数
+title: C++构造函数
 tags:
-  - CPP
+  - C++
+  - 构造函数
 category:
   - 技术
 date: 2019-4-26 21:22:45
@@ -108,4 +109,10 @@ Test& Add(Test& a, Test& b)
 30      构造函数|res 是 临时对象的引用，因此不会拷贝构造
 30      析构函数|
 20      析构函数|
+
+## 相关阅读
+
+- {% post_link cpp-初始化列表 'C++ 初始化列表' %}
+- {% post_link compile-time-map '一种编译期 Map 的实现' %}
+- {% post_link most-vexing-parse 'Most Vexing Parse' %}
 10      析构函数|

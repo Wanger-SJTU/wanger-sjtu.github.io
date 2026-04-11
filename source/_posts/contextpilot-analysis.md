@@ -5,8 +5,10 @@ tags:
   - LLM
   - 推理优化
   - KV Cache
-  - 开源项目分析
+  - 长上下文
   - MLSys 2026
+category:
+  - 技术
 categories:
   - 技术分析
   - 论文解读

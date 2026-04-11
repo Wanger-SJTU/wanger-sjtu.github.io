@@ -1,11 +1,13 @@
 ---
 title: Nvidia 的快速反量化操作
 tags:
-  - llm
+  - LLM
+  - 量化
+  - 性能优化
 category:
   - 技术
 date: 2024-08-16 21:29:22
-mathjax: true 
+mathjax: true
 ---
 
 主要记录了论文Who Says Elephants Can't Run: Bringing Large Scale MoE Models into Cloud Scale Production中关于反量化的快速操作。
@@ -66,4 +68,11 @@ x = x - 1024
 code: https://github.com/Wanger-SJTU/recipes/tree/master/fast_dequant
 **参考链接：**
 1. https://zhuanlan.zhihu.com/p/657072856
+
+## 相关阅读
+
+- {% post_link fp16-err 'FP16 的累加误差有多大' %}
+- {% post_link TurboSparse 'Turbo Sparse：通过激活函数替换提升模型稀疏性' %}
+- {% post_link llm-sparse '端侧 LLM 的 PD 分离技术之稀疏性' %}
+- {% post_link cuda-mode-1 'CUDA Mode 入门教程' %}
 

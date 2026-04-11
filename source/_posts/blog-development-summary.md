@@ -266,3 +266,8 @@ tags:
 - ⚠️ 文件同步机制需要优化
 
 希望这篇总结对后来者有所帮助！
+
+## 相关阅读
+
+- {% post_link auto-deploy '利用 GitHub Actions 自动部署 Hexo 博客' %}
+- {% post_link 2026-03-10-theme-toggle-bug-fix '一次有趣的 Bug 排查：桌面端深色模式切换失效' %}

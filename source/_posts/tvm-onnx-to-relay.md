@@ -95,3 +95,10 @@ class Conv(OnnxOpConverter):
 ```python
 return get_relay_op(op_name)(*inputs, **new_attrs)
 ```
+
+## 相关阅读
+
+- {% post_link VectorizeLoop 'TVM 源码阅读 PASS — VectorizeLoop' %}
+- {% post_link packfunc 'TVM PackedFunc 机制' %}
+- {% post_link tvm-onnx 'TVM ONNX 模型加载' %}
+- {% post_link mlc-llm 'TVM - MLC LLM 调优方案' %}

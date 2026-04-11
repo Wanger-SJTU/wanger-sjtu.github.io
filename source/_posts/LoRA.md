@@ -57,3 +57,11 @@ $$
 - code [link](https://github.com/huggingface/peft/blob/main/src/peft/tuners/lora.py)
 
 [梯度视角下的lora](https://spaces.ac.cn/archives/9590)
+
+## 相关阅读
+
+- {% post_link LLM_SD_Basic '了解 LLM —— LLM && SD 基本概念' %}
+- {% post_link llm-sparse '端侧 LLM 的 PD 分离技术之稀疏性' %}
+- {% post_link TurboSparse 'Turbo Sparse：通过激活函数替换提升模型稀疏性' %}
+- {% post_link contextpilot-analysis 'ContextPilot：基于上下文复用的长上下文推理加速' %}
+- {% post_link RAG系统构建-技术文档中句子嵌入的挑战 'RAG 系统构建：技术文档中句子嵌入的挑战' %}

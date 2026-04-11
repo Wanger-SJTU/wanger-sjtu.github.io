@@ -78,4 +78,10 @@ print(torch.dot(lhs, rhs))
 tensor([0.0942], dtype=torch.float16)
 tensor(0.1041, dtype=torch.float16)
 ```
+
+## 相关阅读
+
+- {% post_link fast-dequant 'Nvidia 的快速反量化操作' %}
+- {% post_link TurboSparse 'Turbo Sparse：通过激活函数替换提升模型稀疏性' %}
+- {% post_link llm-sparse '端侧 LLM 的 PD 分离技术之稀疏性' %}
 结果对得上了。torch 的 dot实现的时候很可能用了更高数值类型做累加。

@@ -193,3 +193,8 @@ grep -r "theme-toggle" themes/custom/source/js/
 **核心教训**：当某端正常而另一端异常时，优先检查是否有重复的事件监听器或不同的实现逻辑。
 
 希望这篇文章对你有所帮助！如果你也遇到过类似的问题，欢迎分享你的经验。
+
+## 相关阅读
+
+- {% post_link blog-development-summary '个人博客开发总结 - 从零到上线' %}
+- {% post_link auto-deploy '利用 GitHub Actions 自动部署 Hexo 博客' %}

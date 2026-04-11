@@ -72,3 +72,12 @@ https://github.com/mlc-ai/mlc-llm
 
 ### Tuning
 在MLC-LLM的代码仓里面已经提供了tuning的脚本，有一点需要先做一下，先调用build.py的文件，把静态shape的相关的函数分离出来。就得到了tuning文件中需要的`mod_tir_static.py`
+
+## 相关阅读
+
+- {% post_link VectorizeLoop 'TVM 源码阅读 PASS — VectorizeLoop' %}
+- {% post_link packfunc 'TVM PackedFunc 机制' %}
+- {% post_link tvm-onnx 'TVM ONNX 模型加载' %}
+- {% post_link tvm-onnx-to-relay 'TVM ONNX to Relay 转换' %}
+- {% post_link LLM_SD_Basic '了解 LLM —— LLM && SD 基本概念' %}
+- {% post_link contextpilot-analysis 'ContextPilot：基于上下文复用的长上下文推理加速' %}

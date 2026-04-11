@@ -1,7 +1,9 @@
 ---
 title: SSD笔记-第二篇SSD结构与性能评估概述
 tags:
-  - ssd
+  - SSD
+  - 存储
+  - 性能评估
 category:
   - 转载
 date: 2024-09-22 21:18:46
@@ -92,3 +94,11 @@ https://www.micron.com/about/blog/2016/february/the-myth-of-hdd-endurance
 
 ## 快闪记忆体的路线之争
 https://www.digitimes.com.tw/col/article.asp?id=717
+
+## 相关阅读
+
+- {% post_link ssd-notes-01 'SSD 笔记 - 第一篇：引言' %}
+- {% post_link ssd-notes-03 'SSD 笔记 - 第三篇：读写操作与 FTL' %}
+- {% post_link ssd-notes-04 'SSD 笔记 - 第四篇：高级功能与内部并行' %}
+- {% post_link ssd-notes-05 'SSD 笔记 - 第五篇：访问模式与系统优化' %}
+- {% post_link ssd-notes-06 'SSD 笔记 - 第六篇：ZFS 缓存' %}

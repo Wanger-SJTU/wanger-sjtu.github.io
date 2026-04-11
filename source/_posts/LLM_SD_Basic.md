@@ -47,3 +47,11 @@ $$
 $$
 x^(i+1) = frelu(x^i_{out} ·w_1)·w_2+x^i_{out}
 $$
+
+## 相关阅读
+
+- {% post_link LoRA '了解LLM —— LoRA（参数高效微调方法）' %}
+- {% post_link llm-sparse '端侧 LLM 的 PD 分离技术之稀疏性' %}
+- {% post_link TurboSparse 'Turbo Sparse：通过激活函数替换提升模型稀疏性' %}
+- {% post_link contextpilot-analysis 'ContextPilot：基于上下文复用的长上下文推理加速' %}
+- {% post_link mlc-llm 'TVM - MLC LLM 调优方案' %}
