@@ -116,19 +116,27 @@ img {
   left: 0;
   right: 0;
   z-index: 50;
-  background: var(--color-bg);
+  background: #ffffff;
   border-bottom: 1px solid var(--color-border);
   transition: all 0.3s ease;
 }
 
 .site-header.scrolled {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
+[data-theme="dark"] .site-header {
+  background: #ffffff;
+}
+
+[data-theme="dark"] .site-header * {
+  color: #1a1a1a !important;
+}
+
 [data-theme="dark"] .site-header.scrolled {
-  background: rgba(10, 10, 10, 0.9);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .header-container {
