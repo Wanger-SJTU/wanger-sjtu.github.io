@@ -663,8 +663,8 @@ console.log('=== Knowledge Graph Feature ===');
     legend.setAttribute('data-graph-legend', 'true');
     legend.style.cssText = `
       position: absolute;
-      bottom: 10px;
-      left: 10px;
+      top: 10px;
+      right: 10px;
       padding: 10px 14px;
       background: ${isDarkMode ? '#1e1e1e' : '#fff'};
       border: 1px solid ${isDarkMode ? '#333' : '#e0e0e0'};
@@ -673,6 +673,7 @@ console.log('=== Knowledge Graph Feature ===');
       color: ${isDarkMode ? '#b0b0b0' : '#666'};
       z-index: 10;
       line-height: 1.6;
+      max-width: 200px;
     `;
     legend.innerHTML = `
       <div style="margin-bottom: 4px; font-weight: 600;">📊 图谱说明</div>
