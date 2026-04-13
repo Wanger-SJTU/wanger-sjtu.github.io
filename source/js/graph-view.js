@@ -112,7 +112,7 @@
         line.setAttribute('x2', target.x);
         line.setAttribute('y2', target.y);
         line.setAttribute('stroke', 'var(--color-border)');
-        line.setAttribute('stroke-width', Math.max(1, link.value * 0.5));
+        line.setAttribute('stroke-width', Math.max(0.5, link.value * 0.25));
         line.setAttribute('opacity', '0.3');
         linksGroup.appendChild(line);
       }
