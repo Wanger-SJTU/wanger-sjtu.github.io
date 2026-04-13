@@ -58,9 +58,61 @@
         links.push({
           source: post.url,
           target: tagId,
+          type: 'tag',
           value: 1
         });
       });
+    });
+
+    // 创建URL映射用于wiki链接查找
+    const urlToPost = new Map();
+    posts.forEach(post => {
+      urlToPost.set(post.url, post);
+      // 也支持不带末尾斜杠的URL
+      const urlWithoutSlash = post.url.replace(/\/$/, '');
+      urlToPost.set(urlWithoutSlash, post);
+    });
+
+    // 添加文章之间的wiki链接连接
+    posts.forEach(post => {
+      if (!post.content) return;
+
+      // 解析文章内容中的wiki链接 [[链接]]
+      const wikiLinkRegex = /\[\[([^\]]+)\]\]/g;
+      let match;
+
+      while ((match = wikiLinkRegex.exec(post.content)) !== null) {
+        const linkText = match[1];
+
+        // 尝试找到对应的文章
+        // 方法1: 直接URL匹配
+        let targetPost = urlToPost.get(linkText);
+        // 方法2: 标题匹配
+        if (!targetPost) {
+          targetPost = posts.find(p => p.title === linkText);
+        }
+        // 方法3: URL部分匹配
+        if (!targetPost) {
+          targetPost = posts.find(p => p.url.includes(linkText));
+        }
+
+        if (targetPost && targetPost.url !== post.url) {
+          // 检查是否已经存在连接
+          const linkExists = links.some(l =>
+            (l.source === post.url && l.target === targetPost.url && l.type === 'wiki') ||
+            (l.source === targetPost.url && l.target === post.url && l.type === 'wiki')
+          );
+
+          if (!linkExists) {
+            links.push({
+              source: post.url,
+              target: targetPost.url,
+              type: 'wiki',
+              value: 1
+            });
+          }
+        }
+      }
     });
 
     return {
@@ -122,9 +174,23 @@
         line.setAttribute('y1', source.y);
         line.setAttribute('x2', target.x);
         line.setAttribute('y2', target.y);
-        line.setAttribute('stroke', 'var(--color-border)');
-        line.setAttribute('stroke-width', '1');
-        line.setAttribute('opacity', '0.3');
+
+        // 根据连接类型设置不同的样式
+        if (link.type === 'wiki') {
+          // wiki链接使用更明显的样式
+          line.setAttribute('stroke', 'var(--color-accent)');
+          line.setAttribute('stroke-width', '2');
+          line.setAttribute('opacity', '0.6');
+          line.setAttribute('stroke-dasharray', '5,5'); // 虚线
+          line.dataset.linkType = 'wiki'; // 存储类型用于恢复
+        } else {
+          // 标签连接使用普通样式
+          line.setAttribute('stroke', 'var(--color-border)');
+          line.setAttribute('stroke-width', '1');
+          line.setAttribute('opacity', '0.3');
+          line.dataset.linkType = 'tag'; // 存储类型用于恢复
+        }
+
         linksGroup.appendChild(line);
       }
     });
@@ -211,8 +277,16 @@
 
         // 恢复所有连接
         linksGroup.querySelectorAll('line').forEach(line => {
-          line.setAttribute('stroke', 'var(--color-border)');
-          line.setAttribute('opacity', '0.3');
+          const linkType = line.dataset.linkType || 'tag';
+          if (linkType === 'wiki') {
+            line.setAttribute('stroke', 'var(--color-accent)');
+            line.setAttribute('stroke-width', '2');
+            line.setAttribute('opacity', '0.6');
+          } else {
+            line.setAttribute('stroke', 'var(--color-border)');
+            line.setAttribute('stroke-width', '1');
+            line.setAttribute('opacity', '0.3');
+          }
         });
       });
 
@@ -244,6 +318,7 @@
       <div>🟣 其他文章</div>
       <div>⚫ 标签</div>
       <div>━━ 文章-标签关联</div>
+      <div>┄┄ Wiki双链</div>
     `;
     container.appendChild(legend);
   }
@@ -482,8 +557,9 @@
           const url = entry.querySelector('url').textContent;
           const tagsEl = entry.querySelector('tags');
           const tags = tagsEl ? tagsEl.textContent.split(',').filter(t => t) : [];
+          const content = entry.querySelector('content')?.textContent || '';
 
-          posts.push({ url, title, tags });
+          posts.push({ url, title, tags, content });
         });
 
         return posts;
