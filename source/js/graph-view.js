@@ -139,14 +139,14 @@
       circle.setAttribute('stroke-width', '2');
       g.appendChild(circle);
 
-      // 节点标签（只显示当前节点或鼠标悬停）
+      // 节点标签（始终显示）
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', pos.x);
       text.setAttribute('y', pos.y + pos.radius + 15);
       text.setAttribute('text-anchor', 'middle');
       text.setAttribute('fill', 'var(--color-text)');
       text.setAttribute('font-size', '11');
-      text.style.opacity = pos.isCurrent ? '1' : '0';
+      text.style.opacity = '1';
       text.style.pointerEvents = 'none';
       text.textContent = node.label.length > 15 ?
         node.label.substring(0, 15) + '...' : node.label;
@@ -179,7 +179,6 @@
           circle.setAttribute('fill', `hsl(${Math.random() * 360}, 70%, 60%)`);
         }
         circle.setAttribute('r', pos.radius);
-        text.style.opacity = pos.isCurrent ? '1' : '0';
 
         // 恢复所有连接
         linksGroup.querySelectorAll('line').forEach(line => {
