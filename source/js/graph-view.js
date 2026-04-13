@@ -28,33 +28,40 @@
     const nodes = new Map();
     const links = [];
 
-    // 添加所有节点
+    // 添加文章节点
     posts.forEach(post => {
       nodes.set(post.url, {
         id: post.url,
         label: post.title,
+        type: 'post',
         tags: post.tags,
         size: post.tags.length + 1
       });
     });
 
-    // 基于共同标签建立连接
-    for (let i = 0; i < posts.length; i++) {
-      for (let j = i + 1; j < posts.length; j++) {
-        const commonTags = posts[i].tags.filter(tag =>
-          posts[j].tags.includes(tag)
-        );
+    // 添加标签节点并建立连接
+    posts.forEach(post => {
+      post.tags.forEach(tag => {
+        const tagId = 'tag-' + tag;
 
-        if (commonTags.length > 0) {
-          links.push({
-            source: posts[i].url,
-            target: posts[j].url,
-            value: commonTags.length,
-            tags: commonTags
+        // 如果标签节点不存在，添加它
+        if (!nodes.has(tagId)) {
+          nodes.set(tagId, {
+            id: tagId,
+            label: '#' + tag,
+            type: 'tag',
+            size: 1
           });
         }
-      }
-    }
+
+        // 建立文章和标签的连接
+        links.push({
+          source: post.url,
+          target: tagId,
+          value: 1
+        });
+      });
+    });
 
     return {
       nodes: Array.from(nodes.values()),
@@ -87,13 +94,17 @@
     data.nodes.forEach((node, i) => {
       const angle = (i / data.nodes.length) * 2 * Math.PI - Math.PI / 2;
       const isCurrent = node.id === currentNode;
-      const nodeRadius = isCurrent ? 20 : 12 + node.size * 2;
+      const isTag = node.type === 'tag';
+
+      // 标签节点更小，文章节点根据标签数量调整大小
+      const nodeRadius = isCurrent ? 20 : (isTag ? 8 : 12 + node.size * 2);
 
       nodePositions.set(node.id, {
         x: centerX + Math.cos(angle) * radius * (isCurrent ? 0.3 : 1),
         y: centerY + Math.sin(angle) * radius * (isCurrent ? 0.3 : 1),
         radius: nodeRadius,
-        isCurrent: isCurrent
+        isCurrent: isCurrent,
+        isTag: isTag
       });
     });
 
@@ -112,7 +123,7 @@
         line.setAttribute('x2', target.x);
         line.setAttribute('y2', target.y);
         line.setAttribute('stroke', 'var(--color-border)');
-        line.setAttribute('stroke-width', Math.max(0.5, link.value * 0.25));
+        line.setAttribute('stroke-width', '1');
         line.setAttribute('opacity', '0.3');
         linksGroup.appendChild(line);
       }
@@ -132,10 +143,18 @@
       circle.setAttribute('cx', pos.x);
       circle.setAttribute('cy', pos.y);
       circle.setAttribute('r', pos.radius);
-      circle.setAttribute('fill', pos.isCurrent ? 'var(--color-accent)' :
-        `hsl(${Math.random() * 360}, 70%, 60%)`);
-      circle.setAttribute('opacity', pos.isCurrent ? '1' : '0.8');
-      circle.setAttribute('stroke', pos.isCurrent ? 'var(--color-accent)' : 'white');
+
+      // 根据节点类型设置颜色
+      if (pos.isTag) {
+        circle.setAttribute('fill', 'var(--color-text-secondary)');
+        circle.setAttribute('opacity', '0.6');
+        circle.setAttribute('stroke', 'var(--color-text-secondary)');
+      } else {
+        circle.setAttribute('fill', pos.isCurrent ? 'var(--color-accent)' :
+          `hsl(${Math.random() * 360}, 70%, 60%)`);
+        circle.setAttribute('opacity', pos.isCurrent ? '1' : '0.8');
+        circle.setAttribute('stroke', pos.isCurrent ? 'var(--color-accent)' : 'white');
+      }
       circle.setAttribute('stroke-width', '2');
       g.appendChild(circle);
 
@@ -144,12 +163,18 @@
       text.setAttribute('x', pos.x);
       text.setAttribute('y', pos.y + pos.radius + 15);
       text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('fill', 'var(--color-text)');
-      text.setAttribute('font-size', '11');
+      text.setAttribute('fill', pos.isTag ? 'var(--color-text-secondary)' : 'var(--color-text)');
+      text.setAttribute('font-size', pos.isTag ? '10' : '11');
       text.style.opacity = '1';
       text.style.pointerEvents = 'none';
-      text.textContent = node.label.length > 15 ?
-        node.label.substring(0, 15) + '...' : node.label;
+
+      // 标签节点显示完整标签名，文章节点截断
+      if (pos.isTag) {
+        text.textContent = node.label;
+      } else {
+        text.textContent = node.label.length > 15 ?
+          node.label.substring(0, 15) + '...' : node.label;
+      }
       g.appendChild(text);
 
       // 鼠标事件
@@ -176,7 +201,11 @@
 
       g.addEventListener('mouseleave', () => {
         if (!pos.isCurrent) {
-          circle.setAttribute('fill', `hsl(${Math.random() * 360}, 70%, 60%)`);
+          if (pos.isTag) {
+            circle.setAttribute('fill', 'var(--color-text-secondary)');
+          } else {
+            circle.setAttribute('fill', `hsl(${Math.random() * 360}, 70%, 60%)`);
+          }
         }
         circle.setAttribute('r', pos.radius);
 
@@ -187,9 +216,9 @@
         });
       });
 
-      // 点击跳转
+      // 点击跳转（仅文章节点可点击）
       g.addEventListener('click', () => {
-        if (node.id !== currentNode) {
+        if (!pos.isTag && node.id !== currentNode) {
           window.location.href = node.id;
         }
       });
@@ -212,8 +241,9 @@
     legend.innerHTML = `
       <div style="margin-bottom: 5px; font-weight: 600;">图谱说明</div>
       <div>🔵 当前文章</div>
-      <div>⚪ 相关文章</div>
-      <div>━━ 共同标签数量</div>
+      <div>🟣 其他文章</div>
+      <div>⚫ 标签</div>
+      <div>━━ 文章-标签关联</div>
     `;
     container.appendChild(legend);
   }
@@ -289,6 +319,9 @@
     content.appendChild(header);
 
     // 统计信息
+    const tagCount = graphData.nodes.filter(n => n.type === 'tag').length;
+    const postCount = graphData.nodes.filter(n => n.type === 'post').length;
+
     const stats = document.createElement('div');
     stats.style.cssText = `
       display: flex;
@@ -297,9 +330,9 @@
       font-size: 14px;
     `;
     stats.innerHTML = `
-      <div>📊 <strong>${posts.length}</strong> 篇文章</div>
+      <div>📊 <strong>${postCount}</strong> 篇文章</div>
+      <div>🏷️ <strong>${tagCount}</strong> 个标签</div>
       <div>🔗 <strong>${graphData.links.length}</strong> 个关联</div>
-      <div>🏷️ 基于共同标签</div>
     `;
     content.appendChild(stats);
 
@@ -332,16 +365,30 @@
       overflow-y: auto;
     `;
 
-    // 找出与当前文章相关的文章
-    const relatedPosts = graphData.links
-      .filter(link => link.source === currentNode || link.target === currentNode)
-      .map(link => {
-        const relatedUrl = link.source === currentNode ? link.target : link.source;
-        const relatedNode = graphData.nodes.find(n => n.id === relatedUrl);
-        return { ...relatedNode, commonTags: link.tags };
-      })
-      .sort((a, b) => b.commonTags.length - a.commonTags.length)
-      .slice(0, 10);
+    // 找出与当前文章相关的文章（通过共同标签）
+    const currentPost = graphData.nodes.find(n => n.id === currentNode);
+    const relatedPosts = [];
+
+    if (currentPost && currentPost.tags) {
+      // 找到所有包含当前文章标签的其他文章
+      graphData.nodes
+        .filter(node => node.type === 'post' && node.id !== currentNode)
+        .forEach(node => {
+          const commonTags = currentPost.tags.filter(tag =>
+            node.tags && node.tags.includes(tag)
+          );
+
+          if (commonTags.length > 0) {
+            relatedPosts.push({
+              ...node,
+              commonTags: commonTags
+            });
+          }
+        });
+
+      // 按共同标签数量排序
+      relatedPosts.sort((a, b) => b.commonTags.length - a.commonTags.length);
+    }
 
     if (relatedPosts.length > 0) {
       relatedPosts.forEach(post => {
