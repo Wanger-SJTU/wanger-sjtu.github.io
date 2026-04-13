@@ -124,13 +124,6 @@
       }
     });
 
-    // Track mouse position for zoom origin
-    modalContent.addEventListener('mousemove', function(e) {
-      if (modal.classList.contains('active')) {
-        updateZoomOrigin(e.clientX, e.clientY);
-      }
-    });
-
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
       if (!modal.classList.contains('active')) return;
