@@ -11,8 +11,11 @@
         <% } %>
         <% } %>
       </nav>
-      
+
       <div class="header-actions">
+        <a href="https://github.com/Wanger-SJTU" class="header-action-btn" aria-label="GitHub" target="_blank" rel="noopener">
+          🐙
+        </a>
         <% if (theme.search !== false) { %>
         <button class="header-action-btn search-toggle" id="search-toggle" aria-label="搜索">🔍</button>
         <% } %>
@@ -23,7 +26,7 @@
         </button>
         <% } %>
       </div>
-      
+
       <button class="hamburger" id="hamburger" aria-label="菜单">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -31,7 +34,7 @@
       </button>
     </div>
   </header>
-  
+
   <div class="mobile-menu" id="mobile-menu">
     <nav class="mobile-nav">
       <% for (var name in theme.menu) { %>
@@ -50,9 +53,9 @@
       <% } %>
     </div>
   </div>
-  
+
   <div class="mobile-overlay" id="mobile-overlay"></div>
-  
+
   <%- partial('_partial/search-modal') %>
-  
+
   <script src="<%= url_for('js/navbar.js') %>"></script>
