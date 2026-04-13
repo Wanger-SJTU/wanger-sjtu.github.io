@@ -1,16 +1,47 @@
 ---
-title: EXO 分布式AI推理系统 - 4+1架构视图
-date: 2026-04-13 17:28:42
-tags: 
-- exo
-- 分布式计算
-- TP
+title: "EXO 分布式AI推理系统 - 4+1架构视图"
+date: 2026-04-13 14:30:00 +0800
+tags: [分布式系统, AI推理, 架构设计, 4+1视图, EXO, libp2p, MLX]
+categories: [系统架构]
+toc: true
+mermaid: true
 ---
 
+本文档使用 Philippe Kruchten 的 **4+1 视图模型**描述 EXO 分布式 AI 推理系统的软件架构。该系统是一个点对点的分布式推理集群，将多个设备连接起来运行大型语言模型（LLM）。
 
 ## 文档概述
 
-本文档使用 Philippe Kruchten 的 4+1 视图模型描述 EXO 分布式 AI 推理系统的软件架构。该系统是一个点对点的分布式推理集群，将多个设备连接起来运行大型语言模型（LLM）。
+本文档使用 Philippe Kruchten 的 **4+1 视图模型**描述 EXO 分布式 AI 推理系统的软件架构。该系统是一个点对点的分布式推理集群，将多个设备连接起来运行大型语言模型（LLM）。
+
+### 4+1 视图模型概览
+
+```mermaid
+graph TB
+    UC[("+1 用例视图<br/>Use Case View<br/>场景驱动")]
+    LOGICAL["逻辑视图<br/>Logical View<br/>功能需求"]
+    PROCESS["进程视图<br/>Process View<br/>运行时行为"]
+    IMPLEMENTATION["实现视图<br/>Implementation View<br/>开发组织"]
+    DEPLOYMENT["部署视图<br/>Deployment View<br/>物理拓扑"]
+
+    UC -.->|"驱动"| LOGICAL
+    UC -.->|"验证"| PROCESS
+    UC -.->|"验证"| IMPLEMENTATION
+    UC -.->|"验证"| DEPLOYMENT
+
+    style UC fill:#ffe1e1
+    style LOGICAL fill:#e1f5ff
+    style PROCESS fill:#fff4e1
+    style IMPLEMENTATION fill:#e1ffe1
+    style DEPLOYMENT fill:#f5e1ff
+```
+
+| 视图 | 关注点 | 主要读者 | 描述内容 |
+|------|--------|----------|----------|
+| **逻辑视图** | 功能需求 | 架构师、开发者 | 类、对象、接口、职责划分 |
+| **进程视图** | 运行时行为 | 架构师、集成工程师 | 进程、线程、同步、通信 |
+| **实现视图** | 开发组织 | 开发者、项目经理 | 文件结构、依赖关系、构建系统 |
+| **部署视图** | 物理拓扑 | 运维工程师、部署工程师 | 硬件配置、网络拓扑、部署方案 |
+| **用例视图** | 场景驱动 | 所有利益相关者 | 用户场景、用例、验收标准 |
 
 ### 核心技术栈
 - **推理后端**: MLX (Apple Silicon), 支持张量并行和流水线并行
@@ -22,256 +53,219 @@ tags:
 
 ---
 
-## 1. 逻辑视图 (Logical View)
+## +1. 用例视图 (Use Case View)
 
-逻辑视图描述系统的功能需求分解为类、接口和对象。本视图关注核心组件及其职责。
+用例视图是整个架构的**驱动视图**，描述系统如何被各种参与者使用。每个用例都会在其他四个视图中得到验证。
 
-### 1.1 核心架构模式
-
-**事件溯源架构 (Event Sourcing Architecture)**
-
-系统采用事件溯源模式进行状态管理：
-- **事件 (Events)**: 所有状态变更以不可变事件形式记录
-- **命令 (Commands)**: 触发状态变更的意图
-- **状态 (State)**: 通过事件重放得到的当前状态快照
+### 1.1 主要参与者 (Actors)
 
 ```mermaid
 graph LR
-    subgraph ES["Event Sourcing Architecture"]
-        CMD["Commands<br/>命令"]
-        EVT["Events<br/>事件"]
-        STATE["State<br/>状态"]
-        LOG["Event Log<br/>事件日志"]
-    end
+    USER["终端用户<br/>End User"]
+    DEV["开发者<br/>Developer"]
+    OPS["运维工程师<br/>Ops Engineer"]
+    SYSTEM["EXO 集群<br/>EXO Cluster"]
 
-    CMD -->|"generates"| EVT
-    EVT -->|"appends to"| LOG
-    EVT -->|"updates"| STATE
-    STATE -->|"replay from"| LOG
+    USER -->|"发送推理请求"| SYSTEM
+    USER -->|"管理模型"| SYSTEM
+    DEV -->|"集成 API"| SYSTEM
+    OPS -->|"监控部署"| SYSTEM
 
-    style ES fill:#f9f9f9
-    style EVT fill:#ffe1e1
-    style STATE fill:#e1f5ff
-    style LOG fill:#fff4e1
+    style USER fill:#e1f5ff
+    style DEV fill:#fff4e1
+    style OPS fill:#ffe1e1
+    style SYSTEM fill:#e1ffe1
 ```
 
-### 1.2 主要组件层次
+### 1.2 核心用例
+
+#### 用例 1: 文本生成（聊天补全）
+
+**主要参与者**: 终端用户  
+**前置条件**: 模型已加载，集群正常运行  
+**主成功场景**:
+
+```mermaid
+sequenceDiagram
+    actor User as 用户
+    participant API as API层
+    participant Master as Master
+    participant Worker as Worker
+    participant Runner as MLX Runner
+
+    User->>API: POST /v1/chat/completions
+    API->>API: 适配器转换请求
+    API->>Master: TextGeneration 命令
+    Master->>Master: 查找匹配的 Instance
+    Master->>Worker: TaskCreated 事件
+    Worker->>Worker: 规划任务执行
+    Worker->>Runner: 启动推理子进程
+    Runner->>Runner: MLX 模型推理
+    
+    loop 每个 Token
+        Runner->>Worker: Token 生成
+        Worker->>Master: ChunkGenerated 事件
+        Master->>API: ChunkGenerated 事件
+        API->>User: SSE: TokenChunk
+    end
+    
+    Runner->>Worker: 推理完成
+    Worker->>Master: ChunkGenerated (finish)
+    API->>Master: TaskFinished 命令
+    API->>User: data: [DONE]
+```
+
+**扩展场景**:
+- **多模态输入**: 用户发送图像，分块传输
+- **工具调用**: LLM 返回 function_call
+- **取消请求**: 用户断开连接
+
+**验证标准**:
+- 逻辑视图: API 适配器正确转换请求格式
+- 进程视图: 流式响应延迟 < 100ms
+- 实现视图: 适配器代码模块化
+- 部署视图: 单节点可处理并发请求
+
+#### 用例 2: 分布式模型推理
+
+**主要参与者**: 终端用户、集群系统  
+**前置条件**: 多个节点在线，模型支持分片  
+**主成功场景**:
+
+```mermaid
+flowchart TD
+    START([用户请求])
+    PLACE[Master 放置实例]
+    SHARD[模型分片分配]
+    DOWNLOAD[各节点下载分片]
+    RUNNER[启动 Runner 进程]
+    COORDINATE[Runner 间协调]
+    INFERENCE[分布式推理]
+    COLLECT[收集结果]
+    RESP[返回响应]
+
+    START --> PLACE
+    PLACE --> SHARD
+    SHARD --> DOWNLOAD
+    DOWNLOAD --> RUNNER
+    RUNNER --> COORDINATE
+    COORDINATE --> INFERENCE
+    INFERENCE --> COLLECT
+    COLLECT --> RESP
+    RESP --> END([完成])
+
+    style START fill:#e1ffe1
+    style END fill:#e1ffe1
+    style INFERENCE fill:#ffe1e1
+```
+
+**场景说明**:
+- **流水线并行**: 模型层分布在多个节点
+- **张量并行**: 同层分片到多个节点
+- **RDMA 加速**: Thunderbolt 高速互连
+
+**验证标准**:
+- 逻辑视图: ShardAssignments 正确计算
+- 进程视图: 节点间通信延迟可控
+- 实现视图: 放置算法可扩展
+- 部署视图: 网络带宽满足要求
+
+#### 用例 3: 集群自愈
+
+**主要参与者**: 集群系统  
+**前置条件**: 节点故障或网络分区  
+**主成功场景**:
+
+```mermaid
+stateDiagram-v2
+    Healthy --> Detecting: 节点超时
+    Detecting --> Electing: 触发选举
+    Electing --> Reelecting: 当前 Master 故障
+    Reelecting --> Healthy: 新 Master 就绪
+    Electing --> Healthy: Master 存活
+
+    note right of Detecting
+        节点 30s 无心跳
+    end note
+
+    note right of Electing
+        Bully 算法选举
+        最高 ID 节点当选
+    end note
+```
+
+**验证标准**:
+- 逻辑视图: Election 消息类型完整
+- 进程视图: 选举收敛时间 < 10s
+- 实现视图: 选举逻辑无死锁
+- 部署视图: 网络分区后可恢复
+
+#### 用例 4: 模型下载与管理
+
+**主要参与者**: 终端用户  
+**前置条件**: 磁盘空间充足  
+**主成功场景**:
+
+```mermaid
+sequenceDiagram
+    participant User as 用户
+    participant API as API
+    participant Master as Master
+    participant DC as DownloadCoordinator
+    participant HF as HuggingFace
+
+    User->>API: POST /download/start
+    API->>Master: StartDownload 命令
+    Master->>DC: 转发下载命令
+    DC->>HF: 下载模型分片
+    
+    loop 进度更新
+        DC->>Master: NodeDownloadProgress 事件
+        Master->>API: 广播进度
+        API->>User: WebSocket 进度
+    end
+    
+    DC->>Master: DownloadCompleted 事件
+    Master->>User: 下载完成通知
+```
+
+**验证标准**:
+- 逻辑视图: 模型卡片格式正确
+- 进程视图: 支持断点续传
+- 实现视图: 下载器模块独立
+- 部署视图: 支持只读模型目录
+
+---
+
+## 1. 逻辑视图 (Logical View)
+
+逻辑视图描述系统的功能结构，关注**类、对象、接口及其职责**。这是最经典的面向对象设计视图。
+
+### 1.1 核心架构模式
+
+**事件溯源 + CQRS**:
 
 ```mermaid
 graph TB
-    subgraph Infrastructure["Infrastructure Layer 基础设施层"]
-        LIBP2P["libp2p (Rust)"]
-        EVENTROUTER["Event Router<br/>事件路由器"]
-        MODELCARD["Model Card Manager"]
+    subgraph CQRS["CQRS 模式"]
+        CMD["命令侧<br/>Commands"]
+        QUERY["查询侧<br/>Queries"]
     end
-
-    subgraph Execution["Execution Layer 执行层"]
-        WORKER["Worker<br/>工作器"]
-        DOWNLOAD["Download Coordinator"]
-        RUNNER["Runner Supervisor"]
-        MLX["MLX Inference Process<br/>独立子进程"]
-    end
-
-    subgraph Coordination["Coordination Layer 协调层"]
-        MASTER["Master<br/>协调器"]
-        ELECTION["Election<br/>选举器"]
-        ROUTER["Router<br/>路由器"]
-    end
-
-    subgraph API["API Layer API层"]
-        OPENAI["OpenAI Adapter"]
-        CLAUDE["Claude Adapter"]
-        OLLAMA["Ollama Adapter"]
-        FASTAPI["FastAPI Server"]
-    end
-
-    OPENAI --> FASTAPI
-    CLAUDE --> FASTAPI
-    OLLAMA --> FASTAPI
-    FASTAPI --> MASTER
-    FASTAPI --> ROUTER
-
-    MASTER --> WORKER
-    MASTER --> ELECTION
-    ELECTION --> ROUTER
-    ROUTER --> LIBP2P
-
-    WORKER --> RUNNER
-    WORKER --> DOWNLOAD
-    RUNNER --> MLX
-
-    LIBP2P --> EVENTROUTER
-    EVENTROUTER --> MODELCARD
-
-    style Infrastructure fill:#e1f5ff
-    style Execution fill:#fff4e1
-    style Coordination fill:#ffe1f5
-    style API fill:#e1ffe1
-```
-
-### 1.3 核心类定义
-
-#### 1.3.1 Node 类 (src/exo/main.py)
-**职责**: 单个 EXO 节点的容器，管理所有子组件的生命周期
-
-```python
-@dataclass
-class Node:
-    router: Router                    # libp2p 网络路由
-    event_router: EventRouter         # 事件路由和转发
-    download_coordinator: DownloadCoordinator | None  # 模型下载协调
-    worker: Worker | None             # 推理工作器
-    election: Election                # 主节点选举
-    master: Master | None             # 集群主控器
-    api: API | None                   # HTTP API 服务器
-```
-
-#### 1.3.2 Master 类 (src/exo/master/main.py)
-**职责**: 集群状态协调器，负责事件溯源和实例放置
-
-**关键方法**:
-- `_command_processor()`: 处理命令并生成事件
-- `_event_processor()`: 索引事件并广播
-- `_plan()`: 定期清理失效实例和超时节点
-
-**状态管理**:
-```python
-class Master:
-    state: State  # 全局不可变状态
-    _event_log: DiskEventLog  # 事件日志
-    command_task_mapping: dict[CommandId, TaskId]
-```
-
-#### 1.3.3 Worker 类 (src/exo/worker/main.py)
-**职责**: 执行推理任务，管理 Runner 进程
-
-**关键方法**:
-- `plan_step()`: 规划并执行任务（创建 Runner、下载模型等）
-- `_event_applier()`: 应用事件到本地状态
-- `_poll_connection_updates()`: 拓扑发现（ping 其他节点）
-
-**核心组件**:
-```python
-class Worker:
-    runners: dict[RunnerId, RunnerSupervisor]  # 运行器进程管理
-    input_chunk_buffer: dict[CommandId, dict]  # 图像数据缓存
-    _download_backoff: KeyedBackoff[ModelId]   # 下载重试退避
-```
-
-#### 1.3.4 API 类 (src/exo/api/main.py)
-**职责**: HTTP API 服务器，提供多种 LLM API 兼容接口
-
-**支持接口**:
-- OpenAI Chat Completions API (`/v1/chat/completions`)
-- Anthropic Claude API (`/v1/messages`)
-- OpenAI Responses API (`/v1/responses`)
-- Ollama API (`/ollama/api/*`)
-- 图像生成 API (`/v1/images/generations`)
-
-**流式响应**:
-```python
-async def _token_chunk_stream(
-    command_id: CommandId
-) -> AsyncGenerator[TokenChunk | ErrorChunk | ToolCallChunk | PrefillProgressChunk]:
-    """为给定命令生成 token 流，直到完成"""
-```
-
-#### 1.3.5 Router 类 (src/exo/routing/router.py)
-**职责**: 基于 libp2p 的发布/订阅消息路由
-
-**Topic 定义**:
-```python
-GLOBAL_EVENTS = TypedTopic("global_events", PublishPolicy.Always, GlobalForwarderEvent)
-LOCAL_EVENTS = TypedTopic("local_events", PublishPolicy.Always, LocalForwarderEvent)
-COMMANDS = TypedTopic("commands", PublishPolicy.Always, ForwarderCommand)
-ELECTION_MESSAGES = TypedTopic("election_messages", PublishPolicy.Always, ElectionMessage)
-CONNECTION_MESSAGES = TypedTopic("connection_messages", PublishPolicy.Never, ConnectionMessage)
-DOWNLOAD_COMMANDS = TypedTopic("download_commands", PublishPolicy.Always, ForwarderDownloadCommand)
-```
-
-### 1.4 类型系统
-
-#### 1.4.1 事件类型 (src/exo/shared/types/events.py)
-**可区分联合类型**:
-```python
-Event = (
-    TestEvent
-    | TaskCreated
-    | TaskStatusUpdated
-    | TaskFailed
-    | TaskDeleted
-    | TaskAcknowledged
-    | InstanceCreated
-    | InstanceDeleted
-    | RunnerStatusUpdated
-    | NodeTimedOut
-    | NodeGatheredInfo
-    | NodeDownloadProgress
-    | ChunkGenerated
-    | InputChunkReceived
-    | TopologyEdgeCreated
-    | TopologyEdgeDeleted
-    | TracesCollected
-    | TracesMerged
-    | CustomModelCardAdded
-    | CustomModelCardDeleted
-)
-```
-
-#### 1.4.2 命令类型 (src/exo/shared/types/commands.py)
-**命令联合**:
-```python
-Command = (
-    TextGeneration
-    | ImageGeneration
-    | ImageEdits
-    | CreateInstance
-    | DeleteInstance
-    | PlaceInstance
-    | StartDownload
-    | CancelDownload
-    | DeleteDownload
-    | AddCustomModelCard
-    | DeleteCustomModelCard
-    | SendInputChunk
-    | TaskCancelled
-    | TaskFinished
-    | RequestEventLog
-)
-```
-
-#### 1.4.3 状态类型 (src/exo/shared/types/state.py)
-**全局状态**:
-```python
-class State(CamelCaseModel):
-    instances: Mapping[InstanceId, Instance]
-    runners: Mapping[RunnerId, RunnerStatus]
-    downloads: Mapping[NodeId, Sequence[DownloadProgress]]
-    tasks: Mapping[TaskId, Task]
-    last_seen: Mapping[NodeId, datetime]
-    topology: Topology
-    last_event_applied_idx: int
     
-    # 细粒度节点状态
-    node_identities: Mapping[NodeId, NodeIdentity]
-    node_memory: Mapping[NodeId, MemoryUsage]
-    node_disk: Mapping[NodeId, DiskUsage]
-    node_system: Mapping[NodeId, SystemPerformanceProfile]
-    node_network: Mapping[NodeId, NodeNetworkInfo]
+    subgraph ES["事件溯源"]
+        EVT["事件流<br/>Event Stream"]
+        STATE["状态快照<br/>State Snapshot"]
+    end
+
+    CMD -->|"生成"| EVT
+    EVT -->|"重放"| STATE
+    QUERY -->|"读取"| STATE
+
+    style CQRS fill:#f0f0f0
+    style ES fill:#ffe1e1
 ```
 
-### 1.5 设计模式应用
-
-| 模式 | 应用位置 | 描述 |
-|------|---------|------|
-| **事件溯源** | 全局状态管理 | 所有状态变更为不可变事件，支持重放和审计 |
-| **CQRS** | Master/Worker 分离 | 命令（写入）和事件（读取）分离处理 |
-| **发布/订阅** | Router/TopicRouter | 基于 libp2p Gossipsub 的去中心化消息传递 |
-| **适配器** | API 层 | 多种 LLM API 格式适配（OpenAI、Claude、Ollama） |
-| **策略模式** | Instance Placement | 支持流水线并行、张量并行等多种放置策略 |
-| **监督模式** | RunnerSupervisor | 监控和管理推理子进程的生命周期 |
-
-### 1.6 核心类关系图
+### 1.2 核心类层次结构
 
 ```mermaid
 classDiagram
@@ -282,466 +276,592 @@ classDiagram
         +Worker worker
         +API api
         +Election election
+        +create() async
         +run() async
     }
 
     class Master {
         +State state
         +DiskEventLog event_log
-        +run() async
-        -_command_processor() async
-        -_event_processor() async
-        -_plan() async
+        +process_commands() async
+        +index_events() async
+        +cleanup() async
     }
 
     class Worker {
         +dict runners
-        +State state
-        +run() async
-        -plan_step() async
-        -_event_applier() async
+        +plan() async
+        +apply_events() async
+        +poll_topology() async
     }
 
     class API {
         +FastAPI app
-        +State state
-        +run() async
         +chat_completions()
         +image_generations()
     }
 
     class Router {
         +dict topic_routers
-        +register_topic() async
-        +sender() Sender
-        +receiver() Receiver
+        +register_topic()
+        +sender()
+        +receiver()
+    }
+
+    class EventRouter {
+        +Sender sender
+        +Receiver receiver
+        +route() async
     }
 
     class Election {
-        +NodeId node_id
+        +BullyAlgorithm algorithm
         +run() async
+        +coordinate() async
     }
 
     class RunnerSupervisor {
         +start_task() async
         +cancel_task() async
-        +shutdown()
+        +monitor() async
     }
 
-    Node "1" *-- "1" Router
-    Node "1" *-- "0..1" Master
-    Node "1" *-- "0..1" Worker
-    Node "1" *-- "0..1" API
-    Node "1" *-- "1" Election
-
-    Master "1" --> "1" State
-    Worker "1" --> "1" State
-    API "1" --> "1" State
-    Worker "1" *-- "0..*" RunnerSupervisor
-
-    Router "1" --> "0..*" TopicRouter
+    Node "1" *-- "1" Router : 包含
+    Node "1" *-- "1" EventRouter : 包含
+    Node "1" *-- "0..1" Master : 创建
+    Node "1" *-- "0..1" Worker : 创建
+    Node "1" *-- "0..1" API : 创建
+    Node "1" *-- "1" Election : 包含
+    Worker "1" *-- "0..*" RunnerSupervisor : 管理
+    
+    Master "1" --> "1" State : 管理
+    Worker "1" --> "1" State : 读取
+    API "1" --> "1" State : 读取
 ```
 
----
-
-## 2. 实现视图 (Development View)
-
-实现视图描述开发环境的静态组织，包括代码结构、模块划分和依赖关系。
-
-### 2.1 代码组织结构
-
-```
-exo/
-├── src/exo/
-│   ├── __init__.py
-│   ├── __main__.py          # 程序入口
-│   ├── main.py              # Node 类定义
-│   │
-│   ├── api/                 # API 层 (FastAPI)
-│   │   ├── main.py          # API 类和路由定义
-│   │   ├── adapters/        # API 格式适配器
-│   │   │   ├── chat_completions.py    # OpenAI Chat Completions
-│   │   │   ├── claude.py              # Anthropic Claude Messages API
-│   │   │   ├── responses.py           # OpenAI Responses API
-│   │   │   └── ollama.py              # Ollama API
-│   │   ├── types/           # API 类型定义
-│   │   └── tests/           # API 测试
-│   │
-│   ├── master/              # 协调层
-│   │   ├── main.py          # Master 类
-│   │   ├── placement.py     # 实例放置算法
-│   │   ├── placement_utils.py
-│   │   ├── image_store.py   # 图像缓存存储
-│   │   └── tests/
-│   │
-│   ├── worker/              # 执行层
-│   │   ├── main.py          # Worker 类
-│   │   ├── plan.py          # 任务规划逻辑
-│   │   ├── runner/          # Runner 管理
-│   │   │   ├── runner_supervisor.py
-│   │   │   ├── runner_process.py
-│   │   │   └── interface.py
-│   │   └── tests/
-│   │
-│   ├── download/            # 模型下载
-│   │   ├── coordinator.py   # 下载协调器
-│   │   ├── shard_downloader.py
-│   │   ├── impl_shard_downloader.py
-│   │   └── tests/
-│   │
-│   ├── routing/             # 网络路由
-│   │   ├── router.py        # Router 类
-│   │   ├── event_router.py  # EventRouter 类
-│   │   ├── topics.py        # Topic 定义
-│   │   └── connection_message.py
-│   │
-│   ├── shared/              # 共享代码
-│   │   ├── types/           # Pydantic 类型定义
-│   │   │   ├── events.py
-│   │   │   ├── commands.py
-│   │   │   ├── tasks.py
-│   │   │   ├── state.py
-│   │   │   ├── chunks.py
-│   │   │   └── ...
-│   │   ├── apply.py         # 事件应用函数
-│   │   ├── election.py      # 选举算法
-│   │   ├── topology.py      # 拓扑管理
-│   │   ├── models/          # 模型卡片
-│   │   │   └── model_cards.py
-│   │   └── tests/
-│   │
-│   └── utils/               # 工具函数
-│       ├── channels.py      # async channel 实现
-│       ├── task_group.py    # async task group
-│       ├── info_gatherer/   # 系统信息收集
-│       └── ...
-│
-├── rust/                    # Rust 组件
-│   ├── exo_pyo3_bindings/   # PyO3 绑定
-│   │   ├── src/
-│   │   │   ├── lib.rs
-│   │   │   ├── networking.rs
-│   │   │   └── ident.rs
-│   │   └── tests/
-│   │
-│   ├── networking/          # libp2p 网络
-│   │   ├── src/
-│   │   │   ├── lib.rs
-│   │   │   ├── swarm.rs
-│   │   │   └── discovery.rs
-│   │   └── tests/
-│   │
-│   └── util/                # Rust 工具
-│       └── src/lib.rs
-│
-├── dashboard/               # Svelte 前端
-│   ├── src/
-│   │   ├── routes/          # 页面路由
-│   │   ├── lib/
-│   │   │   ├── components/  # Svelte 组件
-│   │   │   ├── stores/      # Svelte stores
-│   │   │   └── types.ts
-│   │   └── app.html
-│   ├── package.json
-│   └── vite.config.ts
-│
-├── resources/               # 资源文件
-│   ├── inference_model_cards/   # 推理模型卡片 (TOML)
-│   └── image_model_cards/       # 图像模型卡片 (TOML)
-│
-├── scripts/                 # 工具脚本
-│   └── download_model_to_cluster.py
-│
-└── bench/                   # 基准测试
-    ├── exo_bench.py
-    └── ...
-```
-
-### 2.2 模块依赖图
+### 1.3 包结构
 
 ```mermaid
-graph LR
-    API["API Module"]
-    COMMANDS["Commands"]
-    EVENTS["Events"]
-    MASTER["Master"]
-    STATE["State"]
-    WORKER["Worker"]
-    ROUTER["Router"]
-    RUST["Rust libp2p"]
+package {
+    [API Layer] --> [Coordination Layer]
+    [Coordination Layer] --> [Execution Layer]
+    [Execution Layer] --> [Infrastructure Layer]
+}
 
-    API -->|sends| COMMANDS
-    API -->|receives| EVENTS
+package "API Layer" {
+    [FastAPI Server]
+    [OpenAI Adapter]
+    [Claude Adapter] 
+    [Ollama Adapter]
+}
 
-    COMMANDS -->|triggers| MASTER
-    EVENTS <-->|updates| MASTER
-    MASTER <-->|manages| STATE
+package "Coordination Layer" {
+    [Master]
+    [Election]
+    [Event Router]
+}
 
-    MASTER -->|coordinates| WORKER
-    WORKER -->|communicates via| ROUTER
-    ROUTER -->|wrapped by| RUST
+package "Execution Layer" {
+    [Worker]
+    [Download Coordinator]
+    [Runner Supervisor]
+}
 
-    style API fill:#e1ffe1
-    style MASTER fill:#ffe1f5
-    style WORKER fill:#fff4e1
-    style ROUTER fill:#e1f5ff
-    style RUST fill:#f0f0f0
-    style STATE fill:#f5f5f5
+package "Infrastructure Layer" {
+    [libp2p Router]
+    [Model Card Manager]
+    [Event Log]
+}
 ```
 
-### 2.3 技术栈与依赖
+### 1.4 关键接口
 
-#### 2.3.1 Python 依赖
-| 类别 | 库 | 用途 |
-|------|-----|------|
-| **Web框架** | FastAPI | HTTP API |
-| | Hypercorn | ASGI 服务器 |
-| **序列化** | Pydantic | 数据验证和序列化 |
-| **异步** | Anyio | 异步运行时 |
-| **网络** | exo_pyo3_bindings (Rust) | libp2p 网络 |
-| **日志** | Loguru | 日志记录 |
-| **测试** | pytest, pytest-asyncio | 单元测试 |
-| **类型检查** | basedpyright | 严格类型检查 |
-| **代码格式** | ruff, nix fmt | 代码格式化 |
-| **模型处理** | huggingface_hub | 模型下载 |
+#### Command 接口 (命令)
+```python
+class Command(TaggedModel):
+    command_id: CommandId
+    
+class TextGeneration(Command): ...
+class ImageGeneration(Command): ...
+class CreateInstance(Command): ...
+```
 
-#### 2.3.2 Rust 依赖
-| 类别 | 库 | 用途 |
-|------|-----|------|
-| **网络** | libp2p | P2P 网络 |
-| | rust-discovery | mDNS 节点发现 |
-| **Python绑定** | PyO3 | Python-Rust FFI |
-| | pyo3-async-runtimes | 异步运行时集成 |
-| **异步** | Tokio | 异步运行时 |
-| **日志** | pyo3-log | 日志桥接 |
+#### Event 接口 (事件)
+```python
+class BaseEvent(TaggedModel):
+    event_id: EventId
+    
+class TaskCreated(BaseEvent): ...
+class ChunkGenerated(BaseEvent): ...
+class InstanceCreated(BaseEvent): ...
+```
 
-#### 2.3.3 前端依赖
-| 类别 | 库 | 用途 |
-|------|-----|------|
-| **框架** | Svelte 5 | UI 框架 |
-| **构建** | Vite | 前端构建工具 |
-| **HTTP** | ky/fetch | HTTP 客户端 |
+#### State 接口 (状态)
+```python
+class State(CamelCaseModel):
+    instances: Mapping[InstanceId, Instance]
+    tasks: Mapping[TaskId, Task]
+    topology: Topology
+    last_event_applied_idx: int
+```
 
-### 2.4 构建和开发工具
+### 1.5 设计模式应用
 
-| 工具 | 用途 |
-|------|------|
-| **uv** | Python 包管理和虚拟环境 |
-| **rustup** | Rust 工具链管理 |
-| **nix** | 代码格式化 |
-| **pytest** | Python 测试运行器 |
-| **npm** | Node.js 包管理 |
+| 模式 | 位置 | 说明 |
+|------|------|------|
+| **Event Sourcing** | 全局状态管理 | 不可变事件 + 状态重放 |
+| **CQRS** | Master/Worker | 命令查询分离 |
+| **Pub/Sub** | Router/TopicRouter | 去中心化消息传递 |
+| **Adapter** | API 层 | 多种 LLM API 适配 |
+| **Strategy** | Instance Placement | 多种分片策略 |
+| **Supervisor** | RunnerSupervisor | 进程监控和重启 |
 
 ---
 
-## 3. 进程视图 (Process View)
+## 2. 进程视图 (Process View)
 
-进程视图描述运行时的进程、线程和通信机制。
+进程视图描述系统的**运行时行为**，关注进程、线程、通信和同步机制。
 
-### 3.1 进程架构
+### 2.1 单节点进程结构
 
 ```mermaid
 graph TB
-    subgraph Node["Single Node (exo 进程)"]
-        subgraph MainProcess["Main Process"]
-            subgraph PythonRuntime["Python Asyncio Runtime"]
-                ROUTER_TASK["Router Task"]
-                EVENTROUTER_TASK["Event Router Task"]
-                MASTER_TASK["Master Task"]
-                WORKER_TASK["Worker Task"]
-                ELECTION_TASK["Election Task"]
-                DOWNLOAD_TASK["Download Coordinator Task"]
-                API_TASK["API (Hypercorn)"]
-                FASTAPI["FastAPI App"]
-            end
-
-            subgraph RustRuntime["Rust Tokio Runtime (PyO3)"]
-                LIBP2P_TASK["libp2p Swarm Task"]
-                GOSSIPSUB["Gossipsub Handler"]
-                MDNS["mDNS Discovery"]
-                KADEMLIA["Kademlia DHT"]
-            end
+    subgraph Process["exo 进程"]
+        subgraph PythonRuntime["Python Asyncio Runtime"]
+            RouterTask["Router Task<br/>网络路由"]
+            EventRouterTask["Event Router Task<br/>事件分发"]
+            MasterTask["Master Task<br/>集群协调"]
+            WorkerTask["Worker Task<br/>任务执行"]
+            ElectionTask["Election Task<br/>主节点选举"]
+            DownloadTask["Download Coordinator<br/>模型下载"]
+            APITask["API Server<br/>HTTP 服务"]
         end
 
-        subgraph Subprocesses["MLX Inference Subprocesses"]
-            RUNNER1["Runner 1 (MLX)"]
-            RUNNER2["Runner 2 (MLX)"]
-            RUNNERN["Runner N (MLX)"]
+        subgraph RustRuntime["Rust Tokio Runtime"]
+            Libp2pTask["libp2p Swarm<br/>P2P 网络"]
+            GossipsubTask["Gossipsub<br/>发布订阅"]
+            MDNSTask["mDNS Discovery<br/>节点发现"]
         end
     end
 
-    API_TASK --> FASTAPI
-    ROUTER_TASK --> LIBP2P_TASK
-    EVENTROUTER_TASK --> ROUTER_TASK
-    MASTER_TASK --> ROUTER_TASK
-    WORKER_TASK --> ROUTER_TASK
-    ELECTION_TASK --> ROUTER_TASK
-    DOWNLOAD_TASK --> ROUTER_TASK
+    subgraph Subprocesses["MLX 子进程"]
+        Runner1["Runner 1<br/>GPU 0"]
+        Runner2["Runner 2<br/>GPU 1"]
+        RunnerN["Runner N<br/>..."]
+    end
 
-    LIBP2P_TASK --> GOSSIPSUB
-    LIBP2P_TASK --> MDNS
-    LIBP2P_TASK --> KADEMLIA
-
-    WORKER_TASK --> RUNNER1
-    WORKER_TASK --> RUNNER2
-    WORKER_TASK --> RUNNERN
+    RouterTask --> Libp2pTask
+    EventRouterTask --> RouterTask
+    MasterTask --> RouterTask
+    WorkerTask --> RouterTask
+    ElectionTask --> RouterTask
+    DownloadTask --> RouterTask
+    
+    Libp2pTask --> GossipsubTask
+    Libp2pTask --> MDNSTask
+    
+    WorkerTask --> Runner1
+    WorkerTask --> Runner2
+    WorkerTask --> RunnerN
 
     style PythonRuntime fill:#e1f5ff
     style RustRuntime fill:#ffe1e1
     style Subprocesses fill:#e1ffe1
 ```
 
-### 3.2 组件通信流程
+### 2.2 节点间通信模式
 
-#### 3.2.1 推理请求流程
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant API as Node (API)
-    participant Master
-    participant Worker
-    participant Runner
-
-    Client->>API: POST /v1/chat/completions
-    API->>Master: TextGeneration Command
-
-    Master->>Worker: TaskCreated Event
-    Note over Worker: plan(): CreateRunner
-
-    Worker->>Runner: spawn subprocess
-    Note over Runner: MLX Inference Process
-
-    loop Token Generation
-        Runner->>Worker: token
-        Worker->>Master: ChunkGenerated Event
-        Master->>API: ChunkGenerated Event
-        API->>Client: SSE: TokenChunk
-    end
-
-    Runner->>Worker: finish
-    Worker->>Master: ChunkGenerated (finish)
-    API->>Master: TaskFinished Command
-    API->>Client: data: [DONE]
-```
-
-#### 3.2.2 事件广播流程
+#### libp2p Gossipsub 消息传播
 
 ```mermaid
 sequenceDiagram
-    participant NodeA as Node A (Master)
-    participant Network as libp2p Network
-    participant NodeB as Node B (Worker)
+    participant N1 as Node A
+    participant N2 as Node B
+    participant N3 as Node C
+    participant N4 as Node D
 
-    NodeA->>Network: 1. Local Event (NodeGatheredInfo)
-    Network->>NodeB: 2. Gossipsub Publish
-
-    NodeB->>NodeB: 3. Apply Event<br/>update state
-    NodeB->>NodeB: 4. Plan & Act<br/>generate tasks
+    N1->>N2: Gossipsub: Event
+    N1->>N3: Gossipsub: Event
+    
+    N2->>N3: Gossipsub: Event (已接收)
+    N2->>N4: Gossipsub: Event
+    
+    N3->>N4: Gossipsub: Event (已接收)
+    
+    Note over N1,N4: 消息在 2 跳内覆盖所有节点
 ```
 
-#### 3.2.3 主节点选举流程
+#### Topic 分发策略
+
+| Topic | 发布策略 | 说明 |
+|-------|----------|------|
+| `GLOBAL_EVENTS` | Always | Master 索引的事件，广播所有节点 |
+| `LOCAL_EVENTS` | Always | Worker 生成的本地事件 |
+| `COMMANDS` | Always | 用户和 API 的命令 |
+| `ELECTION_MESSAGES` | Always | 选举协议消息 |
+| `DOWNLOAD_COMMANDS` | Always | 模型下载命令 |
+| `CONNECTION_MESSAGES` | Never | 本地连接更新 |
+
+### 2.3 并发控制
+
+#### Python Asyncio 并发模型
 
 ```mermaid
-sequenceDiagram
-    participant NodeA as Node A
-    participant NodeB as Node B
-    participant NodeC as Node C
+graph LR
+    EL["Event Loop<br/>单线程事件循环"]
+    TG["TaskGroup<br/>任务组管理"]
+    Q["Channels<br/>异步队列"]
 
-    NodeA->>NodeB: Election: nominate(A)
-    NodeA->>NodeC: Election: nominate(A)
+    EL --> TG
+    TG --> Q
 
-    NodeB->>NodeC: Election: nominate(B)
-    NodeB->>NodeA: Election: nominate(B)
-
-    Note over NodeB,NodeC: B has higher ID
-
-    NodeA->>NodeB: Election: coordinate(B)
-    NodeB->>NodeC: Election: coordinate(B)
-
-    Note over NodeA: B becomes Master
-    Note over NodeB: B becomes Master
-
-    NodeA->>NodeB: shutdown Master
-    NodeB->>NodeA: done
+    style EL fill:#ffe1e1
+    style TG fill:#e1f5ff
+    style Q fill:#fff4e1
 ```
 
-### 3.3 并发模型
+**并发原语**:
+- `anyio.create_task_group()`: 结构化并发
+- `channels`: 跨组件通信
+- `asyncio.Event`: 状态同步
 
-**Python Asyncio (任何框架)**:
-- 所有主要组件运行在单个事件循环中
-- 使用 `anyio.create_task_group()` 管理并发任务
-- 通过 `asyncio.Queue` / channel 进行组件间通信
+#### Rust Tokio 并发模型
 
-**Rust Tokio (libp2p)**:
-- 独立的 Tokio 运行时，通过 PyO3 桥接
-- Gossipsub 订阅和消息处理在 Rust 任务中运行
-- 使用 `tokio::sync::mpsc` 进行跨语言通信
+**跨语言通信**:
+```python
+# Python side
+receiver: Receiver[PyFromSwarm] = router.receiver()
 
-**MLX 子进程**:
-- 每个 Runner 在独立的子进程中运行
-- 通过 stdin/stdout JSON-RPC 通信
-- 支持多 GPU/设备并行
+# Rust side
+tokio::spawn(async move {
+    loop {
+        let msg = swarm.recv().await;
+        python_sender.send(msg).await;
+    }
+})
+```
 
-### 3.4 同步机制
+### 2.4 同步机制
 
-| 组件 | 同步原语 | 用途 |
-|------|---------|------|
-| **Election** | Bully Algorithm | 分布式主节点选举 |
-| **Event Apply** | IndexedEvent | 严格顺序事件应用 |
-| **Task Planning** | KeyedBackoff | 指数退避重试 |
-| **Network** | Gossipsub | 弹性消息传播 |
-
-### 3.5 任务状态机
+#### 事件索引同步
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Pending: TaskCreated
-    Pending --> Running: Worker 接收任务
-    Running --> Complete: 推理完成
-    Running --> Failed: 推理失败
-    Running --> TimedOut: 超时
-    Running --> Cancelled: 用户取消
-    Complete --> [*]
-    Failed --> [*]
-    TimedOut --> [*]
-    Cancelled --> [*]
+    Pending["事件待处理"]
+    Indexing["索引进行中"]
+    Indexed["已索引"]
+    Broadcast["广播中"]
+    Applied["已应用"]
 
-    note right of Pending
-        任务已创建，等待 Worker 处理
-    end note
+    Pending --> Indexing: Master 接收
+    Indexing --> Indexed: 分配 idx
+    Indexed --> Broadcast: 发送到 GLOBAL_EVENTS
+    Broadcast --> Applied: Worker 接收
+    Applied --> Pending: 下一个事件
 
-    note right of Running
-        RunnerSupervisor 执行推理
-        逐个生成 token
-    end note
-
-    note right of Complete
-        成功完成，所有 token 已生成
+    note right of Indexing
+        严格递增 idx
+        保证顺序一致性
     end note
 ```
+
+#### 选举同步 (Bully Algorithm)
+
+```mermaid
+sequenceDiagram
+    participant A as Node A (ID: 10)
+    participant B as Node B (ID: 20)
+    participant C as Node C (ID: 30)
+
+    A->>B: Election: nominate(A)
+    A->>C: Election: nominate(A)
+    
+    B->>C: Election: nominate(B)
+    B->>A: Election: nominate(B)
+    
+    Note over B,C: B 发现 C ID 更高
+    
+    B->>C: Election: coordinate(C)
+    A->>C: Election: coordinate(C)
+    
+    C->>B: Election: Result(B wins)
+    C->>A: Election: Result(B wins)
+```
+
+### 2.5 性能考虑
+
+| 操作 | 延迟目标 | 优化策略 |
+|------|----------|----------|
+| **Token 生成** | < 100ms | 流式响应、连续批处理 |
+| **事件传播** | < 50ms | Gossipsub、消息压缩 |
+| **Master 切换** | < 10s | Bully 算法、快速收敛 |
+| **模型加载** | < 30s | 分片下载、并行加载 |
+
+---
+
+## 3. 实现视图 (Implementation View)
+
+实现视图描述系统的**开发组织**，关注代码结构、依赖关系和构建系统。
+
+### 3.1 代码目录结构
+
+```mermaid
+graph TB
+    ROOT["exo/"]
+    
+    subgraph SRC["src/exo/"]
+        MAIN["main.py<br/>Node 类"]
+        API["api/<br/>FastAPI 服务器"]
+        MASTER["master/<br/>集群协调"]
+        WORKER["worker/<br/>任务执行"]
+        DOWNLOAD["download/<br/>模型下载"]
+        ROUTING["routing/<br/>网络路由"]
+        SHARED["shared/<br/>共享类型"]
+        UTILS["utils/<br/>工具函数"]
+    end
+    
+    subgraph RUST["rust/"]
+        BINDINGS["exo_pyo3_bindings/<br/>PyO3 绑定"]
+        NETWORKING["networking/<br/>libp2p"]
+        UTIL["util/<br/>工具库"]
+    end
+    
+    subgraph DASHBOARD["dashboard/"]
+        ROUTES["routes/<br/>页面路由"]
+        LIB["lib/<br/>组件库"]
+        BUILD["build/<br/>构建输出"]
+    end
+    
+    subgraph RESOURCES["resources/"]
+        MODELS["inference_model_cards/"]
+        IMAGES["image_model_cards/"]
+    end
+    
+    ROOT --> SRC
+    ROOT --> RUST
+    ROOT --> DASHBOARD
+    ROOT --> RESOURCES
+
+    style SRC fill:#e1f5ff
+    style RUST fill:#ffe1e1
+    style DASHBOARD fill:#e1ffe1
+    style RESOURCES fill:#fff4e1
+```
+
+### 3.2 模块依赖关系
+
+```mermaid
+graph TB
+    subgraph Layers["分层依赖"]
+        API["api/"]
+        MASTER["master/"]
+        WORKER["worker/"]
+        SHARED["shared/"]
+        ROUTING["routing/"]
+        RUST["rust/"]
+    end
+    
+    API --> MASTER
+    API --> SHARED
+    MASTER --> SHARED
+    WORKER --> SHARED
+    MASTER --> ROUTING
+    WORKER --> ROUTING
+    ROUTING --> RUST
+
+    style API fill:#e1ffe1
+    style MASTER fill:#ffe1f5
+    style WORKER fill:#fff4e1
+    style SHARED fill:#f0f0f0
+    style ROUTING fill:#e1f5ff
+    style RUST fill:#ffe1e1
+```
+
+**依赖规则**:
+- 上层可以依赖下层
+- 同层之间通过接口通信
+- `shared/` 是唯一共享模块
+
+### 3.3 核心模块说明
+
+#### 3.3.1 shared/ - 共享类型定义
+
+```mermaid
+graph LR
+    TYPES["types/"]
+    EVENTS["events.py<br/>事件类型"]
+    COMMANDS["commands.py<br/>命令类型"]
+    TASKS["tasks.py<br/>任务类型"]
+    STATE["state.py<br/>状态类型"]
+    CHUNKS["chunks.py<br/>数据块类型"]
+
+    TYPES --> EVENTS
+    TYPES --> COMMANDS
+    TYPES --> TASKS
+    TYPES --> STATE
+    TYPES --> CHUNKS
+
+    style TYPES fill:#f0f0f0
+```
+
+**设计原则**:
+- 所有类型使用 Pydantic 模型
+- 使用 `frozen=True` 确保不可变性
+- 使用可区分联合类型 (Discriminated Unions)
+
+#### 3.3.2 master/ - 集群协调
+
+```mermaid
+classDiagram
+    class Master {
+        +State state
+        +process_commands()
+        +index_events()
+        +cleanup_instances()
+    }
+    
+    class Placement {
+        +place_instance()
+        +add_instance()
+        +delete_instance()
+    }
+    
+    class ImageStore {
+        +store()
+        +get()
+        +cleanup()
+    }
+    
+    Master --> Placement : 使用
+    Master --> ImageStore : 使用
+```
+
+#### 3.3.3 worker/ - 任务执行
+
+```mermaid
+classDiagram
+    class Worker {
+        +plan()
+        +apply_events()
+        +poll_topology()
+    }
+    
+    class RunnerSupervisor {
+        +start_task()
+        +cancel_task()
+        +monitor()
+    }
+    
+    class Plan {
+        +plan_tasks()
+        +check_downloads()
+        +check_instances()
+    }
+    
+    Worker --> RunnerSupervisor : 管理
+    Worker --> Plan : 使用
+```
+
+### 3.4 构建系统
+
+#### Python 包管理
+
+```mermaid
+graph LR
+    UV["uv<br/>包管理器"]
+    PYPROJECT["pyproject.toml"]
+    SRC["源代码"]
+    VENV["虚拟环境"]
+
+    UV --> PYPROJECT
+    UV --> SRC
+    UV --> VENV
+
+    style UV fill:#e1f5ff
+```
+
+**构建步骤**:
+```bash
+# 1. 安装依赖
+uv pip install -e .
+
+# 2. 构建仪表板
+cd dashboard && npm run build
+
+# 3. 运行
+uv run exo
+```
+
+#### Rust 构建
+
+```mermaid
+graph LR
+    CARGO["cargo<br/>Rust 构建工具"]
+    CRATES["Rust Crates"]
+    PYO3["PyO3 Bindings"]
+    PYTHON["Python 扩展"]
+
+    CARGO --> CRATES
+    CRATES --> PYO3
+    PYO3 --> PYTHON
+
+    style CARGO fill:#ffe1e1
+```
+
+#### 前端构建
+
+```mermaid
+graph LR
+    NPM["npm<br/>Node.js 包管理"]
+    VITE["Vite<br/>构建工具"]
+    SVELTE["Svelte 组件"]
+    BUILD["构建输出"]
+
+    NPM --> VITE
+    VITE --> SVELTE
+    VITE --> BUILD
+
+    style NPM fill:#e1ffe1
+```
+
+### 3.5 技术栈总览
+
+| 层级 | 技术 | 用途 |
+|------|------|------|
+| **前端** | Svelte 5, Vite, TypeScript | Web UI |
+| **后端** | FastAPI, Hypercorn | HTTP API |
+| **网络** | libp2p, Gossipsub | P2P 通信 |
+| **推理** | MLX | 模型推理 |
+| **序列化** | Pydantic | 数据验证 |
+| **异步** | Anyio, Tokio | 并发运行时 |
+| **构建** | uv, cargo, npm | 构建工具 |
+| **测试** | pytest, pytest-asyncio | 单元测试 |
 
 ---
 
 ## 4. 部署视图 (Deployment View)
 
-部署视图描述硬件拓扑、网络配置和组件的物理部署。
+部署视图描述系统的**物理拓扑**，关注硬件配置、网络部署和运维方案。
 
 ### 4.1 集群拓扑
 
 ```mermaid
 graph TB
-    subgraph Cluster["EXO P2P Cluster"]
-        D1["Device 1 (MacBook)<br/>• Router<br/>• Master*<br/>• Worker<br/>• API"]
-        D2["Device 2 (Mac Mini)<br/>• Router<br/>• Worker<br/>• Worker"]
-        D3["Device 3 (Mac Studio)<br/>• Router<br/>• Worker"]
-        D4["Device 4 (iMac)<br/>• Router<br/>• Worker"]
+    subgraph Cluster["EXO P2P 集群"]
+        subgraph Site1["站点 1: 本地网络"]
+            D1["MacBook Pro<br/>Master + API<br/>192.168.1.10"]
+            D2["Mac Mini<br/>Worker<br/>192.168.1.11"]
+        end
+        
+        subgraph Site2["站点 2: 数据中心"]
+            D3["Mac Studio<br/>Worker<br/>10.0.0.10"]
+            D4["iMac<br/>Worker<br/>10.0.0.11"]
+        end
     end
 
-    D1 <-->|"Thunderbolt<br/>libp2p"| D2
-    D3 <-->|"Ethernet<br/>libp2p"| D4
-    D1 <-->|"libp2p"| D3
-    D2 <-->|"libp2p"| D4
+    D1 <-->|"Thunderbolt<br/>RDMA"| D2
+    D3 <-->|"Ethernet<br/>10Gbps"| D4
+    D1 <-->|"VPN<br/>libp2p"| D3
 
     style D1 fill:#ffe1e1
     style D2 fill:#e1f5ff
@@ -749,139 +869,102 @@ graph TB
     style D4 fill:#fff4e1
 ```
 
-### 4.2 节点类型
+### 4.2 节点类型配置
 
-| 节点类型 | 描述 | 组件 |
-|---------|------|------|
-| **协调器节点** | 运行 Master 的节点 | Router + Master + (可选) Worker |
-| **工作器节点** | 运行推理的节点 | Router + Worker + Runners |
-| **API 节点** | 提供 HTTP API 的节点 | Router + API + (可选) Master |
-| **纯协调器** | 仅运行 Master，不运行 Worker | `--no-worker` 模式 |
+| 节点类型 | 硬件要求 | 软件 | 数量 |
+|---------|----------|------|------|
+| **Master + API** | 8GB+ RAM, 4核 | exo --force-master | 1-3 |
+| **Worker** | 16GB+ RAM, GPU/Metal | exo --no-api | 2-N |
+| **纯协调器** | 4GB+ RAM | exo --no-worker | 0-1 |
 
 ### 4.3 网络配置
 
-**libp2p Multiaddr 格式**:
+#### libp2p Multiaddr 格式
+
 ```
-/ip4/<IP>/tcp/<PORT>/p2p/<PeerID>
-/ip6/<IP>/tcp/<PORT>/p2p/<PeerID>
+/ip4/<IP>/tcp/<PORT>/p2p/<PEER_ID>
+/ip6/<IP>/tcp/<PORT>/p2p/<PEER_ID>
 ```
 
-**支持的传输层**:
-- TCP/IP (IPv4/IPv6)
-- mDNS (本地节点发现)
-- Thunderbolt RDMA (高性能互连，macOS 专用)
+#### 支持的传输协议
 
-**端口配置**:
-| 端口 | 用途 | 默认值 |
-|------|------|--------|
-| `libp2p_port` | libp2p 监听端口 | 0 (OS 自动分配) |
-| `api_port` | HTTP API 端口 | 52415 |
+```mermaid
+graph LR
+    TCP["TCP/IP<br/>IPv4/IPv6"]
+    MDNS["mDNS<br/>本地发现"]
+    TB["Thunderbolt<br/>RDMA"]
+
+    TCP --> LIBP2P["libp2p Stack"]
+    MDNS --> LIBP2P
+    TB --> LIBP2P
+
+    style LIBP2P fill:#e1f5ff
+```
+
+#### 端口分配
+
+| 端口 | 服务 | 协议 |
+|------|------|------|
+| `0` (自动) | libp2p | TCP |
+| `52415` | HTTP API | HTTP |
+| `随机` | mDNS | UDP |
 
 ### 4.4 存储布局
 
 ```mermaid
 graph TB
-    ROOT["~/.exo/"]
-
-    NODEID["node_id<br/>节点身份密钥"]
-    MODELS["models/<br/>默认模型目录"]
-    CUSTOM["custom_model_cards/<br/>用户自定义模型卡片"]
-    EVENTS["event_log/<br/>事件日志"]
-    TRACES["traces/<br/>分布式追踪数据"]
+    HOME["~/.exo/"]
+    
+    NODEID["node_id<br/>身份密钥"]
+    MODELS["models/<br/>模型文件"]
+    CARDS["custom_model_cards/<br/>自定义卡片"]
+    LOGS["event_log/<br/>事件日志"]
+    TRACES["traces/<br/>追踪数据"]
     CACHE["cache/<br/>缓存"]
+    
+    HOME --> NODEID
+    HOME --> MODELS
+    HOME --> CARDS
+    HOME --> LOGS
+    HOME --> TRACES
+    HOME --> CACHE
 
-    MLXCOM["mlx-community/"]
-    QWEN["Qwen3-30B-A3B-4bit/"]
-    CONFIG["config.json"]
-    SHARD0["model-shard-0.gguf"]
-    CUSTOMTOML["my-custom-model.toml"]
-    MASTERLOG["master/events.jsonl"]
-    APILOG["api/events.jsonl"]
-    TRACEJSON["trace_*.json"]
-    IMAGES["images/<br/>图像生成缓存"]
-
-    ROOT --> NODEID
-    ROOT --> MODELS
-    ROOT --> CUSTOM
-    ROOT --> EVENTS
-    ROOT --> TRACES
-    ROOT --> CACHE
-
-    MODELS --> MLXCOM
-    MLXCOM --> QWEN
-    QWEN --> CONFIG
-    QWEN --> SHARD0
-
-    CUSTOM --> CUSTOMTOML
-    EVENTS --> MASTERLOG
-    EVENTS --> APILOG
-    TRACES --> TRACEJSON
-    CACHE --> IMAGES
-
-    style ROOT fill:#f0f0f0
+    style HOME fill:#f0f0f0
     style MODELS fill:#e1f5ff
-    style EVENTS fill:#ffe1f5
-    style TRACES fill:#fff4e1
-    style CACHE fill:#e1ffe1
+    style LOGS fill:#fff4e1
+    style TRACES fill:#ffe1e1
 ```
 
-### 4.5 环境变量配置
+### 4.5 部署场景
 
-| 变量 | 描述 | 默认值 |
-|------|------|--------|
-| `EXO_DEFAULT_MODELS_DIR` | 模型下载目录 | `~/.local/share/exo/models` |
-| `EXO_MODELS_DIRS` | 额外模型目录（冒号分隔） | - |
-| `EXO_MODELS_READ_ONLY_DIRS` | 只读模型目录 | - |
-| `EXO_OFFLINE` | 离线模式 | `false` |
-| `EXO_ENABLE_IMAGE_MODELS` | 启用图像模型 | `false` |
-| `EXO_LIBP2P_NAMESPACE` | 集群命名空间 | - |
-| `EXO_TRACING_ENABLED` | 启用分布式追踪 | `false` |
-| `EXO_BOOTSTRAP_PEERS` | 启动节点 | - |
+#### 场景 A: 开发环境 (单节点)
 
-### 4.6 部署场景
+```mermaid
+graph TB
+    DEV["开发机器<br/>MacBook Pro"]
+    ALL["所有组件<br/>Master + Worker + API"]
+    UI["Web UI<br/>localhost:52415"]
 
-#### 场景 1: 单机部署（开发/测试）
+    DEV --> ALL
+    ALL --> UI
+
+    style DEV fill:#e1ffe1
+    style ALL fill:#f0f0f0
+```
+
+**启动命令**:
 ```bash
-# 启动单个节点，同时运行所有组件
 uv run exo
-
-# 访问 Web UI: http://localhost:52415
 ```
+
+#### 场景 B: 小型集群 (本地网络)
 
 ```mermaid
 graph TB
-    NODE["Single Node<br/>exo process"]
-    API["API Server<br/>:52415"]
-    MASTER["Master"]
-    WORKER["Worker"]
-    RUNNER["Runner Process"]
-
-    NODE --> API
-    NODE --> MASTER
-    NODE --> WORKER
-    WORKER --> RUNNER
-
-    style NODE fill:#e1f5ff
-    style API fill:#e1ffe1
-    style MASTER fill:#ffe1f5
-    style WORKER fill:#fff4e1
-```
-
-#### 场景 2: 多机集群（本地网络）
-```bash
-# 节点 1 (协调器 + API)
-uv run exo --force-master
-
-# 节点 2-N (工作器)
-uv run exo --bootstrap-peers /ip4/192.168.1.10/tcp/<PORT>/p2p/<PEER_ID>
-```
-
-```mermaid
-graph TB
-    subgraph Network["Local Network"]
-        N1["Node 1<br/>Master + API<br/>192.168.1.10"]
-        N2["Node 2<br/>Worker<br/>192.168.1.11"]
-        N3["Node 3<br/>Worker<br/>192.168.1.12"]
+    subgraph LAN["本地网络 192.168.1.0/24"]
+        N1["节点 1: Master + API<br/>192.168.1.10"]
+        N2["节点 2: Worker<br/>192.168.1.11"]
+        N3["节点 3: Worker<br/>192.168.1.12"]
     end
 
     N1 <-->|"libp2p"| N2
@@ -893,266 +976,217 @@ graph TB
     style N3 fill:#e1f5ff
 ```
 
-#### 场景 3: 混合部署（高性能计算）
+**启动命令**:
 ```bash
-# Mac Studio (高性能节点 - 运行推理)
-uv run exo --no-api --force-master
+# 节点 1
+uv run exo --force-master --api-port 52415
 
-# MacBook (API + 协调器 - 轻量级)
-uv run exo --no-worker --api-port 52415
+# 节点 2-3
+uv run exo --bootstrap-peers /ip4/192.168.1.10/tcp/<PORT>/p2p/<PEER_ID>
 ```
+
+#### 场景 C: 高性能集群 (混合部署)
 
 ```mermaid
 graph TB
-    subgraph HPC["High Performance Cluster"]
-        STUDIO["Mac Studio<br/>Master + Worker<br/>推理引擎"]
-        MACBOOK["MacBook<br/>API + Master<br/>轻量级协调"]
+    subgraph HPC["高性能环境"]
+        MASTER["协调节点<br/>MacBook<br/>API + Master"]
+        WORKER1["计算节点 1<br/>Mac Studio<br/>Worker"]
+        WORKER2["计算节点 2<br/>Mac Studio<br/>Worker"]
     end
 
-    STUDIO <-->|"Thunderbolt RDMA<br/>高速互连"| MACBOOK
+    MASTER <-->|"Thunderbolt<br/>40Gbps"| WORKER1
+    MASTER <-->|"Thunderbolt<br/>40Gbps"| WORKER2
 
-    style STUDIO fill:#e1ffe1
-    style MACBOOK fill:#e1f5ff
+    style MASTER fill:#ffe1e1
+    style WORKER1 fill:#e1ffe1
+    style WORKER2 fill:#e1ffe1
 ```
 
----
+**启动命令**:
+```bash
+# 协调节点
+uv run exo --no-worker --force-master
 
-## 5. 用例视图 (Use Case View)
+# 计算节点
+uv run exo --no-api --bootstrap-peers <COORDINATOR_MULTIADDR>
+```
 
-用例视图描述系统功能场景和用户交互。
+### 4.6 监控和运维
 
-### 5.1 核心用例
+#### 健康检查
 
-#### 用例 1: 文本生成（聊天补全）
-
-**主要参与者**:
-- 用户 / 客户端应用
-- API 层
-- Master 协调器
-- Worker 工作器
-- MLX Runner
-
-**前置条件**:
-- 模型已下载并实例已创建
-- 集群中至少有一个活跃节点
-
-**流程**:
 ```mermaid
-flowchart TD
-    START([用户请求])
-    POST[POST /v1/chat/completions]
-    ADAPTER[API 适配器转换]
-    COMMAND[发送 TextGeneration 命令]
-    FIND[Master 查找匹配 Instance]
-    CREATE[创建 Task 并广播事件]
-    RECEIVE[Worker 接收 TaskCreated]
-    PLAN[Worker 规划任务执行]
-    SPAWN[RunnerSupervisor 启动推理任务]
-    GENERATE[MLX 进程逐个生成 token]
+graph LR
+    MONITOR["监控系统"]
+    API["API /health"]
+    METRICS["/state"]
+    LOGS["/events"]
 
-    POST --> ADAPTER
-    ADAPTER --> COMMAND
-    COMMAND --> FIND
-    FIND --> CREATE
-    CREATE --> RECEIVE
-    RECEIVE --> PLAN
-    PLAN --> SPAWN
-    SPAWN --> GENERATE
+    MONITOR --> API
+    MONITOR --> METRICS
+    MONITOR --> LOGS
 
-    GENERATE --> STREAM[流式返回 Token]
-    STREAM --> CHECK{还有 token?}
-    CHECK -->|是| STREAM
-    CHECK -->|否| FINISH[推理完成]
-    FINISH --> TASKFINISH[发送 TaskFinished 命令]
-    TASKFINISH --> DONE([响应完成])
-
-    style START fill:#e1ffe1
-    style DONE fill:#e1ffe1
-    style GENERATE fill:#ffe1e1
-    style STREAM fill:#e1f5ff
+    style MONITOR fill:#ffe1e1
 ```
 
-**扩展流程**:
-- **图像输入**: 用户发送图像数据，API 分块发送 InputImageChunk
-- **工具调用**: LLM 返回 tool_calls，API 格式化为 OpenAI 格式
-- **取消请求**: 用户断开连接，API 发送 TaskCancelled 命令
+**检查端点**:
+- `GET /state` - 集群状态
+- `GET /events` - 事件流
+- `GET /node_id` - 节点标识
 
-#### 用例 2: 模型下载
+#### 日志聚合
 
-**主要参与者**:
-- 用户
-- API
-- Master
-- DownloadCoordinator
-- HuggingFace Hub
+```bash
+# 查看集群状态
+curl http://localhost:52415/state
 
-**流程**:
+# 查看事件日志
+curl http://localhost:52415/events
+
+# 查看特定节点的内存
+curl http://localhost:52415/state/node_memory
 ```
-1. 用户调用 POST /download/start
-2. Master 发送 StartDownload 命令
-3. DownloadCoordinator 开始下载模型分片
-4. 定期广播 NodeDownloadProgress 事件
-5. 下载完成后，广播 DownloadCompleted 事件
-6. Worker 检测到模型就绪，可以创建实例
-```
-
-#### 用例 3: 集群自愈
-
-**主要参与者**:
-- Election 系统
-- Master
-- Worker
-
-**场景**:
-```
-1. 当前 Master 节点故障
-2. 其他节点检测到连接丢失
-3. Election 触发新的 Bully 算法选举
-4. 最高 ID 节点成为新 Master
-5. 新 Master 清理失效节点和实例
-6. Worker 重新连接到新 Master
-```
-
-#### 用例 4: 实例放置
-
-**主要参与者**:
-- 用户
-- Master
-- Placement 算法
-
-**策略**:
-
-| 策略 | 描述 | 适用场景 |
-|------|------|----------|
-| **Pipeline** | 模型层分布在多个节点 | 单机内存不足，低延迟互连 |
-| **Tensor** | 张量并行，同一层分片 | 大模型，高带宽网络 |
-| **MlxRing** | MLX Ring 通信 | Thunderbolt RDMA 网络 |
-| **MlxJaccl** | JACCL 通信后端 | 高性能互连 |
-
-**流程**:
-```
-1. 用户调用 POST /instance/place
-2. Master 调用 Placement 算法
-3. 根据资源评估选择节点
-4. 生成 ShardAssignments
-5. 广播 InstanceCreated 事件
-6. 各节点 Worker 启动 Runner
-```
-
-### 5.2 API 端点映射
-
-| 功能 | OpenAI API | Claude API | Ollama API |
-|------|-----------|------------|------------|
-| **聊天** | `POST /v1/chat/completions` | `POST /v1/messages` | `POST /ollama/api/chat` |
-| **补全** | - | - | `POST /ollama/api/generate` |
-| **模型列表** | `GET /v1/models` | - | `GET /ollama/api/tags` |
-| **模型信息** | - | - | `POST /ollama/api/show` |
-| **图像生成** | `POST /v1/images/generations` | - | - |
-| **图像编辑** | `POST /v1/images/edits` | - | - |
-
-### 5.3 用户界面
-
-**Web Dashboard (Svelte)**:
-- **主页**: 集群状态、实例列表、拓扑图
-- **聊天界面**: 实时聊天、模型选择、多模态输入
-- **模型管理**: 浏览、搜索、添加自定义模型
-- **下载管理**: 进度监控、取消操作
-- **追踪查看**: 性能分析、延迟统计
 
 ---
 
-## 6. 架构约束与质量属性
+## 5. 架构质量属性
 
-### 6.1 架构约束
+### 5.1 可扩展性 (Scalability)
 
-| 约束类型 | 描述 | 影响 |
-|---------|------|------|
-| **平台** | macOS (Apple Silicon) 优先 | MLX 推理引擎限制 |
-| **Python 版本** | Python 3.13+ | 使用最新类型特性 |
-| **网络** | libp2p + Gossipsub | 点对点消息传递 |
-| **状态管理** | 事件溯源 | 不可变事件 + 状态重放 |
-| **类型安全** | 严格类型检查 | `basedpyright` 0 错误 |
+| 维度 | 策略 | 指标 |
+|------|------|------|
+| **水平扩展** | 添加新节点自动加入 | < 30s 发现并加入 |
+| **模型分片** | 流水线并行 / 张量并行 | 支持 100+ 层模型 |
+| **负载均衡** | 基于任务数的请求分配 | 自动负载均衡 |
 
-### 6.2 质量属性
+```mermaid
+graph LR
+    SINGLE["单节点<br/>1x 性能"]
+    CLUSTER["集群<br/>Nx 性能"]
+    
+    SINGLE -->|"添加节点"| CLUSTER
+    
+    style SINGLE fill:#ffe1e1
+    style CLUSTER fill:#e1ffe1
+```
 
-#### 可扩展性 (Scalability)
-- **水平扩展**: 添加新节点自动加入集群
-- **模型分片**: 支持流水线并行和张量并行
-- **负载均衡**: 基于实例任务数的请求分配
+### 5.2 可用性 (Availability)
 
-#### 可用性 (Availability)
-- **主节点冗余**: Bully 算法自动故障转移
-- **弹性网络**: Gossipsub 自动重连和消息去重
-- **优雅降级**: Worker 在 Master 重选期间暂停请求
+| 故障类型 | 检测时间 | 恢复时间 | 策略 |
+|---------|----------|----------|------|
+| **Master 故障** | 30s | < 10s | Bully 算法选举 |
+| **Worker 故障** | 30s | 自动 | 重新放置实例 |
+| **网络分区** | 30s | < 10s | 自动重连和选举 |
 
-#### 性能 (Performance)
-- **流式响应**: SSE 实时 token 生成
-- **RDMA 加速**: Thunderbolt 高速互连
-- **连续批处理**: MLX 连续批处理支持
+```mermaid
+stateDiagram-v2
+    Healthy --> Degraded: 节点故障
+    Degraded --> Recovering: 检测到故障
+    Recovering --> Healthy: 故障恢复
+    
+    note right of Degraded
+        降级运行
+        部分实例不可用
+    end note
+    
+    note right of Recovering
+        重新选举
+        实例迁移
+    end note
+```
 
-#### 可维护性 (Maintainability)
-- **严格类型**: 全覆盖类型注解
-- **纯函数**: 事件应用逻辑无副作用
-- **测试覆盖**: pytest-asyncio 测试框架
+### 5.3 性能 (Performance)
 
-#### 可观测性 (Observability)
-- **事件日志**: 所有状态变更持久化
-- **分布式追踪**: 任务级别性能追踪
-- **状态 API**: `/state` 实时集群状态查询
+| 操作 | P50 | P95 | P99 |
+|------|-----|-----|-----|
+| **Token 生成** | 50ms | 100ms | 200ms |
+| **事件传播** | 20ms | 50ms | 100ms |
+| **实例创建** | 1s | 5s | 10s |
+| **模型下载** | 1min | 5min | 15min |
+
+### 5.4 可维护性 (Maintainability)
+
+```mermaid
+graph TB
+    CODE["代码质量"]
+    TEST["测试覆盖"]
+    DOC["文档完善"]
+    TYPE["类型安全"]
+
+    CODE --> TEST
+    CODE --> DOC
+    CODE --> TYPE
+
+    style CODE fill:#e1f5ff
+    style TEST fill:#e1ffe1
+    style DOC fill:#fff4e1
+    style TYPE fill:#ffe1e1
+```
+
+**质量保证**:
+- 严格类型检查 (`basedpyright`)
+- 高测试覆盖率 (`pytest-asyncio`)
+- 完整的架构文档
+- 代码审查流程
+
+### 5.5 可观测性 (Observability)
+
+```mermaid
+graph LR
+    LOGS["事件日志"]
+    TRACES["分布式追踪"]
+    METRICS["状态指标"]
+    DASH["仪表板"]
+
+    LOGS --> DASH
+    TRACES --> DASH
+    METRICS --> DASH
+
+    style DASH fill:#e1f5ff
+```
+
+**可观测性特性**:
+- **事件溯源**: 所有状态变更可追溯
+- **分布式追踪**: 任务级别的性能追踪
+- **实时状态**: `/state` API 实时查询
+- **Web UI**: 可视化监控面板
 
 ---
 
-## 7. 未来演进方向
+## 附录
 
-### 7.1 短期规划
-1. **Prefill/Decode 分离**: 预填充和解码阶段分布式优化
-2. **更多推理后端**: 支持 GGML、vLLM 等
-3. **云部署**: 支持 Linux + GPU 集群
-
-### 7.2 长期愿景
-1. **联邦学习**: 跨节点模型微调
-2. **自动缩放**: 基于负载的动态实例调整
-3. **多模态**: 视频、音频生成支持
-
----
-
-## 附录 A: 术语表
+### A. 术语表
 
 | 术语 | 定义 |
 |------|------|
-| **Event** | 不可变的状态变更记录，包含唯一 event_id |
-| **Command** | 意图表达，触发状态变更 |
-| **Instance** | 模型实例，包含分片分配信息 |
-| **Runner** | MLX 推理进程，托管在 Worker 管理下 |
-| **Task** | 工作单元，绑定到特定 Instance |
+| **Event** | 不可变的状态变更记录 |
+| **Command** | 触发状态变更的意图 |
+| **Instance** | 模型实例，包含分片分配 |
+| **Runner** | MLX 推理进程 |
+| **Task** | 工作单元，绑定到 Instance |
 | **Session** | 选举周期标识 |
-| **Shard** | 模型分片，可独立加载 |
-| **Topology** | 集群网络拓扑图 |
-| **PeerID** | libp2p 节点标识符 |
-| **Master** | 集群协调器节点 |
-| **Worker** | 推理执行节点 |
+| **Shard** | 模型分片 |
+| **Topology** | 集群网络拓扑 |
+| **PeerID** | libp2p 节点标识 |
 
----
+### B. 参考资料
 
-## 附录 B: 参考资料
+**内部文档**:
+- CLAUDE.md - 开发指南
+- README.md - 项目概述
 
 **核心代码**:
-- 主入口: `src/exo/main.py`
-- Master: `src/exo/master/main.py`
-- Worker: `src/exo/worker/main.py`
-- API: `src/exo/api/main.py`
-- 事件定义: `src/exo/shared/types/events.py`
-- 状态定义: `src/exo/shared/types/state.py`
-
-**项目文档**:
-- CLAUDE.md: 项目开发指南
-- README.md: 项目概述
+- `src/exo/main.py` - Node 类
+- `src/exo/master/main.py` - Master 类
+- `src/exo/worker/main.py` - Worker 类
+- `src/exo/api/main.py` - API 类
 
 **外部技术**:
-- libp2p: https://libp2p.io/
-- MLX: https://ml-explore.github.io/mlx/
-- FastAPI: https://fastapi.tiangolo.com/
-- Svelte: https://svelte.dev/
+- [libp2p](https://libp2p.io/)
+- [MLX](https://ml-explore.github.io/mlx/)
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [4+1 View Model](https://www.ibm.com/docs/en/rational-uml/9.0.0?topic=views-four-plus-one-model)
 
 ---
 
