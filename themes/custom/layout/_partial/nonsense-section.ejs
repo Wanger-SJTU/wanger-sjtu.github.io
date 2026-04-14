@@ -29,7 +29,7 @@ flowItems = flowItems.sort(function(a, b) {
     <%
       // 提取标签名称数组
       var tagNames = [];
-      if (item.tags && item.tags.length > 0) {
+      if (item.tags && Array.isArray(item.tags) && item.tags.length > 0) {
         item.tags.forEach(function(tag) {
           tagNames.push(typeof tag === 'string' ? tag : tag.name);
         });

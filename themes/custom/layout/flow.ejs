@@ -45,7 +45,7 @@
             var displayDate = date(p.date, 'YYYY年MM月DD日');
             // 提取标签名称
             var tagNames = [];
-            if (p.tags && p.tags.length > 0) {
+            if (p.tags && Array.isArray(p.tags) && p.tags.length > 0) {
               p.tags.forEach(function(tag) {
                 tagNames.push(typeof tag === 'string' ? tag : tag.name);
               });
@@ -56,7 +56,7 @@
             <div class="timeline-content">
               <h3 class="timeline-title"><%- p.title %></h3>
               <div class="timeline-body"><%- p.content %></div>
-              <% if (p.tags && p.tags.length > 0) { %>
+              <% if (p.tags && Array.isArray(p.tags) && p.tags.length > 0) { %>
               <div class="timeline-tags">
                 <% p.tags.forEach(function(tag) { %>
                 <% var tagName = typeof tag === 'string' ? tag : tag.name; %>
