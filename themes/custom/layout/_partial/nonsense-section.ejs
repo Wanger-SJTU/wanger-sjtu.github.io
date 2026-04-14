@@ -46,7 +46,7 @@ flowItems = flowItems.sort(function(a, b) {
         <% if (item.content) { %>
         <p class="nonsense-excerpt"><%- strip_html(item.content).substring(0, 80) %><% if (strip_html(item.content).length > 80) { %>...<% } %></p>
         <% } %>
-        <% if (item.tags && item.tags.length > 0) { %>
+        <% if (item.tags && Array.isArray(item.tags) && item.tags.length > 0) { %>
         <div class="nonsense-tags">
           <% item.tags.forEach(function(tag) { %>
           <% var tagName = typeof tag === 'string' ? tag : tag.name; %>
