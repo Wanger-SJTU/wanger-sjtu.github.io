@@ -66,8 +66,20 @@
 
     // 创建URL映射用于wiki链接查找
     const urlToPost = new Map();
+    const slugToPost = new Map();
+
     posts.forEach(post => {
       urlToPost.set(post.url, post);
+
+      // 提取slug（URL的最后一部分，不含日期）
+      const urlParts = post.url.split('/').filter(p => p);
+      const slug = urlParts[urlParts.length - 1] || urlParts[urlParts.length - 2];
+
+      // 存储slug到文章的映射
+      if (slug) {
+        slugToPost.set(slug, post);
+      }
+
       // 也支持不带末尾斜杠的URL
       const urlWithoutSlash = post.url.replace(/\/$/, '');
       urlToPost.set(urlWithoutSlash, post);
@@ -85,13 +97,20 @@
         const linkText = match[1];
 
         // 尝试找到对应的文章
-        // 方法1: 直接URL匹配
-        let targetPost = urlToPost.get(linkText);
+        // 方法1: slug匹配（优先，因为wiki链接通常只用slug）
+        let targetPost = slugToPost.get(linkText);
+
         // 方法2: 标题匹配
         if (!targetPost) {
           targetPost = posts.find(p => p.title === linkText);
         }
-        // 方法3: URL部分匹配
+
+        // 方法3: 直接URL匹配
+        if (!targetPost) {
+          targetPost = urlToPost.get(linkText);
+        }
+
+        // 方法4: URL部分匹配
         if (!targetPost) {
           targetPost = posts.find(p => p.url.includes(linkText));
         }
