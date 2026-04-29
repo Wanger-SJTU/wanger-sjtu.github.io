@@ -3,7 +3,7 @@ title: "Q&C - 量化与缓存融合的高效生成"
 date: 2026-04-29
 tags: ["论文翻译"]
 mathjax: true
-source: 2503.02508
+source: https://arxiv.org/abs/2503.02508
 ---
 
 # Q&C: 当量化遇见缓存——高效生成中的技术融合

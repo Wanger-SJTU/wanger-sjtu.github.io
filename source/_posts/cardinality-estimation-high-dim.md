@@ -3,7 +3,7 @@ title: "高维相似性查询基数估计 - PVLDB 2020"
 date: 2026-04-29
 tags: ["论文翻译"]
 mathjax: true
-source: 2604.04603
+source: https://arxiv.org/abs/2604.04603
 ---
 
 # 高维相似性查询基数估计：基于自适应桶探测的方法

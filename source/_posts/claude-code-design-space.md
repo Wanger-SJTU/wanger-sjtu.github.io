@@ -3,7 +3,7 @@ title: "深入 Claude Code - AI Agent 系统设计空间"
 date: 2026-04-29
 tags: ["论文翻译"]
 mathjax: true
-source: 2604.14228
+source: https://arxiv.org/abs/2604.14228
 ---
 
 # 论文信息

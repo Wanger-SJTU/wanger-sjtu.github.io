@@ -3,7 +3,7 @@ title: "向量检索的理论局限性分析 - ICLR 2026"
 date: 2026-04-29
 tags: ["论文翻译"]
 mathjax: true
-source: 2508.21038
+source: https://arxiv.org/abs/2508.21038
 ---
 
 # 论文信息

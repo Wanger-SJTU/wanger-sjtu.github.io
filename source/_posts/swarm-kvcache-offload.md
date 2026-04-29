@@ -3,7 +3,7 @@ title: "SWARM - 多SSD协同激活感知的KVCache卸载"
 date: 2026-04-29
 tags: ["论文翻译"]
 mathjax: true
-source: 2603.17803
+source: https://arxiv.org/abs/2603.17803
 ---
 
 # SWARM: 多SSD协同激活感知的KVCache卸载
