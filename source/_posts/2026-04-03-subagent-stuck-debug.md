@@ -1,7 +1,7 @@
 ---
 title: "Subagent 卡死排查：input tokens 的隐形天花板"
 date: 2026-04-03 12:38:00 +0800
-tags: [ai, debugging, agent, codex]
+tags: [ai, debugging, agent, codex, AI生成]
 ---
 
 ## 现象

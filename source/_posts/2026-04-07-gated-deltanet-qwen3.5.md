@@ -2,6 +2,7 @@
 title: Qwen3.5 核心架构解析：Gated DeltaNet 线性注意力机制
 date:   2026-04-07
 tags:
+  - AI生成
     - LLM
     - 架构
     - 线性注意力

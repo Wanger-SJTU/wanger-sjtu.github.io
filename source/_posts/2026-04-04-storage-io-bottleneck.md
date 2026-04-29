@@ -1,7 +1,7 @@
 ---
 title: "4万美金的H100都在等磁盘IO——Agent的真实瓶颈根本不是推理"
 date: 2026-04-04
-tags: [存储, IO, 性能]
+tags: [存储, IO, 性能, AI生成]
 ---
 
 > 原文链接：[知乎 - Guanlan](https://zhuanlan.zhihu.com/p/2021028461456701359)

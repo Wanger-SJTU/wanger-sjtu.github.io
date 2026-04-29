@@ -2,7 +2,7 @@
 title: DeepSeek V4 Pro 技术报告解读
 date: 2026-04-24
 mathjax: true
-tags: [论文解读, DeepSeek, MoE, 长上下文]
+tags: [论文解读, DeepSeek, MoE, 长上下文, AI生成]
 ---
 
 

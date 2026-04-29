@@ -1,7 +1,7 @@
 ---
 title: "RRAttention动态块稀疏注意力"
 date: 2026-04-29
-tags: ["论文翻译"]
+tags: ["论文翻译", AI生成]
 mathjax: true
 source: https://arxiv.org/abs/2602.05853
 ---

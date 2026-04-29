@@ -2,6 +2,7 @@
 title: GB200 NVL72 + GLM-5-FP8 成本深度拆解：从硬件折旧到每百万 Token 只需 38 元
 date: 2026-03-16 19:45:00
 tags:
+  - AI生成
   - GPU
   - 推理成本
   - GB200

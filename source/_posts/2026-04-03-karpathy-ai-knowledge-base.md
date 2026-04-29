@@ -1,7 +1,7 @@
 ---
 title: "Karpathy 的本地 AI 知识库，和我的实践"
 date: 2026-04-03 13:10:00 +0800
-tags: [ai, obsidian, knowledge-base, how-i-ai]
+tags: [ai, obsidian, knowledge-base, how-i-ai, AI生成]
 ---
 
 Karpathy 分享了他如何构建本地的 AI 知识库，跟我用的方法也很相似。

@@ -2,6 +2,7 @@
 title: Heuristics 黄昏，Mechanism 迷途
 date: 2026-03-14 08:20:00
 tags:
+  - AI生成
   - 思考
   - LLM
   - AI

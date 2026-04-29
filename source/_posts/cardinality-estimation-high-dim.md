@@ -1,7 +1,7 @@
 ---
 title: "高维相似性查询基数估计 - PVLDB 2020"
 date: 2026-04-29
-tags: ["论文翻译"]
+tags: ["论文翻译", AI生成]
 mathjax: true
 source: https://arxiv.org/abs/2604.04603
 ---
