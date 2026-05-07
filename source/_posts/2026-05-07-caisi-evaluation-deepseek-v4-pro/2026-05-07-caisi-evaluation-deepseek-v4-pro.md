@@ -8,7 +8,10 @@ tags:
   - NIST
   - 大模型
 mathjax: true
+source: https://www.nist.gov/news-events/news/2026/05/caisi-evaluation-deepseek-v4-pro
 ---
+
+> **原文**：[CAISI Evaluation of DeepSeek V4 Pro](https://www.nist.gov/news-events/news/2026/05/caisi-evaluation-deepseek-v4-pro)（NIST，2026年5月）
 
 2026年4月，人工智能标准与创新中心（CAISI）对开源权重 AI 模型 DeepSeek V4 Pro（"DeepSeek V4"）进行了评估。CAISI 评估结果表明，DeepSeek V4 的能力落后于前沿水平约 **8个月**（图1）。
 
@@ -55,9 +58,7 @@ mathjax: true
 
 ## DeepSeek 评估 vs CAISI 评估
 
-![图3：DeepSeek 和 CAISI 评估对比](asset/fig2-benchmark-table.png)
-
-(a) DeepSeek 自行选择和报告的基准测试，V4 看起来与美国前沿模型相当。(b) CAISI 套件中的基准测试，DeepSeek V4 在其中落后于美国模型。CAISI 预先承诺了其整体基准测试套件，即没有根据结果选择基准测试。
+DeepSeek 的技术报告表明，DeepSeek V4 在一系列基准测试上与美国前沿模型具有竞争力（图3a）。然而，CAISI 对这些模型在未出现在 DeepSeek 报告中的基准测试上的评估显示，在某些推理和基于 agent 的评估上表现更差，如 ARC-AGI-2 半私密数据集、留出的软件工程评估 PortBench 和网络安全基准测试 CTF-Archive-Diamond（图3b）。
 
 DeepSeek 的技术报告表明，DeepSeek V4 在一系列基准测试上与美国前沿模型具有竞争力（图3a）。然而，CAISI 对这些模型在未出现在 DeepSeek 报告中的基准测试上的评估显示，在某些推理和基于 agent 的评估上表现更差，如 ARC-AGI-2 半私密数据集、留出的软件工程评估 PortBench 和网络安全基准测试 CTF-Archive-Diamond（图3b）。
 
