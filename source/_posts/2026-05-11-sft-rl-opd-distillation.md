@@ -1,6 +1,7 @@
 ---
 
 > 注：本文图片为 Mermaid 图表，原文使用 JavaScript 渲染，中文版暂不可用。详见[英文原文](https://wanger-sjtu.github.io/2026-05-11-sft-rl-opd-distillation/)。
+
 title: SFT, RL 与 离线蒸馏：从分布视角理解后训练
 date: 2026-05-11 23:47:33
 tags:
@@ -14,6 +15,7 @@ mathjax: true
 
 > 注：本文图片为 Mermaid 图表，原文使用 JavaScript 渲染，中文版暂不可用。详见[英文原文](https://wanger-sjtu.github.io/2026-05-11-sft-rl-opd-distillation/)。
 
+
 > 这篇文章是对英文原文的翻译，原文地址：https://wanger-sjtu.github.io/2026-05-11-sft-rl-opd-distillation/
 
 > 原文关于灾难性遗忘、泛化以及 RL 与离线蒸馏之间联系的分析非常有洞见，作者提出了一个非常有用的心智模型：将后训练方法视为对模型分布的重塑。
@@ -21,6 +23,7 @@ mathjax: true
 ---
 
 > 注：本文图片为 Mermaid 图表，原文使用 JavaScript 渲染，中文版暂不可用。详见[英文原文](https://wanger-sjtu.github.io/2026-05-11-sft-rl-opd-distillation/)。
+
 
 我一直从**分布**的角度思考后训练方法。语言模型是序列上的一个分布。当我们对其进行后训练并试图教它一个任务时，我们实际上是在重塑这个分布。不同的后训练方法在如何重塑分布、什么是目标分布、以及如何定义目标分布上有所不同。
 
