@@ -21,458 +21,288 @@ source: https://dsv4.interactive.ikot.blog/
 
 ### 🔢 Big model smell
 
-嗯，用户让我把一段英文翻译成简短的中文，还要保留格式。先看看原文内容。这段话是在比较DeepSeek-V4 Pro和Google的Switch-C模型的规模，特别是计算量的差异。
+Finally, we have a model comparable in scale to Google's [legendary Switch-C](https://huggingface.co/google/switch-c-2048)! It's been [5 years](https://arxiv.org/abs/2101.03961) since Noam Shazeer & Co. scaled MoEs to an unprecedented size, though that model only had about 1.8B active parameters.
 
-首先，开头提到“Finally, we have a model comparable in scale to Google's [legendary Switch-C](https://huggingface.co/google/switch-c-2048)! It's been [5 years](https://arxiv.org/abs/2101.03961) since Noam Shazeer & Co. scaled MoEs to an unprecedented size, though that model only had about 1.8B active parameters.” 这里需要翻译，同时保留超链接的格式。中文里通常会把链接放在方括号里，比如[超链接文字](链接地址)，所以翻译的时候要保持这个结构。
+最后，我们拥有了一个规模可与谷歌的[传奇 Switch-C](https://huggingface.co/google/switch-c-2048)相媲美的模型！自从 Noam Shazeer 等人将 MoE 扩展到前所未有的规模已经过去了[5 年](https://arxiv.org/abs/2101.03961)，不过那个模型的有效参数只有约 1.8 B。
 
-接下来，“To put things in perspective, Google spent roughly \(3.3 \times 10^{21}\ \text{FLOPs}\) (floating-point operations) on that pretraining run.” 这里的FLOPs需要翻译，通常中文会说“浮点运算次数”或者直接保留FLOPs，可能用“浮点运算”或者“FLOPS”。不过可能直接保留FLOPs，因为技术文档中常用。然后计算部分：
+To put things in perspective, Google spent roughly \(3.3 \times 10^{21}\ \text{FLOPs}\) (floating-point operations) on that pretraining run. If we do some back-of-the-envelope math for DeepSeek-V4 Pro, we get:
 
-\[\begin{aligned} \mathrm{FLOPs}_{\mathrm{V4\ Pro}} &\approx 6 \times N_{\mathrm{active}} \times D_{\mathrm{tokens}} \\ &\approx 6 \times 49\mathrm{B} \times 33\mathrm{T} \\ &\approx 9.7 \times 10^{24}\ \text{FLOPs} \\ &\approx 1 \times 10^{25}\ \text{FLOPs} \end{aligned}\]
+为了给出直观的对比，谷歌在该预训练过程中大约消耗了 \(3.3 \times 10^{21}\ \text{FLOPs}\)（浮点运算）。如果我们对 DeepSeek-V4 Pro 进行简易估算，可得：
 
-这部分需要保持公式格式，但中文里可能用“约”代替≈，或者直接保留符号。不过通常数学公式中的符号是保留的。数字部分如49B是490亿，33T是33万亿，可能需要转换成中文的单位，但有时候直接保留B和T，或者写成“490亿”和“33万亿”。不过在技术文档中可能保留B和T，但中文环境下可能需要说明。比如49B通常翻译为490亿，33T是33万亿。不过有时候也会直接写49B，但可能需要确认。
+\[\begin{aligned}
+\mathrm{FLOPs}_{\mathrm{V4\ Pro}}
+&amp;\approx 6 \times N_{\mathrm{active}} \times D_{\mathrm{tokens}} \\
+&amp;\approx 6 \times 49\mathrm{B} \times 33\mathrm{T} \\
+&amp;\approx 9.7 \times 10^{24}\ \text{FLOPs} \\
+&amp;\approx 1 \times 10^{25}\ \text{FLOPs}
+\end{aligned}\]
 
-然后最后说“That's a 3,000x difference in compute!” 翻译为“计算量相差3000倍！”或者“计算量差异达3000倍！”
+That's a 3,000x difference in compute!
 
-现在整理一下：
-
-首先，第一句：“Finally, we have a model comparable in scale to Google's [legendary Switch-C](https://huggingface.co/google/switch-c-2048)! It's been [5 years](https://arxiv.org/abs/2101.03961) since Noam Shazeer & Co. scaled MoEs to an unprecedented size, though that model only had about 1.8B active parameters.”
-
-翻译成中文：“我们终于有了可与Google[传奇Switch-C](https://huggingface.co/google/switch-c-2048)相媲美的模型！自Noam Shazeer等人将MoE扩展至前所未有的规模至今已[5年](https://arxiv.org/abs/2101.03961)，但该模型仅约18亿活跃参数。”
-
-这里“legendary”翻译为“传奇”可能合适，或者“著名”，但“legendary”通常译为“传奇
+这意味着计算量相差约 **3,000 倍**！
 
 ### 📊 Comparison with DeepSeek-V3.2
 
-...这已经是一个很强的基线。事实上，它实际上开创了我们现在在DeepSeek-V4中看到的一些注意力机制调整，而且它的效率极高。
+……这已经是一个强大的基线。事实上，它在注意力机制的某些调整上具有开创性——正是这些调整如今在DeepSeek-V4中得以体现，而且其运行效率也出奇地高。
 
-下图展示了V3.1和V3.2在不同上下文长度下的推理成本对比。（快速回顾：预填充是指模型为提示词计算KV缓存，而解码是实际的逐个token生成过程。）
+[以下是](https://arxiv.org/pdf/2512.02556) V3.1与V3.2在不同上下文长度下的推理成本对比。（快速回顾：预填充阶段指模型为提示语计算KV缓存，而解码阶段则是逐词生成实际输出的过程。）
 
-![](asset/dsv4/img_01.png) alt="Inference costs comparison">
+![](asset/dsv4/img_01.png) alt="推理成本对比图">
 
 ## 第 4 页
 
 ### 🏗️ What counts as modeling capability
 
-嗯，用户让我把一段英文翻译成中文，要简短，还要保留格式。首先，我需要仔细看看原文内容。这段讲的是模型的建模能力，特别是Transformer中的残差流，还有计算成本的问题。
+这可能听起来有些抽象，所以让我们澄清一下。**“建模能力”**通常指模型表示复杂函数并捕捉错综模式的能力。你也可以把它看作是**拓扑表达力**——即模型在不同层之间灵活路由、存储和组合信息的程度。
 
-先通读一遍原文。开头说“这可能听起来有点抽象，所以让我们澄清一下。”然后解释“建模能力”通常指模型表示复杂函数和捕捉复杂模式的能力，也可以理解为拓扑表达性，即模型如何灵活地路由、存储和组合不同层的信息。接着提到很多机制可解释性的论文，比如[1]和[2]的链接，说明Transformer中信息通过单一残差流顺序流动，这是各层读写的主要通道。每个层（Attention、MLP、MoE）都必须读取这个流，处理数据再写回。后面有个图片链接和alt文本，还有引用Anthropic的博客。然后解释残差连接的工作原理，x' = x + layer(x)，然后说提升建模能力的方法是加宽“高速公路”，即增加隐藏或嵌入维度，但计算成本会随隐藏维度二次方增长，导致模型变慢更重。
+正如众多**机制可解释性**论文所展示的（[1](https://transformer-circuits.pub/), [2](https://arxiv.org/abs/2312.12141v1)），Transformer 中的信息是顺序流经唯一的**残差流**（residual stream）的。这是层读取和写入的主要高速公路。每一层（Attention、MLP、MoE）都必须从该流中读取数据，进行处理，然后再写回去。
 
-现在需要翻译成简短的中文，保留格式。首先，注意保留原文的结构，比如引用链接、图片标记、引用块等。用户要求简短，所以可能需要适当精简，但不能改变原意。
+![](asset/dsv4/img_02.png) alt="Transformer 残差流示意图">
 
-先处理第一句：“This might sound a bit abstract, so let's clarify. 'Modeling capability' generally refers to a model's ability to represent complex functions and capture intricate patterns. You can also think of it as topological expressivity—how flexibly the model can route, store, and combine information across different layers.”
+> 摘自 [Anthropic 的博客文章](https://transformer-circuits.pub/2021/framework/index.html)。
 
-翻译成中文，简短：“这可能有点抽象，我们来澄清一下。'建模能力'指模型表示复杂函数和捕捉精细模式的能力，也可视为拓扑表达性——模型在各层间路由、存储和组合信息的灵活性。”
+（这直接来源于残差连接的工作方式：`x' = x + layer(x)`（为简洁起见省略了归一化），我们只是把多个相加操作链在一个不断变化的 `x'` 上。）
 
-接下来：“As numerous mechanistic interpretability papers have shown ([1](https://transformer-circuits.pub/), [2](https://arxiv.org/abs/2312.12141v1)), information in a Transformer flows sequentially through a single residual stream. This is the main highway that layers read from and write to. Every single layer (Attention, MLP, MoE) has to read from this stream, process the data, and write it back. ![](asset/dsv4/img_02.png) alt="Transformer residual stream illustration"> > From [Anthropic’s blogpost](https://transformer-circuits.pub/2021/framework/index.html).”
+提升建模能力和表达力的最可靠方法是通过增加隐藏维度或嵌入维度来**扩宽**这条“高速公路”。直观上，这相当于为层间信息传递创建了更多的“槽位”。但这里有一个限制：Attention / FFN / MoE 层的计算成本（FLOPs）随隐藏维度的增加呈二次增长。把残差流扩宽会使模型的计算速度显著下降，并且计算负担大幅加重。
 
-翻译时，注意保留链接和图片标记。例如：“如多篇机制可解释性论文所示([1](https://transformer-circuits.pub/), [2](https://arxiv.org/abs/2312.12141v1))，Transformer中的信息通过单一残差流顺序流动，这是各层读写的主干道。每个层（Attention、MLP、MoE）都需从该流读取、处理数据并写回。![](asset/dsv4/img_02.png) alt='Transformer残差流示例'> > 来自[Anthropic博客](https://transformer-circuits.pub/2021/framework/index.html)。”
-
-然后：“(This follows directly from how residual connections work: `x' = x + layer(x)`, omitting normalizations for clarity. We just chain multiple additions to an ever-changing `x'`).”
-
-翻译：“（这源于残差连接的工作原理：`x' = x + layer(x)`（省略归一化以简化），通过多次累加到不断变化的`x'`。）”
-
-接下来
+这正是 **HyperConnections (HC)** 及其升级版 **mHC** 发挥作用的地方。它们能够在几乎不增加计算开销的情况下，**大幅提升残差流的带宽**。本质上，它们引入了一种“虚拟”宽度，使得表示保持区分度和丰富度。通过将残差流扩展 \(n\) 倍（例如，宽度提升 4 倍），它可以在不覆盖先前数据的情况下，向前传播四倍的信息量。
 
 ## 第 5 页
 
 ### ⚡ How FP4-FP8 can be more efficient
 
-So why is it 1/3 more efficient? Tensor core computations are bottlenecked by physical resources. Specifically, it's about how many operand bits can be staged, decoded, and fed into the compute pipeline per cycle.
+以下是您所需的中文翻译，已严格遵循保留Markdown格式、LaTeX公式、代码块、URL链接以及专业术语准确性的要求：
 
-When the size of matrix elements shrinks, we can push more elements through the datapath in the same amount of time. But there's a catch: the compute blocks themselves must natively support this format.
+为什么效率提升了1/3？张量核心的计算受限于物理资源。具体来说，关键在于每个周期内能有多少操作数比特被暂存、解码并送入计算流水线。
 
-Here are Nvidia's official specs. You can clearly see how cutting the operand size in half doubles the potential compute:
+当矩阵元素的大小缩小时，我们可以在相同时间内将更多元素推入数据通路。但有一个前提：计算块本身必须原生支持这种格式。
 
-![](asset/dsv4/img_03.png) alt="Nvidia compute specs">
+以下是英伟达的官方规格。您可以清楚地看到，操作数大小减半后，潜在的计算能力翻了一番：
 
-Under the hood, this speedup happens because GPU instructions can process larger matrices in a single pass, taking a fixed number of clock cycles.
+![](asset/dsv4/img_03.png) alt="英伟达计算规格">
 
-Check out this screenshot from a [paper](https://www.scribd.com/document/768738241/Benchmarking-and-Dissecting-the-Nvidia-Hopper-GPU-Architecture) benchmarking different instructions on the H800:
+在底层，这种加速是因为GPU指令可以在单次处理中以固定的时钟周期数处理更大的矩阵。
 
-![](asset/dsv4/img_04.png) alt="H800 instructions benchmark">
+请查看这篇[论文](https://www.scribd.com/document/768738241/Benchmarking-and-Dissecting-the-Nvidia-Hopper-GPU-Architecture)中的截图，该论文对H800上的不同指令进行了基准测试：
 
-Notice how the instruction names include the matrix chunk sizes `m-n-k`. For instance, `m64n256k16` (the first row for 16-bit formats) means multiplying a `64x16` matrix by a `16x256` matrix.
+![](asset/dsv4/img_04.png) alt="H800指令基准测试">
 
-Now look at the 8-bit FP8 format in the fourth row. It uses `m64n256k32`, which means multiplying `64x32` by `32x256`. That's the maximum possible size for this GPU type; larger matrices just get split into chunks.
+请注意，指令名称中包含了矩阵分块大小 `m-n-k`。例如，`m64n256k16`（16位格式的第一行）表示将一个 `64x16` 的矩阵乘以一个 `16x256` 的矩阵。
 
-The inner dimension K has doubled, but the instruction still takes exactly 128 clock cycles to execute. So, by dropping down to 8 bits, the GPU manages to multiply twice as many elements in the same number of cycles.
+现在看第四行中的8位FP8格式。它使用了 `m64n256k32`，这意味着将 `64x32` 乘以 `32x256`。这是该GPU类型的最大可能尺寸；更大的矩阵会被拆分成多个分块。
 
-This brings us to an interesting conclusion. If a GPU natively supports FP4 x FP8, it can process more elements per instruction than FP8 x FP8. This gives us a theoretical speedup of \((8+8)/(4+8) = 16/12 = 1.33\times\).
+内维度K翻倍了，但该指令仍然恰好需要128个时钟周期来执行。因此，通过降低到8位，GPU在相同周期数内成功将乘法的元素数翻倍。
 
-But without this hardware support, developers are stuck calling instructions that perform exactly like standard FP8 x FP8.
+这引出了一个有趣的结论。如果GPU原生支持FP4 x FP8，那么每条指令处理的数据元素数将超过FP8 x FP8。这给我们带来了理论上的加速比 \((8+8)/(4+8) = 16/12 = 1.33\times\)。
 
-The current generation of Blackwell GPUs doesn't actually support this FP4 x FP8 efficiency boost. Sure, they allow multiplying any combination of `{f4,f6,f8} × {f4,f6,f8}`, but the throughput stays exactly the same. Doing `f4 x f8` is exactly as fast as `f8 x f8`. Yes, it's twice as fast as Hopper (see the blue box below), but that's it:
+但如果没有这种硬件支持，开发者只能使用性能与标准FP8 x FP8完全一致的指令。
 
-![](asset/dsv4/img_05.png) alt="Blackwell GPU specifications">
-
-That 2x boost is just a baseline architectural improvement in the GPU, which you can also see for FP16 and TF32 (in the red box). A true 2x throughput jump only happens if you go full `f4 x f4` (in the green box).
-
-Because of this, getting that 1/3 extra efficiency out of the box just isn't happening right now. DeepSeek will either have to transition to `f4 x f4` compute, or we'll have to wait for the next generation of hardware—like Nvidia's Vera Rubin or, more likely, upcoming Huawei chips.
+当前一代
 
 ## 第 6 页
 
 ### 🏗️ Transformer of Theseus
 
-有趣的是，我们至今仍称这些模型为"Transformer"来指代2017年的原始架构，尽管从那以后几乎一切都改变了。
+很有意思，我们把这类模型仍称为“Transformer”，沿袭2017年原始架构的命名，但实际上几乎所有组件都已面目全非。
 
-现在的注意力机制完全不同了（我们看到的论文实际使用了两种类型！）。我们抛弃了标准FFN，改用MoE——它们本身也已多次演变——替换了位置嵌入，从LayerNorm转向RMSNorm。
+注意力机制如今已彻底改头换面（比如本论文中实际上采用了两种注意力类型！）。我们抛弃了标准前馈网络（FFN），改用混合专家模型（MoE）——而MoE自身也已历经数次迭代——同时替换了位置嵌入，并从LayerNorm转向RMSNorm。
 
-甚至连损失函数都演变为混合多token预测任务。这些甚至还没提从原始编码器-解码器架构到纯解码器LLM的巨大范式转变。
+就连损失函数也进化到融合了多Token预测任务。更不用说，原始编码器-解码器架构已发生了向仅解码器大型语言模型（Decoder-only LLM）的宏大范式迁移。
 
-再加上传奇的Adam优化器被AdamW取代，现在又转向Muon。
+再加上传奇般的Adam优化器已被AdamW取代，如今我们正迈向Muon优化器。
 
-这就是Transformer版的忒修斯之船。如果你随时间替换了所有原始组件，它还是Transformer吗？我把它留给读者思考。
+这堪称“忒修斯之Transformer”。若随时间推移替换掉所有原始组件，它是否仍是Transformer？这个问题留给读者作为思考题。
 
 ## 第 7 页
 
 ### 🎯 Multi-Token Prediction
 
-嗯，用户让我把一段英文翻译成中文，要简短，还要保留格式。首先，我需要仔细看看原文内容。原文讲的是Multi-Token Prediction（MTP），在V4中只预测一个额外的token，然后解释为什么需要这个，比如更密集的训练信号、数据效率、让模型“提前思考”等等。还有架构上的细节，比如共享输入输出嵌入，有自己的transformer块，可能包含MoE层，还有损失函数的权重。
+多令牌预测（Multi-Token Prediction，MTP）顾名思义，是在每个位置同时预测多个未来令牌。在V4版本中，我们仅额外预测一个令牌，但为何要如此设计？
 
-首先，我需要确保翻译准确，同时保持简短。用户特别提到“简短”，所以可能需要删减一些重复的部分，或者用更简洁的表达。比如原文中两次提到“for training, MTP uses a standard cross-entropy loss...”，可能可以合并。另外，保留格式，比如链接、图片alt文本等。
+首先，MTP目标函数能提供更密集的训练信号，从而提升数据效率。同时，它迫使模型"提前规划"，并针对未来令牌优化其内部表征。
 
-先看第一句：“Multi-Token Prediction (MTP) does exactly what it sounds like: it predicts multiple future tokens at every position.” 翻译成中文，可能需要简短，比如“多令牌预测（MTP）名副其实：在每个位置预测多个未来令牌。”不过“令牌”通常翻译为“token”，但中文里可能直接用“token”或者“标记”，不过技术文档里通常保留英文，所以可能写“多令牌预测（MTP）名副其实：在每个位置预测多个未来token。”
+如原始[DeepSeek-V3论文](https://arxiv.org/abs/2412.19437)图示所示，MTP在保持每步完整因果链的前提下，顺序预测这些额外令牌。
 
-接下来，“In V4, we’re only predicting one extra token, but why bother?” 翻译成“V4中仅预测一个额外token，为何如此？”或者更口语化一点，“V4仅预测一个额外token，为何要这么做？”
+![](asset/dsv4/img_06.png) alt="MTP顺序预测示意图">
 
-然后解释原因：“First, an MTP objective provides a denser training signal, which improves data efficiency. It also forces the model to "think ahead" and optimize its internal representations for future tokens.” 可以翻译为“首先，MTP提供更密集的训练信号，提升数据效率；同时迫使模型‘提前思考’，优化内部表示以处理未来token。”
+在架构层面，每个MTP模块与主模型共享输入和输出嵌入，但维护独立的完整Transformer块。该模块包含注意力层，且尽管论文未明确证实，很可能还包含MoE层（尽管也可能只是标准的前馈网络FFN）。
 
-接着，“As shown in the diagram from the [original DeepSeek-V3 paper](https://arxiv.org/abs/2412.19437), MTP predicts these extra tokens sequentially while maintaining the full causal chain at every step. ![](asset/dsv4/img_06.png) alt="MTP sequential prediction illustration">” 这里需要保留链接和图片格式。中文可能写“如[DeepSeek-V3原论文](https://arxiv.org/abs/2412.19437)图示，MTP按顺序预测额外token，同时每一步保持完整因果链。![](asset/dsv4/img_06.png) alt='MTP顺序预测示例'”
+通过MTP，我们计算标准交叉熵损失。该损失作为辅助损失，其权重系数（参考V3论文）可能在0.1至0.3之间。
 
-然后架构部分：“Architecturally, each MTP module shares its input and output embeddings with the main model, but maintains its own full transformer block. This block includes an attention layer and—while the paper doesn't explicitly confirm it—likely an MoE layer (though it could just be a standard FFN).” 翻译：“架构上，每个MTP模块共享主模型的输入输出嵌入，但保留独立的完整transformer块，包含注意力层及可能的MoE层（或标准FFN）。”
-
-最后损失函数部分：“With MTP, we compute a standard cross-entropy loss. This acts as an auxiliary loss with some weight (likely somewhere between 0.1 and 0.3, if we go by the V3 paper). For training, MTP uses a standard cross-entropy loss. This functions as an auxiliary loss, with a weighting factor likely somewhere between 0.1 and 0.3, if we go by the V3 paper.” 这里重复了，可以合并为“训练时使用
+训练时，MTP采用标准交叉熵损失。根据V3论文推断，该损失作为辅助损失，权重因子可能设定在0.1至0.3范围内。
 
 ### 🧩 Auxiliary-loss-free expert routing
 
-当我们训练MoE模型时，token路由经常遭遇"路由崩溃"问题。这是指网络固执地将大部分token发送给少数几个专家，完全破坏了效率并造成GPU瓶颈，使大部分硬件处于空闲状态。
+当训练MoE模型时，token路由常遭遇"路由坍缩"问题——网络会顽固地将大多数token发送给少数专家。这完全摧毁了效率，造成严重的GPU瓶颈，使大部分硬件处于闲置状态。传统解决方案是使用辅助损失函数——通过惩罚项强制模型均匀分配token。
 
-传统解决方案是使用辅助损失函数来强制平均分配token。
+但该惩罚项作为正则化项会改变梯度，与主要语言建模目标产生冲突。如[此项研究](https://arxiv.org/abs/2408.15664)所示，若将惩罚强度提升至足以成功平衡负载，则会降低模型的整体性能。
 
-但这种惩罚作为正则化项会改变梯度，与主要的语言建模目标冲突。如果惩罚足够强以平衡负载，会降低模型整体性能。
+为摆脱这种权衡，无辅助损失策略将平衡机制从损失函数中剥离，直接嵌入路由过程。具体通过为每个专家施加动态偏置实现（每个MoE层中每个专家仅对应一个标量值）。
 
-为了避免这种权衡，无辅助损失的策略将平衡任务从损失函数转移到路由机制中，通过动态的专家偏置（每个MoE层每个专家一个标量值）实现。
+当某专家接收的token超过公平份额时（参见下图外列），其偏置会被**降低**以抑制被选中概率。若专家未被充分利用，则偏置会被**提升**。通过基于批次统计迭代调整这些偏置，我们能在不损害训练目标的前提下实现专家负载的完美均衡。
 
-如果专家收到超过公平份额的token，其偏置被**降低**以抑制选择；如果专家未充分利用，其偏置被**提高**。通过基于批次统计动态调整这些偏置，实现完美平衡的专家负载而不影响训练目标。
+![](asset/dsv4/img_07.png) alt="MoE层动态偏置与负载均衡">
 
-![](asset/dsv4/img_07.png) alt="MoE层中的动态偏置和负载均衡"
-
-动态偏置仅用于路由决策。
+精妙之处在于：该动态偏置仅用于路由决策。选定顶尖专家后，偏置随即被剥离。随后我们使用原始路由器的评分来加权专家实际输出的结果。
 
 ### 🧩 Hash routing in early layers
 
-嗯，用户让我把一段英文翻译成简短的中文，还要保留格式。首先，我需要仔细看看原文内容。这段讲的是MoE模型中前几层使用标准密集FFN的原因，避免路由崩溃的问题。
+在几乎所有近期的 **MoE** 模型中，前 **1 到 3 层** 都是标准的 **dense FFN**。我们采用这种结构纯粹是出于必要性。如果在最早的层中使用学习得到的 MoE 路由，往往会遭遇 **“routing collapse”** ——模型几乎把所有 token 都倾斜到一两个 expert 上，导致训练极度不稳定。
 
-先通读一遍原文。开头说在几乎所有最近的MoE模型中，第一到第三层是标准的密集FFN，这是出于必要。如果早期层用学习的MoE路由，会导致路由崩溃，大部分token都送到一两个专家，训练不稳定。为什么？因为Transformer的早期层是特征提取器，处理通用的低级特征，比如形态和拼写，这时候token还没吸收上下文，所以隐藏状态没有上下文，标准MoE路由器难以学习有意义的动态映射。密集FFN强制所有token用相同权重，建立共享表示基础。比增加隐藏尺寸更高效，因为后者计算量二次增长。也比扩大词汇量好，大词汇量有长尾问题，罕见token训练不足，还提到SolidGoldMagikarp的故事。另外，即使训练稳定，早期路由器最多只能记忆静态映射，比如固定把某个token ID送到特定专家。
+**为什么会出现这种情况？**  
+Transformer 的最早几层充当 **特征提取器**，抽取诸如形态学和拼写等通用的低层次特征。这一步发生在 token 表示甚至还未吸收其周围上下文之前。由于这些隐藏状态完全 **未上下文化**，标准的 MoE 路由器难以学习到任何有意义、动态的 expert 专业化映射。
 
-现在需要翻译成简短中文，保留格式。可能用户需要技术文档或者论文中的翻译，所以要准确，同时简洁。要注意术语的正确翻译，比如MoE是混合专家，FFN是前馈神经网络，routing collapse翻译成路由崩溃。SolidGoldMagikarp可能需要保留英文，或者用中文译名，但原文有链接，可能直接保留链接，但中文里可能用“SolidGoldMagikarp”或者“固金魔法鲤鱼”之类的，不过通常技术文档中可能保留英文名，或者加引号。
+**dense FFN** 通过强制所有 token 使用完全相同的权重来解决这一问题。它构建了一个共享的表征基础。相比于 **增加 hidden size**（这会导致后续所有层的计算量呈二次增长），这种方式更为高效。它也优于 **扩展词表规模**——巨大的词表已经存在大量稀有、训练不足的 token（如果你还没读过著名的 [SolidGoldMagikarp](https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation) 故事，它正好阐释了这一问题）。
 
-“dense FFNs”翻译为“密集前馈网络”或者“密集FFN”，可能用“密集前馈网络”更准确，但有时候在中文里直接说FFN也可以，不过可能需要全称。不过用户要求简短，可能用“密集FFN”即可。
-
-“routing collapse”翻译为“路由崩溃”应该没问题。
-
-“feature extractors for universal, low-level traits like morphology and spelling” 这里“morphology”是形态学，但可能指词形变化，比如词的结构，比如词根、词缀等。“spelling”是拼写。
-
-“uncontextualized”翻译为“无上下文的”或者“未上下文化的”。
-
-“shared representational foundation”共享表示基础。
-
-“quadratically increase compute”计算量二次增长，或者计算量呈二次方增长。
-
-“long tail of rare, undertrained tokens”长尾的罕见、训练不足的token。
-
-“SolidGoldMagikarp”可能直接保留，或者翻译为“固金魔法鲤鱼”，但通常可能保留英文，因为可能是一个专有名词，比如LessWrong上的文章，可能需要保留原名，或者加引号。
-
-“hardcoded rule”硬编码规则。
-
-现在要简短，所以可能需要把长句拆短，用更简洁的表达。例如“we do this out of pure necessity”可以翻译为“这是出于必要”。
-
-“the model just dumps almost all tokens onto one or two experts”可以译为“模型几乎将所有token分配给一两个专家”。
-
-“severe training instability”训练严重不稳定。
-
-“before a token representation even absorbs its surrounding context”在token表示吸收周围上下文之前。
-
-“standard MoE routers struggle to learn any meaningful, dynamic mappings for expert specialization”标准MoE路由器难以学习有意义的动态专家分配映射。
-
-“Dense FFNs solve this by forcing all tokens through the exact same weights.”密集FFN通过强制所有token使用相同权重来解决此问题。
-
-“builds a shared representational foundation”建立共享的表示基础。
-
-“much more efficient than increasing the hidden
+此外，即使训练得到稳定，**早层学习到的路由器** 能实现的最好效果也只能是记忆一个静态映射。它本质上学习到类似 “**始终将 Token ID 405 发送给 Expert 3**” 的硬编码规则。**HashMoE** 正是利用了这一点：完全去除学习到的路由器，
 
 ### 🧩 Sqrt-Softplus for router scores
 
-After selecting and computing the outputs for K experts in an MoE layer, we calculate their weighted sum. It's helpful to break this down into three distinct concepts:
+在选择并计算MoE层中K个专家的输出后，我们计算其加权和。将此过程分解为三个不同的概念会更有帮助：
 
-- Router logits — the raw outputs of the router linear layer.
+- **路由器logits** — 路由器线性层的原始输出。
+- **亲和力得分** — 应用激活函数（如\(Softmax\)）后得到的正得分。
+- **路由权重** — 归一化后选出的top-K得分，实际用于混合专家输出。
 
-- Affinity scores — the positive scores you get after applying an activation function like \(Softmax\).
+经典的MoE路由器通常依赖\(Softmax\)。这确保了所选专家的权重非负，并被归一化为类似概率的分布。但\(Softmax\)由于指数运算可能变得过于尖锐。例如，如果4个专家的路由器logits为`[4, 4, 4, 8]`，最后一个专家会占据约95%的概率质量，前三个专家只能争夺剩余的5%。这导致了严重的赢家通吃局面。
 
-- Routing weights — the selected top-K scores after normalization, which are actually used to mix the expert outputs.
+DeepSeek-V3通过改用基于\(Sigmoid\)的亲和力得分解决了这一问题。与\(Softmax\)不同，\(Sigmoid\)独立地对每个专家进行评分。如果一个专家获得高分，并不会自动抑制其他专家。
 
-Classic MoE routers typically relied on \(Softmax\). This ensures the selected expert weights are non-negative and normalized into a probability-like distribution. But \(Softmax\) can get way too sharp because of the exponential. For example, if the router logits for 4 experts are `[4, 4, 4, 8]`, the last expert grabs about 95% of the probability mass. The first three experts are left fighting over the remaining 5%. This leads to a harsh winner-take-most dynamic.
+但\(Sigmoid\)有其致命缺陷：它会饱和。较大的正logits会被压缩到接近1，较大的负logits则降至接近0。梯度在两端都会消失。因此，如果两个专家的logits分别为4和8，\(Sigmoid\)只会说：“嗯，它们基本上都是1。”你会丢失关于该token与专家实际匹配程度的关键信息。
 
-DeepSeek-V3 tackled this by moving to \(Sigmoid\)-based affinity scores. Unlike \(Softmax\), \(Sigmoid\) scores each expert independently. If one expert gets a massive score, it doesn't automatically suppress the others.
+这种基于\(Sigmoid\)的路由方式迅速成为类似DeepSeek的MoE模型的标准，包括Kimi K2.x、GLM-5.x和MiniMax-M2.x。然而，在DeepSeek-V4中，团队再次调整了方向。他们放弃了\(Sigmoid\)，转而采用\(Sqrt(Softplus)\)。
 
-But \(Sigmoid\) has its own fatal flaw: it saturates. Large positive logits all squash to roughly 1, and large negative logits drop to roughly 0. Gradients vanish on both ends. So, if two experts have logits of 4 and 8, \(Sigmoid\) just says, "Yep, they're both basically 1." You lose critical information about how strongly that token actually matches the expert.
+\(Softplus\)的行为类似于平滑的\(ReLU\)：\(Softplus(z)=\log(1+e^z)\)：
 
-This \(Sigmoid\)-style routing quickly became the standard for DeepSeek-like MoE models, including Kimi K2.x, GLM-5.x, and MiniMax-M2.x. However, with DeepSeek-V4, the team shifted gears again. They dropped \(Sigmoid\) for \(Sqrt(Softplus)\).
-
-\(Softplus\) behaves a lot like a smooth \(ReLU\): \(Softplus(z)=\log(1+e^z)\):
-
-![](asset/dsv4/img_08.png) alt="Softplus activation function graph">
-
-For highly negative values, it hugs zero. But for large positive values, it keeps growing roughly linearly instead of flattening out. This means positive router logits finally preserve their magnitude. A logit of 8 is now meaningfully stronger than a logit of 4.
-
-Still, plain \(Softplus\) can be a bit too aggressive. If one selected expert has a massive positive logit, it can easily dominate the normalized mixture. Taking the square root beautifully solves this by compressing the dynamic range. \(Sqrt(Softplus)\) hits the perfect sweet spot.
-
-Let's check out the MoE [code](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/inference/model.py#L546):
-
-`# Compute router logits
-scores = router(x)
-# Convert logits into positive affinity scores
-scores = F.softplus(scores).sqrt()
-# Select top-K experts by affinity
-indices = scores.topk(self.topk, dim=-1)[1]
-weights = scores.gather(1, indices)
-# Normalize relative weights among selected experts
-weights /= weights.sum(dim=-1, keepdim=True)
-# What's this?
-weights *= self.route_scale
-
-```
-
-We can see that the `weights` are normalized at the end so they sum to one. But why multiply them by `self.route_scale` right after?
-
-Imagine the selected top-6 experts output vectors with similar magnitudes, but they point in different directions. Not literally opposite, just capturing different features. When we average those vectors together, their coordinates partially cancel out. As a result, the final vector can end up much smaller than a single expert's output.
-
-RMS (root mean square) is just a handy way to measure this. It basically means the "typical per-coordinate size" of a vector. In the toy simulation below, averaging 6 somewhat independent expert outputs gives us a vector with an RMS of only \(1/\sqrt{6} \approx 0.41\) compared to that of a single expert. Without any correction, the routed MoE branch would just become too weak.
-
-DeepSeek-V4 Pro uses top-6 routing and sets `route_scale = 2.5`. Multiplying by 2.5 scales that uniform top-6 average back up to roughly the scale of a single expert:
-
-`import torch
-torch.manual_seed(0)
-
-expert_out = torch.randn(4096, 6, 1024) # [tokens, top6 experts, hidden_dim]
-weights = torch.ones(6) / 6 # uniform top-6 routing
-
-original_rms = expert_out.pow(2).mean(-1).sqrt().mean()
-
-for route_scale in [1.0, 2.5]:
- agg_out = route_scale * (expert_out * weights[None, :, None]).sum(dim=1)
- agg_rms = agg_out.pow(2).mean(-1).sqrt().mean()
- print(f&quot;route_scale={route_scale}: aggregated/original RMS = {agg_rms / original_rms:.4f}&quot;)
-# route_scale=1.0: aggregated/original RMS = 0.4083
-# route_scale=2.5: aggregated/original RMS = 1.0209
-
-```
-
-For instance, Kimi K2.5 [uses](https://huggingface.co/moonshotai/Kimi-K2.6/blob/main/config.json#L145) top-8 routing and a scale of 2.827, which is almost exactly \(\sqrt{8}\). It's not a strict rule, though.
+![Softplus激活函数图](asset/dsv4/img_08.png) 
+对于高度负值，它趋近于零。但对于较大的正值，它保持线性增长。
 
 ### 🏗️ How Hyper-Connections expand
 
-你可能认为这意味着在开始时添加 \(n_{hc}\) 个嵌入层，将多个不同的嵌入传递到残差流中。令人惊讶的是，事实并非如此。对于每个token，嵌入只是简单地重复多次：
+You might assume this means adding \(n_{hc}\) embedding layers at the start to pass multiple distinct embeddings down the residual stream. Surprisingly, that’s not the case. For each token, the embedding is simply repeated multiple times:
 
-`def forward(self, input_ids: torch.Tensor, start_pos: int = 0):
- h = self.embed(input_ids)
- # 通过重复展开为hc_mult份拷贝以实现超连接
- h = h.unsqueeze(2).repeat(1, 1, self.hc_mult, 1)
- # 遍历transformer块
- for layer in self.layers:
- h = layer(h, start_pos, input_ids)
- # 输出LMHead
- logits = self.head(h, self.hc_head_fn, self.hc_head_scale, self.hc_head_base, self.norm)
- return logits
-
+```python
+def forward(self, input_ids: torch.Tensor, start_pos: int = 0):
+    h = self.embed(input_ids)
+    # Expand to hc_mult copies for Hyper-Connections using repetition
+    h = h.unsqueeze(2).repeat(1, 1, self.hc_mult, 1)
+    # Traverse transformer blocks
+    for layer in self.layers:
+        h = layer(h, start_pos, input_ids)
+    # Output LMHead
+    logits = self.head(h, self.hc_head_fn, self.hc_head_scale, self.hc_head_base, self.norm)
+    return logits
 ```
 
-在底层，每个`layer`都包含我们稍后会讨论的投影矩阵。我们需要这些矩阵在运行核心操作（如Attention或MoE）之前将\(n_{hc}\)个通道混合成一个，并在之后将其分离回多个通道。
+Under the hood, each `layer` contains the projection matrices we’ll discuss later. We need these to mix the \(n_{hc}\) channels into one before running the core operation (like Attention or MoE), and to separate them back out afterward. 
 
-实际上，这意味着虽然相同的嵌入在所有\(n_{hc}\)流中进入第一个transformer层，但当它们退出时看起来会有所不同。
+In practice, this means that while identical embeddings enter the first transformer layer across all \(n_{hc}\) streams, they will look different by the time they exit.
 
 ### 🏗️ Hyper-Connections and Equations 1, 3, 5 explained
 
-嗯，用户让我把一段英文翻译成简短的中文，还要保留格式。先看看原文内容。这段讲的是关于Transformer块处理多个嵌入的机制，提到了Pre-Block Mixing和Post-Block Mixing，还有公式里的A_l和C_l，以及DeepSeek-V4 Pro架构里的n_hc=4。
+该方程与下方公式(3)-(5)可能看起来极其复杂且难以直观理解，但理解它们的关键在于论文中的图2：
 
-首先，我需要准确理解每个技术点。比如“4 embeddings per token”要翻译成“每个token有4个嵌入”，但可能需要更简洁。然后“flatten the 4 embeddings into a single vector”就是“将4个嵌入展平为单个向量”，不过可能用“展平”或者“合并”更合适。
+![](asset/dsv4/img_09.png) alt="图2 论文中解释超连接（HyperConnections）的示意图">
 
-“linear layer with an output dimension of 4”应该翻译为“输出维度为4的线性层”。然后“weights for a weighted sum”是“加权和的权重”。这里可能需要检查专业术语是否正确，比如“weighted sum”通常译为“加权求和”。
+现在，Transformer块对每个词元输入4个嵌入向量，而非仅1个（因为DeepSeek-V4 Pro架构中\(n_{hc} = 4\)）。然而，核心层（DeepSeekMoE / CSA / HCA）仍仅处理单个嵌入向量。为填补这一差异，他们引入了两个组件：
 
-“core layers (DeepSeekMoE / CSA / HCA) still only process a single embedding”这里要保留专有名词，比如DeepSeekMoE、CSA、HCA可能不需要翻译，直接保留。所以“核心层（DeepSeekMoE/CSA/HCA）仍仅处理单个嵌入”。
+- **块前混合**（底部中央）。这对应于公式中的输入映射\(A_l\)。我们将4个嵌入向量展平为单一向量，并通过一个输出维度为4的线性层。这4个数值作为权重，对输入嵌入向量进行加权求和，最终得到一个单一嵌入向量，该向量以正确比例融合了所有4种"语义"。这个单一嵌入向量才是实际输入核心层的对象。
 
-接下来“Pre-Block Mixing (bottom center)”翻译成“预块混合（底部中心）”，可能需要确认“pre-block”是否常用“预块”还是“块前”，但可能“预块混合”更准确。然后“input mapping A_l in the formula”是“公式中的输入映射A_l”。
+- **块后混合**。这对应于公式中的输出映射\(C_l\)。其作用相反，将单一嵌入向量重新分配回4个残差流中。值得注意的是，我们并非将层输出拆分为四个不同向量，而是将相同的层更新广播至四条超连接通道，仅使用不同的学习振幅。例如，我们可能对某个残差流写入`1.1 * u`，而对另一残差流写入`0.3 * u`，其中\(u\)为核心层的输出。
 
-“flatten the 4 embeddings into a single vector and pass it through a linear layer with an output dimension of 4” → “将4个嵌入展平为单个向量，通过输出维度为4的线性层”。不过可能“展平”在中文里更常用“展开”或者“扁平化”，但“展平”也可以。
+- 尽管这可能听起来有违直觉，但此步骤的权重是通过拼接块前混合中使用的完全相同的4个嵌入向量获得的。此处的线性层具有相同维度：输入为\(4d\)，输出为4。
 
-然后“4 numbers act as weights for a weighted sum of the input embeddings” → “这4个数作为输入嵌入加权和的权重”。或者“作为输入嵌入加权和的权重”。
-
-“The result is a single embedding that captures all 4 'meanings' in the right proportions.” → “结果得到一个能以适当比例融合4种含义的单一嵌入。”
-
-“core layer”翻译为“核心层”没问题。
-
-Post-Block Mixing对应“输出映射C_l”，“distributing that single embedding back into the 4 residual streams” → “将该单一嵌入分配回4个残差流”。
-
-“broadcast the same layer update into the four hyper-connection lanes, just with different learned amplitudes.” → “将同一层更新广播到四个超连接通道，但使用不同的学习振幅。”或者“广播到四个超连接通道，但使用不同的学习振幅”。
-
-“1.1 * u to one residual stream and 0.3 * u to another” → “例如，将1.1*u送入一个残差流，0.3*u送入另一个，其中u为核心层输出。”
-
-然后“it might sound counterintuitive, but the...”可能后面还有内容，但用户给的原文到“but the”就结束了，可能后面被截断了？不过用户给的原文最后是“it might sound counterintuitive, but the”，可能后面没写完，但翻译的时候只需要处理到这部分。
-
-现在要简短，所以可能需要更精炼。比如“每个token接收4个嵌入（n_hc=4）”，然后核心层仍处理单个嵌入，通过预块混合和后块混合处理。
-
-检查格式：保留原格式，比如“- **Pre
+简而言之：四个嵌入向量被压缩为相同尺寸的单一嵌入向量。该向量以零计算开销通过MoE/Attention层，随后广播回四个流。在公式中，这表示为\(C_lF_l(A_lX_l)\)，而非标准的\(F_l(X_l)\)。此后，
 
 ## 第 8 页
 
 ### 📐 TF is Birkhoff polytope?
 
-"What the hell is that?" you might ask. I hate it when simple concepts get slapped with overly complex names. As you'll see, it's actually pretty straightforward.
+“这到底是什么鬼？”你可能会问。我讨厌那些简单概念被冠以过度复杂名称的命名方式。你很快就会发现，这其实相当直白。
 
-In this context, the residual mapping matrix \(B_l\) is exactly that 4x4 matrix I mentioned earlier. It simply defines the weights used to combine the embeddings across the different residual streams.
+在这个上下文中，残差映射矩阵 \(B_l\) 正是我前面提到的那个4x4矩阵。它只是定义了用于组合不同残差流中嵌入向量的权重。
 
-Researchers use all this fancy jargon to say one basic thing: let's just normalize the matrix so that every row and column sums to exactly one, and all elements stay non-negative. Matrices that follow this rule are called "doubly stochastic." The mathematical set of all such matrices is known as the "Birkhoff Polytope."
+研究人员用所有这些花哨的术语只是为了说明一个基本事实：让我们对矩阵进行归一化，使得每一行和每一列之和都恰好为1，并且所有元素保持非负。遵循这一规则的矩阵被称为“双随机矩阵”。所有这类矩阵的数学集合被称为“伯克霍夫多面体”。
 
-This is the core difference between mHC and standard HC. Even before V4, researchers noticed that the 4x4 matrices controlling the residual stream mixing tended to break down. The deeper you go into the network, the crazier the absolute values get:
+这是mHC与标准HC之间的核心区别。甚至在V4之前，研究人员就注意到控制残差流混合的4x4矩阵容易出现退化。随着网络层数加深，这些矩阵的绝对值会变得越发离谱：
 
-![](asset/dsv4/img_13.png) alt="Matrices in layers 1, 30, and 60 respectively.">
+![](asset/dsv4/img_13.png) alt="分别对应第1层、第30层和第60层的矩阵">
 
-> Matrices in layers 1, 30, and 60 respectively.
+> 分别对应第1层、第30层和第60层的矩阵
 
-In the top half of the image, you can see the \(B_l\) matrices in a trained network without normalization. The row and column sums are printed along the left and bottom edges of each matrix. As you can see, those sums just blow up.
+在图像的上半部分，你可以看到未经过归一化训练的网络的 \(B_l\) 矩阵。每行和每列的和分别标注在每个矩阵的左侧和底部边缘。如你所见，这些和会不断膨胀。
 
-If we combine the streams using these raw, unnormalized weights, the vector magnitudes become completely unbounded. Instead of staying stable, they can jump by factors of tens or hundreds. That's 
+如果我们使用这些未经归一化的原始权重来组合残差流，向量模长将完全失去约束。它们不仅无法保持稳定，还可能以数十倍或数百倍的幅度跳跃。这对优化来说是彻底的噩梦，并会导致严重的训练不稳定。
+
+但请看图像的下半部分。mHC对这些矩阵进行了归一化，使得这些和保持在1附近。虽然这并非总是完美，但嘿，它确实有效！
 
 ### ⚖️ Why constrain residual mixing in mHC?
 
-Recall that whenever you multiply an embedding \(x\) by a weight matrix \(W\), you're applying a linear transformation. Geometrically, this transformation takes the input space and rotates, squishes, and stretches it.
+回顾一下，当你将嵌入向量 \(x\) 与权重矩阵 \(W\) 相乘时，实际上是在应用一个线性变换。从几何角度来看，该变换会对输入空间进行旋转、挤压和拉伸。
 
-The spectral norm of a matrix is simply its maximum stretch factor. Since the paper bounds this norm to 1, the matrix's maximum stretch factor is at most 1.0. As a result, no matter what vector you multiply by this matrix, the output will never be longer than the input.
+矩阵的谱范数就是其最大拉伸因子。由于论文将该范数约束为1，矩阵的最大拉伸因子至多为1.0。因此，无论你用该矩阵乘以任何向量，输出长度都不会超过输入长度。
 
-Why does this matter? In mHC, we repeatedly apply mixing transformations in the residual stream. If any of these matrices have a spectral norm greater than 1, certain directions in the activation space will keep getting amplified. Even a 3% expansion at each layer yields an amplification of \(1.03^{60} \approx 5.9\) (assuming a 60-layer network).
+为什么这一点很重要？在mHC中，我们会在残差流中反复应用混合变换。如果其中任意矩阵的谱范数大于1，激活空间中的某些方向将持续被放大。即使每层仅放大3%，在60层网络中也会产生 \(1.03^{60} \approx 5.9\) 倍的放大效应。
 
-By constraining \(B\) to be doubly stochastic, mHC makes the residual mapping behave like a mass-preserving mixer. It can blend information across the expanded residual lanes, but it can't arbitrarily amplify the signal.
+通过将 \(B\) 约束为双随机矩阵，mHC使得残差映射表现为一个保质量的混合器。它可以在扩展的残差通道间混合信息，但无法任意放大信号。
 
-[The mHC paper](https://arxiv.org/abs/2512.24880) visualizes this directly, showing the products of residual mixing matrices across 60 layers for both the unconstrained HC setup and the constrained mHC setup. In the HC case, the composite mapping develops extreme positive and negative values. This means some paths through the residual stream strongly amplify the signal or gradients—exactly the kind of behavior that destabilizes optim
+[mHC论文](https://arxiv.org/abs/2512.24880) 直接可视化展示了这一效果：在无约束的HC设置与约束后的mHC设置中，分别呈现了60层残差混合矩阵的乘积。在HC情况下，复合映射出现了极端的正负值。这意味着残差流中的某些路径会强烈放大信号或梯度——这正是导致优化不稳定的典型行为。
+
+![](asset/dsv4/img_14.png) alt="60层残差混合矩阵的乘积">
+
+而在mHC情况下，复合矩阵保持稳定。其元素为非负值，行和与列和均接近1。由于底层归一化算法是迭代式的，双随机约束只是近似满足，因此行和与列和并非精确等于1。但关键在于，增益始终保持有界，而非无限膨胀。
 
 ### 🌀 The Birkhoff polytope
 
-如前所述，这种复杂表述仅意味着我们将矩阵归一化，使每行每列的和都为1，且所有元素均为非负数。
+如前所述，这种复杂的表述实际上意味着我们对矩阵进行归一化，使得每一行和每一列的和均为1，且所有元素均为非负值。
 
 ## 第 9 页
 
 ### 👁️ Two KV-entry series
 
-一个序列 \(C^b\) 包含表示"当前块"的特征，另一个序列 \(C^a\) 表示"前一个块"。实际上，我们为每个token创建了两种表示。第一种表示用于token作为当前压缩块的一部分，编码其核心含义；第二种表示用于作为上下文信息，提供补充细节。
+一个系列 \(C^b\) 包含代表"当前块"的特征，而另一个系列 \(C^a\) 则代表"前一块"。实际上，我们为每个令牌创建了两种表示形式。第一种用于该令牌属于当前压缩块时，并可能编码其核心含义；第二种用于该令牌作为上下文时，仅提供补充性细节。
 
 ## 第 10 页
 
 ### 👁️ Learnable positional biases
 
-嗯，用户让我把一段英文翻译成中文，还要简短，保留格式。先看看原文内容。
-
-原文是：“These are just per-position biases. They allow the model to learn patterns like a decay effect within a chunk, where early tokens contribute less to the sum than later ones. Since we have \(m\) tokens per chunk, we need \(m\) of these bias vectors.”
-
-首先，我需要准确理解每个部分的意思。"per-position biases"应该翻译为“逐位置偏置”或者“按位置的偏置”。“decay effect within a chunk”可能是指在一个块（chunk）内的衰减效应，也就是前面的token对总和的贡献比后面的少。
-
-“Since we have \(m\) tokens per chunk, we need \(m\) of these bias vectors.” 这里m是每个chunk的token数量，所以需要m个这样的偏置向量。
-
-现在要简短，所以可能需要把句子结构简化，但保留技术术语。比如“per-position biases”可以译为“逐位置偏置”，“decay effect”可能用“衰减效应”或者“衰减效果”。
-
-“allow the model to learn patterns like a decay effect within a chunk, where early tokens contribute less to the sum than later ones.” 这部分可以翻译为“使模型学习块内衰减模式，早期token对总和的贡献小于后期token”。
-
-然后“Since we have m tokens per chunk, we need m of these bias vectors.” 这里可能需要处理数学符号，比如“\(m\)”在中文里通常保留符号，或者写成“m个”，但可能直接保留原样，比如“每个chunk有m个token，因此需要m个这样的偏置向量。”
-
-检查一下格式是否保留，原文中的\(m\)在中文里可能还是用LaTeX格式，所以应该保留为\(m\)。但中文环境下有时候可能直接写m，但用户说保留格式，所以可能保持原样。
-
-现在组合起来：
-
-“这些是逐位置偏置，使模型学习块内衰减模式（早期token对总和贡献小于后期）。由于每个chunk有\(m\)个token，需\(m\)个此类偏置向量。”
-
-或者更简短一点：“逐位置偏置让模型学习块内衰减效应：早期token贡献小于后期。每个chunk含\(m\)个token，需\(m\)个偏置向量。”
-
-需要检查是否准确，比如“decay effect”是否翻译为“衰减效应”更合适，或者“衰减模式”？可能“衰减效应”更准确。
-
-“early tokens contribute less to the sum than later ones”可以简化为“早期token贡献小于后期”。
-
-“we need m of these bias vectors”可以译为“需m个此类偏置向量”或者“需要m个这样的偏置向量”。
-
-可能更简洁的表达：“逐位置偏置使模型学习块内衰减效应（早期token贡献小于后期）。因每个chunk有\(m\)个token，需\(m\)个偏置向量。”
-
-或者更简短，比如：“逐位置偏置用于学习块内衰减效应（早期token贡献小于后期）。每个chunk含\(m\)个token，需\(m\)个此类偏置向量。”
-
-可能还可以更简短，比如去掉“用于”，直接“逐位置偏置让模型学习块内衰减效应：早期token贡献小于后期。每个chunk有\(m\)个token，需\(m\)个偏置向量。”
-
-检查是否符合简短的要求。可能“per-position biases”翻译成“逐位置偏置”是标准的，比如在Transformer中常用这个术语。
-
-“decay effect within a chunk”可以翻译为“块内衰减效应”或者“chunk内的衰减效应”，但
+这些仅仅是位置偏差。它们允许模型学习每个块内的衰减效应等模式，即较早的token对求和结果的贡献小于较晚的token。由于每个块包含\(m\)个token，我们需要\(m\)个这样的偏置向量。
 
 ### 👁️ Equations 11-12 for CSA
 
-让我们更详细地分解这些公式中发生的事情。我们有三对项：
+让我们更详细地拆解这些公式中发生了什么。我们有三对术语：
 
-- \(C^a\) 和 \(C^b\) —— 用于构建压缩块表示的令牌向量。如上所述，\(a\) 和 \(b\) 表示前一个和当前块。
+- **\(C^a\) 和 \(C^b\)** — 用于构建压缩块表示的 token 向量。正如前文所述，\(a\) 与 \(b\) 分别表示前一个块和当前块。在 **CSA** 中，每个块有 \(m=4\) 个 token（在 **HSA** 中是 \(m=128\)，但思想完全相同）。
+  
+  *直观上，这些向量捕获了嵌入的真实语义。*
 
-- 直观上，这些向量捕捉了嵌入的实际含义。
+- **\(Z^a\) 和 \(Z^b\)** — 我们在压缩过程中用于加权不同 token 的局部 attention logits。不同于标准 Attention 为每对 token 计算一个 logit，这里的 logits 是按通道（channel）划分的。
 
-- \(Z^a\) 和 \(Z^b\) —— 用于在压缩期间加权不同令牌的局部注意力对数。与标准注意力机制中每个令牌对计算一个对数不同，这里的对数是每通道的。
+  *直观上，这些向量跟踪每个 token 内信息的重要性。*
 
-- 直观上，这些向量跟踪每个令牌内信息的重要性。
+- **\(B^a\) 和 \(B^b\)** — 如前所述，这些只是按位置的偏置，使模型能够学习诸如块内部衰减（intra‑chunk decay）之类的行为。
 
-- \(B^a\) 和 \(B^b\) —— 如前所述，这些是每个位置的偏差，因此模型可以学习诸如块内衰减之类的东西。
+  *直观上，它们根据 token 的位置对 \(Z^a\) 和 \(Z^b\) 的重要性进行下调。*
 
-- 直观上，它们根据位置降低 \(Z^a\) 和 \(Z^b\) 的重要性。
+因此，公式中传递给 **\(Softmax_{row}\)** 的参数表示两个块（当前块和前一个块）中全部 \(2m\) 个 token 的重要性（就像它们被拼接在一起），并已根据它们的位置进行了校正。**\(Softmax_{row}\)** 随后在每个通道上分别对这些 token 进行 softmax 归一。与标准 **Softmax**（通常作用于标量）不同，这里我们对每个隐藏通道独立地、在相邻两块的 token 位置上执行该操作。
 
-因此，公式中传递给 \(Softmax_{row}\) 的参数代表了所有 \(2m\) 个令牌在两个块（当前和前一个，好像它们被连接起来）中的重要性，已根据它们的位置进行调整。然后对每个通道分别对令牌应用 \(Softmax_{row}\)。这与通常在标量上操作的标准 \(Softmax\) 不同。相反，我们针对每个隐藏通道独立地应用此操作，横跨两个连续块中的令牌位置。
+于是，**\(Softmax_{row}\)** 输出加权得分 **\(S^a\)** 与 **\(S^b\)**。我们利用这些得分对 **\(C^a\)** 与 **\(C^b\)** 按通道进行加权，如公式 (12) 所示。这实际上是对平均池化（average pooling）的一种更智能的替代方案——token 自行决定自身的权重。
+
+我们将 **\(C\)** 与 **\(Z\)** 解耦，以处理特定的极端情况。有时某个 token 嵌入通道的数值会异常大，在普通的平均池化中会主导压缩后的表示。将二者分离即可确保它不会贡献过多。
 
 ### 🔢 The Hadamard product
 
-Hadamard积$\odot$就是简单的通道逐元素相乘：
+Hadamard乘积 \(\odot\) 只是逐通道的乘法：
 
-![](asset/dsv4/img_15.png) alt="Hadamard积图示">
+![](asset/dsv4/img_15.png) alt="Hadamard product illustration">
 
-正如我之前提到的，这里的加权是按通道进行的，而不是每个token使用单个标量权重。这正是我们需要Hadamard积的原因。
+正如我之前所述，权重是对每个通道单独施加的，而不是对每个 token 使用单一的标量权重。这正是我们在此需要使用 Hadamard 乘积的原因。
 
 ## 第 11 页
 
 ### 👁️ The grouped projection trick
 
-嗯，用户让我把一段英文翻译成中文，要简短，还要保留格式。先看看原文内容。
-
-原文是：“From what I've gathered, this is the first time an approach like this has been used. You won't find it in any previous LLMs of this scale. You do occasionally see conceptually similar ideas though, such as in [Rethinking Attention Output Projection: Structured Hadamard Transforms for Efficient Transformers](https://arxiv.org/abs/2603.08343).”
-
-首先，我需要准确翻译，同时保持简短。用户可能希望翻译后的中文既准确又简洁，可能用于技术文档或者快速传达信息。要注意保留格式，比如链接部分不能动，可能需要保留方括号和URL。
-
-先分解句子：
-
-1. "From what I've gathered, this is the first time an approach like this has been used." 
-   - 意思是根据我所了解的，这是第一次使用这种方法。或者“据我所知，这是首次采用这种方案。”
-
-2. "You won't find it in any previous LLMs of this scale."
-   - 在以往同等规模的LLM中找不到这种做法。或者“此前没有同等规模的LLM采用过此方法。”
-
-3. "You do occasionally see conceptually similar ideas though, such as in [Rethinking Attention Output Projection: Structured Hadamard Transforms for Efficient Transformers](https://arxiv.org/abs/2603.08343)."
-   - 不过有时会有概念相似的想法，比如这篇论文：[Rethinking Attention Output Projection: Structured Hadamard Transforms for Efficient Transformers](https://arxiv.org/abs/2603.08343)
-
-现在需要简短翻译。可能需要调整结构，让句子更紧凑。
-
-比如：
-
-据我所知，这是首次采用此类方法，此前同等规模的LLM中未见此做法。但概念相似的思路偶有出现，例如[《重新思考注意力输出投影：高效Transformer的结构化Hadamard变换》](https://arxiv.org/abs/2603.08343)。
-
-检查是否简短。可能需要更简练。比如“此前同等规模LLM中未见此方法”或者“此前无同等规模LLM使用过”。
-
-“据我所知，这是首次采用此类方法，此前同等规模LLM中未见。但概念相似的思路偶有出现，如[《重新思考注意力输出投影：高效Transformer的结构化Hadamard变换》](https://arxiv.org/abs/2603.08343)。”
-
-或者更简短一点，比如“据我所知，这是首次使用此类方法，此前同等规模LLM中未见。但概念相似的思路偶有出现，例如[...]”。
-
-注意论文标题的翻译是否准确。原题是“Rethinking Attention Output Projection: Structured Hadamard Transforms for Efficient Transformers”，通常中文翻译可能会是“重新思考注意力输出投影：用于高效Transformer的结构化Hadamard变换”或者更简洁的“重新思考注意力输出投影：高效Transformer的结构化Hadamard变换”。
-
-保持标题的翻译准确，但可能不需要太长。例如“重新思考注意力输出投影：高效Transformer的结构化Hadamard变换”。
-
-然后检查格式是否保留，比如方括号和链接是否原样保留。是的，中文翻译中应该保留[标题](链接)的格式。
-
-再检查是否简短。原句翻译后的中文是否足够简短。可能可以去掉“据我所知”，但“从我收集到的信息来看”可能更口语化，但用户要求简短，所以“据我所知
+根据我的了解，这是首次采用此类方法。在先前任何同等规模的LLM中都无法找到这种方案。不过，偶尔能看到概念上相似的想法，例如论文《重新思考注意力输出投影：面向高效Transformer的结构化哈达玛变换》（[Rethinking Attention Output Projection: Structured Hadamard Transforms for Efficient Transformers](https://arxiv.org/abs/2603.08343)）中的相关研究。
 
 ### 🔢 The "quite large" attention output
 
@@ -488,7 +318,7 @@ You might wonder why other models haven't used this trick. Well, most mainstream
 
 - For Kimi-2.5/2.6, \(c \times n_h = 128 \times 64 = 8192\), and the `Linear(8192, 7168)` layer has 59M parameters.
 
-So, this bottleneck only emerged because of the massive increase in embedding size. This is mainly because the sequence is compressed, with each chunk representation carrying the semantic informa
+So, this bottleneck only emerged because of the massive increase in embedding size. This is mainly because the sequence is compressed, with each chunk representation carrying the semantic information of multiple tokens at once.
 
 ## 第 13 页
 
@@ -504,7 +334,25 @@ This is known as the frequency. High-frequency pairs are extremely sensitive to 
 
 You could say the first pairs are high-frequency and handle short-range dependencies. The last pairs are low-frequency and manage long-range influence. Since they rotate so little over standard context lengths, relative position doesn't drastically change their dot-product contribution.
 
-But why use rotation in the first place? RoPE changes the relative angle between the Query and Key while preserving their norms. This directly affects their dot product, which is what we use to compute attention logits. Rotation lowers the dot product, 
+But why use rotation in the first place? RoPE changes the relative angle between the Query and Key while preserving their norms. This directly affects their dot product, which is what we use to compute attention logits. Rotation lowers the dot product, which in turn lowers the attention scores. Here's a cool GIF from Lorenzo Cesconetto’s [blog](https://towardsdatascience.com/rope-clearly-explained/):
+
+![](asset/dsv4/img_17.gif) alt="DeepSeek uses RMSNorm before core attention on both Qs and KVs, so calling it “cosine” is somehow justified.">
+
+> DeepSeek uses RMSNorm before core attention on both Qs and KVs, so calling it “cosine” is somehow justified.
+
+The tempting intuition here is simple: the larger the relative distance, the more the rotation misaligns the Query and Key, so the attention score should decay. This holds up in a toy setup where Q and K are already aligned or nearly constant. But generally speaking, it's just not true! To quote the paper [Round and Round We Go! What makes Rotary Positional Encodings useful](https://arxiv.org/abs/2410.06205):
+
+> 
+
+A common belief is that RoPE is useful because it helps to decay token dependency as relative distance increases. In this work, we argue that this is unlikely to be the core reason. We study the internals of a trained Gemma 7B model to understand how RoPE is being used at a mechanical level. We find that Gemma learns to use RoPE to construct robust "positional" attention patterns by exploiting the highest frequencies. We also find that, in general, Gemma greatly prefers to use the lowest frequencies of RoPE, which we suspect are used to carry semantic information.
+
+&lt;…&gt; we carry out an ablation in which they truncate the very lowest frequencies of RoPE. The intuition is that &lt;…&gt; truncating the lowest frequencies should not harm performance. In fact, this allows RoPE to provide robust semantic channels that are distance agnostic. We call this modification p-RoPE, with \(p\) being the fraction of RoPE “kept”.
+
+DeepSeek-V4 uses **partial RoPE**, not p-RoPE (and yes, they are actually different). The model reserves the last 64 dimensions of each 512-d attention head as a RoPE slice and computes a standard 64-d RoPE ladder directly within that slice. This differs from p-RoPE, which keeps the original full-head frequency scale but discards the lowest-frequency dimensions. To put it simply: DeepSeek reduces the rotary dimension, while p-RoPE truncates the frequency ladder.
+
+And, of course, you could just as easily use the first 64 dimensions instead of the last—it makes absolutely no difference.
+
+![](asset/dsv4/img_18.png) alt="image.png">
 
 ### 👁️ RoPE absolute-position leakage
 
@@ -529,7 +377,21 @@ score(t, j)
 &amp;= q_t^T R_{j-t} k_j
 \end{aligned}\]
 
-Boom! The extra term in our dot product no longer depends on \(t\) and \(j\) individually. It depends purely on their difference! \(R_{j-t}\) will be exactly the same whether \(j=995, \space t=1000\) or \(j
+Boom! The extra term in our dot product no longer depends on \(t\) and \(j\) individually. It depends purely on their difference! \(R_{j-t}\) will be exactly the same whether \(j=995, \space t=1000\) or \(j=95,\space t=100\). In both cases, the tokens are exactly 5 positions apart.
+
+Now, let's see how RoPE actually gets applied in the Attention layer. [Here](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/inference/model.py#L502) is the relevant part of the code:
+
+`kv = self.wkv(x)
+kv = self.kv_norm(kv)
+apply_rotary_emb(kv[..., -rd:], freqs_cis)
+...
+o = sparse_attn(q, kv, self.attn_sink, topk_idxs, self.softmax_scale)
+
+```
+
+After we call `apply_rotary_emb`, the last 64 dimensions of `kv` carry absolute positional info. Inside the attention block, we compute attention weights, which are then used to calculate a weighted sum of the values. But these values have also been RoPE-rotated based on their absolute positions. This happens because the KV vector serves as both the key and the value (which cuts our KV cache memory footprint in half).
+
+This side effect is exactly what the authors mean when they talk about absolute position embeddings leaking into the attention output (`o`).
 
 ### 👁️ SWA + CSA/HCA = ?
 
@@ -570,7 +432,9 @@ But here's where standard Sliding Window Attention (SWA) runs into trouble. As t
 
 ![](asset/dsv4/img_20.png) alt="image.png">
 
-To solve this, we can simply add a dedicated sink term to the softmax denominator (though this is just one of several potential workarounds). This gives the attention head a clear "none-of-the-above" option. This way, any leftover attention mass safely drains into the sink instead of spilling over onto the active K
+To solve this, we can simply add a dedicated sink term to the softmax denominator (though this is just one of several potential workarounds). This gives the attention head a clear "none-of-the-above" option. This way, any leftover attention mass safely drains into the sink instead of spilling over onto the active KV entries after the initial tokens drop out.
+
+Effectively, this formula creates a dummy token. It only participates in the softmax normalization and affects the final attention output as if its value vector consisted entirely of zeros.
 
 ### 🎛️ FP4 inside the CSA indexer / attention
 
@@ -658,7 +522,13 @@ aligns with the paper’s ≈2%
 
 The 7.76× effective token-compression factor comes from compression ratios for chunks of size 4 (CSA) and 128 (HCA):
 
-\[\frac{1}{\frac{1}{2}\left(\frac{1}{4} + \frac{1}{12
+\[\frac{1}{\frac{1}{2}\left(\frac{1}{4} + \frac{1}{128}\right)}
+= \frac{1}{0.1289}
+\approx 7.76\]
+
+assuming a 50/50 mix.
+
+Looking at the table, the two biggest contributors are MQA and token-level chunk compression. While MQA is standard practice these days, this chunk compression is the real architectural gem of DeepSeek-V4.
 
 ## 第 14 页
 
@@ -682,7 +552,9 @@ For now, I'll just share a few important quotes from those posts:
 
 - Muon solves this problem through a elegant mathematical insight: instead of applying raw momentum updates, it orthogonalizes them to create more balanced parameter changes.
 
-- Thin
+- Think of orthogonalization like this: if traditional optimizers create updates that are like a bunch of arrows pointing in similar directions (wasteful and imbalanced), Muon transforms them into arrows that point in perpendicular directions - each carrying unique, non-redundant information.
+
+- We speculate that orthogonalization effectively increases the scale of other “rare directions” which have small magnitude in the update but are nevertheless important for learning.
 
 ## 第 15 页
 
@@ -715,27 +587,17 @@ Reading the paper, you might think a single expert has two linear layers. But th
 
 As you can see, `w1` (gate) and `w3` (up) have the exact same dimensions. Under the hood, they are actually [fused](https://github.com/deepseek-ai/DeepGEMM/blob/211d2678d9d178de7a77fbfefe7310e0f4f8821c/deep_gemm/include/deep_gemm/impls/sm100_fp8_fp4_mega_moe.cuh#L37) into a single linear layer (Linear-1) and computed in parallel. You can even spot this in Figure 5, where L1 takes about twice as long to compute as L2:
 
-![](asset/dsv4/img_
+![](asset/dsv4/img_22.png) alt="Timeline comparison of L1 and L2 computation">
 
 ### 🔧 Expert parallelism
 
-嗯，用户让我把一段英文翻译成简短的中文，保留格式。首先，我需要仔细看看原文内容。原文是关于专家并行（Expert Parallelism, EP）的，引用了Hugging Face的一个空间链接，还有图片和一些技术细节。
+Borrowing from the excellent [Ultra-Scale Playbook](https://huggingface.co/spaces/nanotron/ultrascale-playbook?section=expert_parallelism):
 
-首先，我得确认翻译的要求：简短，保留格式。所以可能需要保留链接、图片标记、数学符号等。比如“[Ultra-Scale Playbook](https://huggingface.co/spaces/nanotron/ultrascale-playbook?section=expert_parallelism)”这个链接要保持原样，图片的alt文本也要处理。
+The design of MoE layers makes it easy to implement parallelism across the experts dimension, for what we call expert parallelism (EP). Since the feedforward layers are fully independent, we can simply put each expert's feedforward layer on a different worker (GPU). Compared to TP (TensorParallelism), this approach is much more lightweight, since we don't need to split the matrix multiplication; we just need to route the hidden states of a token to the right expert.
 
-接下来，逐句分析。第一句：“Borrowing from the excellent [Ultra-Scale Playbook](https://huggingface.co/spaces/nanotron/ultrascale-playbook?section=expert_parallelism): The design of MoE layers makes it easy to implement parallelism across the experts dimension, for what we call expert parallelism (EP).” 这里“Borrowing from”可以翻译为“借鉴自”，然后链接部分保持原样。MoE layers是“混合专家（MoE）层”，expert parallelism翻译成“专家并行（EP）”。
+![](asset/dsv4/img_23.png) alt="Expert Parallelism routing illustration">
 
-接下来：“Since the feedforward layers are fully independent, we can simply put each expert's feedforward layer on a different worker (GPU). Compared to TP (TensorParallelism), this approach is much more lightweight, since we don't need to split the matrix multiplication; we just need to route the hidden states of a token to the right expert.” 这里feedforward layers是“前馈层”，worker (GPU)可以译为“工作节点（GPU）”。TP是张量并行，需要写成“张量并行（TP）”。然后“split the matrix multiplication”可能翻译为“拆分矩阵乘法”，“route the hidden states”是“路由隐藏状态”。
-
-然后图片部分：“![](asset/dsv4/img_23.png) alt="Expert Parallelism routing illustration">” 这里需要保留图片标记，但alt文本可能需要翻译。不过通常alt文本在中文环境下可能保留英文，或者翻译成中文。比如“专家并行路由示意图”可能更合适。不过用户说保留格式，所以可能图片的markdown格式不变，alt部分翻译成中文。例如：alt="专家并行路由示意图"
-
-接下来：“There are a few tricks to make EP work efficiently, and they are closely tied to model design. For instance, DeepSeek-V3 enforces a constraint in the router, ensuring that each token is sent to at most \(M\) nodes (in their case, 4) to keep the tokens on a single node and reduce communication overhead.” 这里“tricks”可以译为“技巧”或者“诀窍”，“enforces a constraint”是“施加约束”，“each token is sent to at most M nodes”即“每个令牌最多发送到M个节点”，这里M是变量，保持原样，括号里例子是4。最后“reduce communication overhead”是“减少通信开销”。
-
-现在要确保翻译简短，所以可能需要精简一些表达。例如“makes it easy to implement parallelism across the experts dimension”可以简化为“便于实现专家维度的并行”。
-
-检查是否有需要简化的部分。比如“Since the feedforward layers are fully independent, we can simply put each expert's feedforward layer on a different worker (GPU).” 可以译为“前馈层完全独立，可将各专家的前馈层分配至不同GPU工作节点。”
-
-“Compared to TP (TensorParallelism), this approach is much more lightweight, since we don't need to split the matrix multiplication; we just need to route the hidden states of a token to the right expert.”
+There are a few tricks to make EP work efficiently, and they are closely tied to model design. For instance, DeepSeek-V3 enforces a constraint in the router, ensuring that each token is sent to at most \(M\) nodes (in their case, 4) to keep the tokens on a single node and reduce communication overhead.
 
 ## 第 16 页
 
@@ -781,7 +643,9 @@ Vectorized memory loading is a classic example. If several values are contiguous
 
 Because the underlying address formula might involve strides, modulos, floor division, and symbolic dimensions, the compiler has to prove that `address(k + 1) == address(k) + 1` (and that `k` remains strictly within bounds). If it can't prove this, It falls back to a slow, conservative approach using scalar loads and runtime bounds checks.
 
-So, whe
+So, where does this solver actually live in everyday PyTorch? If you're running in standard eager mode, it doesn't. Eager mode relies entirely on pre-compiled kernels where human engineers have already done all the heavy mathematical lifting.
+
+But the second you wrap your model in torch.compile(), everything changes. PyTorch starts generating custom GPU kernels on the fly. Behind the scenes, it fires up SymPy—a symbolic math library—to act as this exact kind of solver. By symbolically analyzing dynamic shapes and strides, SymPy proves to TorchInductor (the compiler) exactly when it's safe to vectorize memory reads or fuse operations without unnecessary overhead.
 
 ## 第 18 页
 
@@ -799,53 +663,64 @@ To fix this, we use Split-KV. This decoding-focused optimization splits the long
 
 ![](asset/dsv4/img_25.gif) alt="Split-KV method illustration">
 
-Howeve
+However, Split-KV's reduction step is problematic. DeepSeek requires bitwise batch invariance, meaning the same token must produce exactly the same bits regardless of where it appears in a batch.
+
+In standard floating-point arithmetic, the order of summation matters. Due to rounding errors, \((A+B)+C\neq A+(B+C)\). Since the final bitwise result strictly depends on the exact grouping and order of these additions, Split-KV can't guarantee the strict reproducibility that DeepSeek needs.
 
 ### ⚙️ When split-KV is removed
 
-在上一篇笔记中，我们看到了Split-KV如何将长序列维度（KV缓存）切分成更小的块，以便在多个SM上并行处理。没有它，我们的GPU并行化选项就只剩下在batch和查询长度上进行分割。
+In the previous note, we saw how Split-KV slices the long sequence dimension (the KV cache) into smaller chunks to process them in parallel across multiple SMs. Without it, our GPU parallelization options shrink to just splitting over the batch and query length.
 
-由于解码时的查询长度为1，这里无法并行化。我们只剩下batch维度。
+Since the query length during decoding is exactly 1, there's nothing to parallelize there. We're left with just the batch.
 
-在标准方法中，不使用Split-KV时，单个batch元素会占用整个SM的所有资源。H800 GPU物理上有132个SM。我不知道DeepSeek在长上下文RL rollout中使用的具体batch大小，但为了简化，假设为200。
+In the standard approach without Split-KV, a single batch element occupies all the resources of an entire SM. An H800 GPU physically has 132 SMs. I don't know the exact batch size DeepSeek uses for long-context RL rollouts, but let's assume it's 200 to keep things simple.
 
-每个SM处理一个batch元素，将当前token的Query乘以整个上下文的KV缓存。前132个元素立即开始处理，完全饱和GPU。这是第一波。剩余的68个请求（\(200 - 132 = 68\)）必须等待第二波，因为没有空闲的SM了。
+Each SM picks up one batch element, multiplying the current token's Query by the KV cache of the entire context. The first 132 elements start processing immediately, fully saturating the GPU. This is the first wave. The remaining 68 requests (\(200 - 132 = 68\)) have to wait for the second wave, since there are no free SMs left.
 
-第一波完成后，剩余的68个元素被分配到新释放的SM上。但现在GPU有一半处于空闲状态。我们只使用了132个SM中的68个，而其他64个什么都不做。
+Once the first wave finishes, the remaining 68 elements are assigned to the newly freed SMs. But now the GPU is half-idle. We're only using 68 out of 132 SMs, while the other 64 just sit there doing nothing.
 
-这正是Split-KV解决的硬件利用率不足问题。它允许我们将batch的尾部扩展到所有SM上。但DeepSeek-V4团队决定放弃它以保持batch不变性。
+This hardware underutilization is exactly what Split-KV solved. It allowed us to spread the tail of the batch across all SMs. But the DeepSeek-V4 team decided to ditch it to preserve batch invariance.
 
-有趣的见解：这意味着将batch大小从200增加到264基本上是免费的 t
+Interesting insight: this means bumping the batch size from 200 to 264 is essentially free in terms of latency (assuming you have enough VRAM for the KV cache). The compute time for batches of 200 and 264 will be exactly the same. In both cases, the GPU needs to execute exactly two waves.
+
+The [Nvidia docs](https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html#wave-quant) have a great chart illustrating this effect for matrix multiplication of sizes \(M \times K\) and \(K \times N\). If \(K\) and \(M\) are fixed while \(N\) grows, the number of tiles (chunks) and execution time increase in discrete steps:
+
+![](asset/dsv4/img_26.png) alt="Nvidia wave quantization chart">
+
+A matrix with \(N=3100\) will take the exact same amount of time to compute as a matrix with \(N=4500\).
+
+This exact scenario leads to severe wave-quantization inefficiencies. Without the ability to parallelize the workload at a finer granularity, we simply can't fully utilize the GPU.
 
 ### ⚙️ Split-K for small batches
 
-嗯，用户让我把一段英文翻译成中文，要简短，还要保留格式。首先，我需要仔细看看这段英文内容。看起来是关于split-K和GEMM的，可能涉及GPU计算或者深度学习的优化技术。
+Conceptually, split-K is based on the exact same idea as the split-KV trick we discussed earlier, but this time, we’re applying it to GEMM (general matrix multiplication).
 
-首先，我得确认用户的需求。他们需要翻译，但保持格式，比如代码块、数学符号、列表结构等。所以不能随便改格式，比如里面的列表项、数学公式、代码块的标记都要保留。
+We use GEMM all the time in linear layers to multiply inputs by a weight matrix. The operation `C = A @ B` has the following shapes:
 
-先通读一遍原文。开头说Conceptually, split-K is based on the exact same idea as the split-KV trick... 然后讲GEMM，矩阵乘法，形状，计算方式，然后split-K如何进一步拆分K维度，还有关于并行化的问题，SM空闲，浮点加法不满足结合律，等等。
+- A: [M, K]
 
-翻译的时候要注意专业术语的正确性。比如“split-K”可能直接保留，或者翻译成“分裂K”？不过通常这类术语可能不翻译，直接保留英文。比如split-KV可能也是保留。GEMM一般翻译为“通用矩阵乘法”或者直接用GEMM。CUDA block可能保留CUDA，因为这是专有名词。
+- B: [K, N]
 
-然后看结构。原文有列表，比如A: [M, K]，B: [K, N]，C: [M, K] x [K, N] = [M, N]。这些需要保留格式，可能用中文的冒号或者保持原样。比如“A: [M, K]”可能翻译成“A: [M, K]”保持不变，因为括号里的内容是数学符号。
+- C: [M, K] x [K, N] = [M, N]
 
-然后数学公式部分，比如C[m, n] = sum_k A[m, k] * B[k, n]，需要保留LaTeX格式，比如用$...$或者$$...$$。原文中是用\( ... \)表示的，可能翻译后还是用同样的符号。
+We calculate each element \(C[m, n]\) as a sum over \(K\): \(C[m, n] = \sum_k A[m, k] * B[k, n]\).
 
-接下来，“split-K takes this a step further by splitting the computation along the K dimension. Now, our tile looks like this: [C[m0:m1, n0:n1] = partial_0 + partial_1 + ...]” 这里的tile可能翻译为“块”或者“瓦片”，但可能保留tile？或者根据上下文。不过通常在GPU计算中，tile可能翻译为“分块”或者直接保留tile。不过可能需要看中文技术文档的习惯。比如“分块”或者“切块”。
+Usually, GEMM parallelizes the computation by slicing the \([m, n]\) grid into tiles. A single CUDA block handles a specific tile \(C[m0:m1, n0:n1]\). It loops through all values of \(K\), accumulates the sum, and writes out the finished tile.
 
-然后“partial_0 + partial_1 + ...”可能保留partial，或者翻译为“部分和”？比如partial sum，所以partial_0可能翻译为“部分和0”之类的，但可能直接保留partial_0，因为这是变量名。
+Split-K takes this a step further by splitting the computation along the \(K\) dimension. Now, our tile looks like this:
 
-后面提到“when parallelizing across just two axes (especially when one is very small, like the batch size) doesn't generate enough parallel work, some SMs on the GPU end up idle.” 这里的SM是Streaming Multiprocessors，通常翻译为“流式多处理器”或者直接SM。batch size是批大小。
+\[C[m0:m1, n0:n1]
+= partial_0 + partial_1 + partial_2 + partial_3 + ...\]
 
-“Floating-point addition simply isn't associative: (A+B)+C≠A+(B+C).” 这句需要准确翻译，浮点加法不满足结合律。
+We use this splitting technique in roughly the same scenarios as split-KV. When parallelizing across just two axes (especially when one is very small, like the batch size) doesn't generate enough parallel work, some SMs on the GPU end up idle. This reduces hardware utilization.
 
-然后最后提到“Note that even though "split-KV" and "split” 可能后面还有，但用户给的原文可能被截断了，但翻译时可能需要处理。
+Just like with split-KV, the order in which we accumulate the partial sums \(partial_0 + partial_1 + partial_2 + partial_3\) actually matters. If we don't preserve it, we break batch invariance. Floating-point addition simply isn't associative: \((A+B)+C\neq A+(B+C)\).
 
-现在开始逐句翻译，保持简短，同时保留格式。
+Note that even though "split-KV" and "split-K" sound very similar, the "K" refers to completely different things.
 
-比如开头：“Conceptually, split-K is based on the exact same idea as the split-KV trick we discussed earlier, but this time, we’re applying it to GEMM (general matrix multiplication).”
+In split-KV, it stands for Keys and Values in attention calculations. Split-KV slices the sequence dimension, and later we have to merge the partial softmax statistics and weighted values.
 
-翻译：概念上，split-K基于之前讨论的split-KV技巧的相同思路，但
+In split-K, `K` refers to one of the GEMM dimensions. It's the reduction dimension, which usually corresponds to the input feature dimension in a `[batch_size, features_dim]` matrix.
 
 ### 🔩 24 in mHC dimensions
 
@@ -877,23 +752,57 @@ Interestingly, this fusion slightly complicates the Muon optimizer logic we disc
 
 ### 🎛️ FP4 during post-training
 
-嗯，用户让我把一段英文翻译成简短的中文，还要保留格式。先看看原文内容。看起来是关于DeepSeek-V3和V4的训练框架中精度设置的说明，里面有表格和一些技术术语。
+Back in DeepSeek-V3, the core training framework relied on FP8 mixed precision for both pretraining and RL. Just a quick refresher: this means we mix and match different data types—the big win here is that MoE weights are stored and multiplied in FP8, which saves a massive amount of memory. Meanwhile, attention and other sensitive components are kept in higher precision.
 
-首先，我需要确认用户的需求：简短翻译，保留格式。可能需要保持原有的结构，比如标题、表格、图片链接等。不过用户给的示例里有个图片链接和alt文本，可能需要处理一下。比如“![](asset/dsv4/img_28.png) alt="It really was quite something!"”这部分，可能翻译的时候要保留图片标记，但alt文本可能需要翻译，或者保持原样？
+![](asset/dsv4/img_28.png) alt="It really was quite something!">
 
-不过用户说“保留格式”，可能是指保持原有的Markdown结构，比如加粗、表格、图片链接等。但中文翻译时，可能需要把文字部分翻译，但结构不变。
+It really was quite something!
 
-现在看原文内容，第一句：“Back in DeepSeek-V3, the core training framework relied on FP8 mixed precision for both pretraining and RL. Just a quick refresher: this means we mix and match different data types—the big win here is that MoE weights are stored and multiplied in FP8, which saves a massive amount of memory. Meanwhile, attention and other sensitive components are kept in higher precision. ![](asset/dsv4/img_28.png) alt="It really was quite something!" It really was quite something! Now, DeepSeek-V4 introduces a much more granular breakdown across the different training stages. I’ve put together a quick table summarizing all the precision types mentioned throughout the paper. It's super handy to keep this in mind as we go: Stage Type Notes LM Pretrain **FP8 mixed** Inherits the DS-V3 training framework. Core Linear GEMMs are in FP8. No FP4 whatsoever. Specialist SFT **simulated FP4→FP8** QAT in post-training. FP4 expert weights are de-quantized to FP8 for the forward and backward passes. Specialist RL / rollouts **native FP4** No backward pass. Uses FP4 weights directly for sampling. Specialist RL / train **simulated FP4→FP8** Backward pass over FP8 weights. Gradients flow into FP32 master weights via STE. OPD / student rollouts **native FP4** The student generates on-policy trajectories. OPD / teacher logits inference **native FP4** Inference-only forward passes, meaning no backward pass is needed. OPD / student train **simulated FP4→FP8** Reverse-KL / full-vocab distillation. Mod”
+Now, DeepSeek-V4 introduces a much more granular breakdown across the different training stages. I’ve put together a quick table summarizing all the precision types mentioned throughout the paper. It's super handy to keep this in mind as we go:
 
-需要翻译成中文，简短。可能要注意技术术语的正确翻译，比如FP8是8位浮点，FP4是4位浮点，MoE是混合专家模型，QAT是量化感知训练，STE是Straight-Through Estimator，GEMMs是通用矩阵乘法，RL是强化学习，SFT是监督微调，OPD可能是指某种特定的训练阶段，比如Online Policy Distillation？不过可能需要确认，但用户可能只需要直译。
+Stage
+Type
+Notes
 
-先处理每个部分：
+LM Pretrain
+**FP8 mixed**
+Inherits the DS-V3 training framework. Core Linear GEMMs are in FP8. No FP4 whatsoever.
 
-“Back in DeepSeek-V3, the core training framework relied on FP8 mixed precision for both pretraining and RL.” → 回顾DeepSeek-V3，核心训练框架在预训练和强化学习中均使用FP8混合精度。
+Specialist SFT
+**simulated FP4→FP8**
+QAT in post-training. FP4 expert weights are de-quantized to FP8 for the forward and backward passes.
 
-“Just a quick refresher: this means we mix and match different data types—the big win here is that MoE weights are stored and multiplied in FP8, which saves a massive amount of memory. Meanwhile, attention and other sensitive components are kept in higher precision.” → 简单回顾：混合不同数据类型，MoE权重以FP8存储和计算，大幅节省内存，而注意力等敏感组件保持高精度。
+Specialist RL / rollouts
+**native FP4**
+No backward pass. Uses FP4 weights directly for sampling.
 
-“![](asset/dsv4/img_28.png)
+Specialist RL / train
+**simulated FP4→FP8**
+Backward pass over FP8 weights. Gradients flow into FP32 master weights via STE.
+
+OPD / student rollouts
+**native FP4**
+The student generates on-policy trajectories.
+
+OPD / teacher logits inference
+**native FP4**
+Inference-only forward passes, meaning no backward pass is needed.
+
+OPD / student train
+**simulated FP4→FP8**
+Reverse-KL / full-vocab distillation.
+
+Model serving (API)
+**native FP4**
+FP4 is used for MoE expert weights and the CSA indexer QK path.
+
+I want to reiterate: we aren't talking about compressing *all* the model weights here. The paper clarifies this later on (specifically, right in the same paragraph as this note):
+
+> 
+
+We apply FP4 (MXFP4) quantization to two components: (1) MoE expert weights, which are a major source of GPU memory occupancy and (2) the Query-Key (QK) path in the indexer of CSA, where QK activations are cached, loaded, and multiplied entirely in FP4.
+
+So, none of this affects how things like token embeddings are stored.
 
 ### 🎛️ FP4-to-FP8 scale absorption
 
@@ -957,94 +866,89 @@ Keep in mind that information is inherently lost when you initially compress the
 
 ### 🔧 Context-parallel all-gather
 
-是的，每个rank都会接收整个序列的完整KV缓存。
+Yes, each rank receives the full KV cache for the entire sequence.
 
-你可能会认为这会占用大量空间，完全耗尽你的显存。但由于CSA和HCA的惊人效率，即使对于超长上下文窗口，实际内存占用也很小。
+You might expect this to eat up a ton of space and completely blow up your VRAM. But thanks to the incredible efficiency of CSA and HCA, the actual memory footprint is tiny, even for super long context windows.
 
-让我们快速计算一下。为简单起见，我们假设所有元素都以BF16（每个元素2字节）存储，尽管DeepSeek提到某些维度以FP8存储。
+Let's do some quick math. For simplicity, we'll assume all elements are stored in BF16 (2 bytes per element), even though DeepSeek mentioned storing some dimensions in FP8.
 
-对于64k token上下文，单个CSA层存储\(64\text{k}/4 = 16,384\)个KV条目（得益于压缩因子\(m=4\)）。这得出的结果仅为：
+For a 64k token context, a single CSA layer stores \(64\text{k}/4 = 16,384\) KV entries (thanks to the compression factor \(m=4\)). That comes out to just:
 
 \[512 \times 2 \times 16,384
-= 16.7\text{M} \text{字节}
-\approx 16.7\text{MB}\]
+= 16.7\text{M} \text{ bytes}
+\approx 16.7\text{ MB}\]
 
-每层每序列。
+per layer, per sequence.
 
-对于HCA，这个数字减少了\(128/4 = 32\)倍。我们谈论的是不到1兆字节！
+For HCA, that number drops by a factor of \(128/4 = 32\). We're talking less than a single megabyte!
 
-即使扩展到1M token上下文，我们也只看到大约256 MB和8 MB。这些数字如此之小，几乎不会对你的网络带宽或显存造成任何影响。
+Even scaling all the way up to a 1M token context, we're still only looking at roughly 256 MB and 8 MB, respectively. These numbers are so small they barely make a dent in either your network bandwidth or VRAM.
 
 ## 第 22 页
 
 ### 💾 Layer-varying KV caches
 
-这是因为CSA和HCA使用不同的块大小（例如，\(m=4\) 与 \(m'=128\)）。
-因此，我们必须保留不同大小的token缓冲区，以便稍后将它们压缩成单个块。结果是一层的token槽位远多于另一层。
+This is because CSA and HCA operate on different chunk sizes (for example, \(m=4\) versus \(m&#x27;=128\)). To handle this, we have to keep token buffers of different sizes so we can compress them into a single chunk later on. Consequently, one layer will have vastly more token slots than another.
 
-我们还必须考虑到CSA和HCA由于压缩因子不同而固有地产生不同数量的块。此外，CSA要求我们将闪电索引器密钥存储在KV缓存中。
+We also have to account for the fact that CSA and HCA inherently produce different numbers of chunks due to their distinct compression factors. On top of that, CSA requires us to store the lightning indexer keys in the KV cache. 
 
-简而言之，各层差异很大。
+Long story short, the layers differ a lot.
 
 ## 第 24 页
 
 ### 🚀 Is on-disk KV cache fast enough?
 
-嗯，用户让我把一段英文翻译成中文，要简短，保留格式。先看看原文内容。这段讲的是关于磁盘读取速度和LLM推理中的存储带宽问题，提到了DualPath论文，DeepSeek的3FS文件系统，还有带宽数据之类的。
+You might think reading from disk is extremely slow and would massively spike response latency—especially in long-context scenarios with a massive KV cache.
 
-首先，我需要准确翻译技术术语，比如“KV cache”应该是“键值缓存”，“DRAM cache”是“DRAM缓存”，“SSDs”是“固态硬盘”，“NIC”是“网络接口控制器”，“PCIe Gen5”保持原样，“HBM”是高带宽内存。可能有些缩写需要确认，比如“3FS”可能直接保留，因为是专有名词。
+But it turns out, that's not the case. In their recent paper, [DualPath: Breaking the Storage Bandwidth Bottleneck in Agentic LLM Inference](https://arxiv.org/abs/2602.21548), DeepSeek wrote: “Our cluster-wide 3FS has no internal DRAM cache and can saturate the 400Gbps bandwidth of the storage NIC.”
 
-然后看结构，原文有几段，需要保持段落结构。用户要求简短，所以可能需要精简一些细节，但必须保留关键数据和术语。比如“400Gbps”转换成“400 Gbps”，中文里通常写成“400 Gbps”或者“400吉比特每秒”，但可能保留数字和单位更合适。
+3FS is the name of their custom file system. The interesting part is the lack of a DRAM cache. This means the system isn't faking its performance by keeping hot KV blocks in a massive DRAM data cache; everything is read directly from SSDs.
 
-“cluster-wide 3FS has no internal DRAM cache and can saturate the 400Gbps bandwidth of the storage NIC.” 这里“saturate”翻译为“充分利用”或者“达到饱和”，但技术上可能用“充分利用”或者“满载”更合适。“saturate the bandwidth”通常翻译为“充分利用带宽”或者“达到带宽上限”。
+Despite this, the storage architecture is designed to completely saturate the Network Interface Controller (NIC). In other words, you physically can't pump more data into a given GPU server without adding more NICs.
 
-“3FS is the name of their custom file system.” 这句可以翻译为“3FS是他们自定义的文件系统名称。”
+For context, 400 Gbps is roughly 50 GB/s. That's about the bandwidth of a single fast DDR5 memory channel. Sure, it falls way short of the aggregate server DRAM bandwidth. But it's actually right on par with the relevant ingress path into a GPU. This path is typically the PCIe Gen5 I/O fabric, which pushes about 64 GB/s in one direction.
 
-“The interesting part is the lack of a DRAM cache.” 可以说“有趣的是，该系统没有DRAM缓存。”
+So, a single fully saturated 400 Gbps storage NIC gets you pretty close to the per-GPU host ingress limit. Of course, this is still a drop in the bucket compared to the massive HBM bandwidth inside the GPU itself.
 
-“everything is read directly from SSDs.” 译为“所有数据直接从SSD读取。”
+But a standard host doesn't just have one GPU—it has eight. Since eight GPUs have to share that 400 Gbps connection, you're still looking at a pretty hefty bottleneck.
 
-“Despite this, the storage architecture is designed to completely saturate the Network Interface Controller (NIC).” 这里“completely saturate”可能需要准确表达，比如“完全利用NIC的带宽”或者“使NIC达到满载”。
+This is exactly the problem DeepSeek tackles in that DualPath paper I mentioned earlier. They actually managed to nearly double the throughput by using the NIC of a neighboring host and routing the data over a blazing-fast GPU-to-GPU link (via a separate Storage NIC, or SNIC).
 
-“400 Gbps is roughly 50 GB/s.” 这个转换要准确，50 GB/s是对的，因为1 Gbps = 0.125 GB/s，所以400*0.125=50。
+Now, how do you saturate that 50 GB/s read speed using SSDs? That's obviously way beyond what a single SSD can handle. But it's totally doable for a small cluster of datacenter NVMe drives. On paper, roughly four PCIe 5.0 SSDs or eight PCIe 4.0 SSDs can easily max it out.
 
-“single fast DDR5 memory channel” 译为“单条快速DDR5内存通道”。
+This perfectly explains the hardware design described on [DeepSeek’s GitHub](https://github.com/deepseek-ai/3fs). They use a 3FS storage node packed with 16 PCIe 4.0 NVMe drives and two 400 Gbps NICs. This SSD array can deliver up to 112 GB/s of sequential read bandwidth.
 
-“PCIe Gen5 I/O fabric, which pushes about 64 GB/s in one direction.” PCIe Gen5 I/O架构，单向传输约64 GB/s。
+![](asset/dsv4/img_30.png) alt="DeepSeek 3FS storage node architecture">
 
-“per-GPU host ingress limit” 可能翻译为“每GPU主机的入口带宽限制”。
-
-“a drop in the bucket compared to the massive HBM bandwidth inside the GPU itself” 这个成语“drop in the bucket”意思是微不足道，可以译为“与GPU内部的高带宽HBM相比，这仍微不足道”。
-
-然后检查有没有需要简化的部分。比如“DeepSeek wrote: “Our cluster-wide 3FS has no internal DRAM cache and can saturate the 400Gbps bandwidth of the storage NIC.”” 可以翻译为“DeepSeek在论文中表示：‘我们的集群级3FS无内部DRAM缓存，可充分利用存储网卡的400 Gbps带宽。’”
-
-“3FS is the name of their custom file system.” 简单说“3FS是其自研文件系统”。
-
-“the lack of a DRAM cache. This means the system isn't faking its performance by keeping hot KV blocks in a massive DRAM data cache; everything is read directly from SSDs.” 这里“is
+This doesn't magically turn an SSD into RAM for cache reads. But it does explain why this setup isn't orders of magnitude slower than reading the cache straight out of DRAM.
 
 ## 第 26 页
 
 ### 📝 How to combine AdamW + Muon
 
-如论文前面所述，AdamW也应用于mHC模块的静态偏置和门控因子。
+As mentioned earlier in the paper, AdamW is also applied to the static biases and gating factors of the mHC modules.
 
-![](asset/dsv4/img_31.png) alt="方程3-5中的这六个参数。">
+![](asset/dsv4/img_31.png) alt="These six parameters from Equations 3-5.">
 
-> 方程3-5中的这六个参数。
+> These six parameters from Equations 3-5.
 
-但为什么要这样分割？为什么有些层用Muon训练，有些层用AdamW？
+But why do we make this specific split? Why train some layers with Muon and others with AdamW?
 
-让我们回顾一下之前关于Muon的讨论。传统优化器对所有参数一视同仁。Muon更智能，它理解2D权重矩阵（如线性层中的矩阵）具有独特的几何结构。
+Let's recall what we discussed about Muon in an earlier note. Traditional optimizers treat all parameters exactly the same. Muon is smarter. It understands that 2D weight matrices (like those in Linear layers) have unique geometric structures.
 
-在反向传播过程中，它不只是应用原始动量更新，而是将其正交化以产生更平衡的参数变化。
+During the backward pass, it doesn't just apply raw momentum updates. Instead, it orthogonalizes them to create much more balanced parameter changes.
 
-这意味着Muon的操作只有在参数是 proper 矩阵变换时才有意义。让我们看看例外情况：
+This means Muon’s operation only really makes sense when the parameter is a proper matrix transform. Let’s look at the exceptions:
 
-- **嵌入模块：** 是的，从技术上讲它是形状为\(vocab\_size \times hidden\_dim\)的2D矩阵。但从语义上讲，它不是普通的密集线性映射——它是查找表。行对应离散标记，而不是连续输入特征。这里AdamW更合适，因为它保持每个参数的自适应二阶矩。这使得稀有和频繁标记的行可以获得不同的有效学习率。
+- **Embedding module:** Yes, technically it's a 2D matrix of shape \(vocab\_size \times hidden\_dim\). But semantically, it's not a normal dense linear map—it's a lookup table. The rows correspond to discrete tokens, not continuous input features. AdamW is a better fit here because it maintains per-parameter adaptive second moments. This allows rows for rare and frequent tokens to get different effective learning rates.
 
-- **预测头**（通常称为LM头）：它是对分类词汇的分类器。其行和列与标记标识相关，而不仅仅是隐藏特征。
+- **Prediction head** (often called the LM head): it's It's a classifier over a categorical vocabulary. Its rows and columns are tied to token identities, not just hidden features.
 
-- **RMSNorm：** 这里的权重是...
+- **RMSNorm:** The weights here are usually just a 1D scale vector. There is no meaningful 2D matrix geometry to orthogonalize. You could try reshaping it to \(1\times d\), but then Muon would just degenerate into normalizing or coupling the entire vector update. That's definitely not what you want.
+
+- **mHC components:** The same logic applies to the mHC static biases and gates.
+
+You can easily carry this logic over to your own experiments. Muon is fantastic for internal learned matrix transforms. For everything else, just stick to AdamW.
 
 ## 第 27 页
 
@@ -1098,7 +1002,17 @@ What's cool is that the authors didn't just combine all three modes right away. 
 
 > 
 
-&lt;…&gt; we observed a critical limitation: when prompted to both generate and analyze its own proof in one shot, the generator tends to claim correctness even when
+&lt;…&gt; we observed a critical limitation: when prompted to both generate and analyze its own proof in one shot, the generator tends to claim correctness even when the external verifier easily identify flaws. In other words, while the generator can refine proofs based on external feedback, it fails to evaluate its own work with the same rigor as the dedicated verifier.
+
+This observation motivated us to endow the proof generator with genuine verification capabilities.
+
+The proof verifier and generator create a tight feedback loop. The verifier improves the generator, and as the generator gets better, it produces new proofs that push the verifier’s current limits.
+
+For the general domain, these verification capabilities might look a lot like the DeepSeek GRM. The model first comes up with "Principles" that determine the quality of a potential response for a given query. Then, it evaluates the answer based on these principles and calculates a final score using a weighted sum. Everything is learned end-to-end via RL, and the model writes its own reasoning to justify the score. Humans don't have to hardcode these principles at all.
+
+![](asset/dsv4/img_34.png) alt="GRM evaluation process diagram">
+
+> From [this paper](https://arxiv.org/abs/2504.02495)
 
 ## 第 31 页
 
@@ -1118,51 +1032,123 @@ Even Anthropic, who are notoriously secretive about their closed-source Claude C
 
 ### 🎓 Why reverse KL is used for on-policy distillation
 
-好的，什么是反向KL，为什么我们不使用前向KL？来分解一下。
+Okay, what is reverse KL, and why don't we use forward KL? Let's break it down.
 
-学生模型的后训练方法通常分为两类。引用Thinking Machines的一篇优秀[博客文章](https://thinkingmachines.ai/blog/on-policy-distillation/#loss-function-reverse-kl)：
+Approaches to post-training a student model generally fall into two categories. To quote a great [blog post](https://thinkingmachines.ai/blog/on-policy-distillation/#loss-function-reverse-kl) by Thinking Machines:
 
-- **在线策略**训练从学生模型本身采样轨迹并为其分配奖励。
+- **On-policy** training samples rollouts from the student model itself and assigns them some reward.
 
-- **离线策略**训练依赖于来自外部源的目标输出，学生学习模仿这些输出。
+- **Off-policy** training relies on target outputs from an external source that the student learns to imitate.
 
-离线策略训练的缺点是学生在教师常去的情境中学习，而不是在学生实际会遇到的情境中。这导致错误累积。如果学生犯了早期错误而教师永远不会犯，它会偏离训练期间看到的状态越来越远。
+The downside of off-policy training is that the student learns in contexts the teacher frequents, not the ones the student itself will actually encounter. This leads to compounding errors. If the student makes an early mistake that the teacher would never make, it drifts further and further away from the states it saw during training.
 
-那么为什么不总是使用在线策略方法呢？将在线策略蒸馏与RL进行比较会有帮助。学生生成轨迹，教师对每个轨迹进行评分以提供反馈。但标准RL有一个巨大缺点：这种反馈非常稀疏。学生只知道最终答案是错误的，并在未来避免这条路径。它不知道具体在哪里犯了错误。
+So why not use on-policy methods all the time? It helps to compare on-policy distillation to RL. The student generates trajectories, and the teacher grades each of them to provide feedback. But standard RL has a massive downside: this feedback is very sparse. The student only learns that its final answer was wrong and avoids that path in the future. It doesn't learn exactly where it made the mistake.
 
-直观上，在线策略蒸馏(OPD)的核心思想是从学生模型采样轨迹，并使用高性能教师对**每个token**进行评分。
+Intuitively, the core idea of on-policy distillation (OPD) is to sample trajectories from the student model and use a high-performing teacher to grade **each token** along the way.
 
-让我们回顾一下，Kullback-Leibler(KL)散度是一种
+Let's recall that Kullback-Leibler (KL) divergence is a type of statistical distance. It measures how much an approximating probability distribution \(Q\) (the student) differs from a target or reference distribution \(P\) (the teacher).
+
+Crucially, divergences are generally asymmetric, meaning \(D_{KL}(P || Q) \neq D_{KL}(Q || P)\). Because of this asymmetry, we have to choose the order of the arguments, which dictates whether we use Forward KL or Reverse KL.
+
+The formula for Forward KL, straight from [Wikipedia](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence), looks like this:
+
+\[D_{\mathrm{KL}}(P || Q)
+= \sum_{x \in \mathcal{X}} P(x)\log\frac{P(x)}{Q(x)}\]
+
+In this formula, \(x\) is the token actually sampled at a given position in the teacher's trajectory. Since we're using the teacher for rollouts, this is an off-policy approach. The loss is then summed over the sampled tokens in that rollout. \(P(x)\) is the probability predicted by the teacher model for that token given a specific prefix. \(Q(x)\) is the probability predicted by the student model for the exact same prefix.
+
+In other words, the teacher's predicted probability acts as the weight in the sum we want to minimize. Suppose, for example, that at a given prefix, the teacher's distribution looks like this:
+
+Token
+Teacher (P(x))
+Meaning
+
+A
+0.499
+valid reasoning path
+
+B
+0.499
+another valid reasoning path
+
+C
+0.002
+bad / weird continuation
+
+Now let's compare two possible students. Student 1 covers both good options and imitates the teacher's output almost exactly. Student 2 simply commits to a single good option:
+
+Token
+Student (Q(x))
+
+A
+0.997
+
+B
+0.001
+
+C
+0.002
+
+Student 2 is basically saying, "I know the teacher likes both A and B, but I'll mostly just use A." It doesn't perfectly match the full teacher distribution, but it still confidently chooses a valid, teacher-approved token.
+
+You can read Forward KL as asking: "For every token the teacher likes, does the student also assign probability mass there?" This happens because the multiplier in our equation is \(P(x)\), the teacher's probability. Intuitively, we're teaching the student not to ignore any important options the teacher considers valid—Student 2 from the example above would be punished.
+
+This is exactly why Forward KL is known as a **mode-covering** objective. It forces the student to cover all the major modes of the teacher's distribution. If the teacher uses several plausible reasoning styles, Forward KL pushes the student to preserve every single one of them.
+
+Reverse KL is, as the name suggests, reversed:
+
+\[D_{\mathrm{KL}}(Q || P)
+= \sum_{x \in \mathcal{X}} Q(x)\log\frac{Q(x)}{P(x)}\]
+
+The critical difference here is that \(x\) is the token actually sampled at a position in the student's trajectory.
+
+You can read this one as: "For every token the student wants to use, does the teacher also approve of it?" This makes sense because our multiplier is now \(Q(x)\), the student's probability.
+
+If the student assigns zero probability to token B, it won't be penalized at all, even if the teacher thinks B is a perfectly valid option. However, Reverse KL heavily penalizes the student if it puts probability mass on a bad token like C, when the teacher considers \(P(C)\) to be tiny.
+
+This is why Reverse KL is called **mode-seeking**. It tends to commit to one high-probability mode instead of spreading its probability mass over all available modes. In other words, it tells the student: "Pick something the teacher likes. You don't have to cover every possible thing they like, just pick one. But whatever you do, don't put mass on tokens the teacher deems unlikely.”
+
+The 2023 [MiniLLM](https://arxiv.org/abs/2306.08543) paper provides a good empirical validation of this concept using a toy experiment setup:
+
+![](asset/dsv4/img_37.png) alt="MiniLLM paper empirical validation">
+
+Real LLM experiments in that same paper confirm this behavior as well. We also saw this recently in the [Qwen 3 paper](https://arxiv.org/abs/2505.09388):
+
+![](asset/dsv4/img_38.png) alt="Qwen 3 paper results">
+
+The Qwen team reported that starting from the exact same off-policy distilled 8B checkpoint, on-policy distillation outperformed direct RL while using roughly one-tenth of the GPU hours.
+
+The exact reason why OPD works this well is still an ongoing topic of discussion. Will Brown from Prime Intellect wrote an interesting piece on it [here](https://x.com/willccbb/status/2050038277454143918).
 
 ## 第 34 页
 
 ### 🎓 Teacher hidden-state caching
 
-这看起来像是一个可以轻松跳过的小优化。但让我们来计算一下它实际上节省了多少内存。
+This might look like a tiny optimization you could easily skip. But let's run the numbers to see how much memory it actually saves.
 
-为了弄清楚这一点，我们需要教师模型最后层隐藏状态和实体化对数的位精度。论文中没有提到这一点，所以我们简化假设标准的2字节浮点数（BF16/FP16）。这样我们得到每个教师模型每个序列的内存占用：
+To figure this out, we need the bit precision for the teacher's last-layer hidden states and materialized logits. The paper leaves this out, so let's keep it simple and assume standard 2-byte floats (BF16/FP16). This gives us the following memory footprint per teacher, per sequence:
 
 - \(M_{\text{logits}} = \text{Seq\_len} \times |\text{Vocab}| \times 2\)
 
 - \(M_{\text{hidden}} = \text{Seq\_len} \times \text{dim} \times 2\)
 
-假设上下文长度为64k——对于代理回放来说这是一个相当标准的大小。对于DeepSeek-V4 Pro，\( |\text{Vocab}| = 131,072 \) 和 \( d = 7168 \)，存储对数需要16GB，而隐藏状态只需要0.875GB。这意味着每个序列每个教师模型节省超过15GB。
+Let's assume a context length of 64k—a fairly standard size for agentic rollouts. For DeepSeek-V4 Pro \(|\text{Vocab}| = 131,072\) and \(d = 7168\), we'd need 16 GB to store the logits versus just 0.875 GB for the hidden states. That’s a difference of over 15 GB per sequence, per teacher.
 
-（是的，如果他们使用FP8而不是BF16/FP16，绝对数值会减半，但节省比例完全相同）。
+(And yes, if they used FP8 instead of BF16/FP16, the absolute numbers would be cut in half, but the savings ratio stays exactly the same).
 
-还值得注意的是，隐藏状态（尤其是输出对数）不是KV缓存条目。它们不会被压缩成4或128个token的块，所以我们不能依赖这些巨大的内存节省。
+It's also worth noting that hidden states (and especially output logits) are not KV cache entries. They don't get compressed into chunks of 4 or 128 tokens, so we can't rely on those massive memory savings here.
 
-DeepSeek提到使用了十多个教师模型。这意味着我们每个序列节省超过150GB。这个数字听起来太离谱了，我实际上不得不重新检查我的数学。
+DeepSeek mentions using over ten teacher models. That means we are saving over 150 GB per sequence. That number sounds so ridiculous I actually had to double-check my math.
 
 ## 第 38 页
 
 ### 📈 The SimpleQA-Verified situation
 
-DeepSeek-V4 Pro crushing Kimi K2.6 here feels a bit off. Since Kimi is also a huge 1-trillion parameter model trained on over 30T tokens, the performance gap on SimpleQA seems disproportionately large. While I don't doubt V4's underlying quality, this result points toward overfitting or a failure to properly filter out the eval data from their pretraining set.
+DeepSeek-V4 Pro 在 SimpleQA 上碾压 Kimi K2.6 的结果显得有些不合理。毕竟 Kimi 同样是基于超过 30T token 训练、拥有 1 万亿参数的庞大模型，两者在该测试上的性能差距却大得不成比例。虽然我不质疑 V4 本身的质量，但这一结果指向了过拟合，或预训练集未能有效过滤掉评估数据的问题。
 
-That said, I'm not saying DeepSeek is faking it. V4 performs legitimately well on [AA-Omniscience](https://artificialanalysis.ai/evaluations/omniscience)—a newer benchmark designed to measure a model's breadth of knowledge—where it still manages to outperform Kimi:
+话虽如此，我并非认为 DeepSeek 在造假。V4 在 [AA-Omniscience](https://artificialanalysis.ai/evaluations/omniscience) 这一较新的、用于衡量模型知识广度的基准测试上确实表现出色，并且仍能超越 Kimi：
 
-![](asset/dsv4/img_39.png) alt="AA-Omniscience benchmark comparison">
+![](asset/dsv4/img_39.png) alt="AA-Omniscience 基准测试对比"
 
 ## 第 39 页
 
@@ -1184,8 +1170,24 @@ It looks like we'll have to wait for DeepSeek-V4.1+ to introduce `medium` / `low
 
 ### 📈 Coding R&D benchmarks
 
-DeepSeek aside, this is an insane amount of progress on real-world engineering tasks. Sonnet 4.5 came out on September 29, 2025, and Opus 4.6 dropped on February 5, 2026. In just four months, the success rate jumped from 50% to 80%.
+嗯，用户让我把一段英文技术文档翻译成中文，还要保留所有Markdown格式、LaTeX公式、代码块、URL链接，技术术语比如MoE、Attention、Transformer这些直接保留英文，用词要专业精准。好的，先看看原文内容。
 
-And keep in mind, these aren't trivial problems. We're talking about complex R&amp;D tasks typically handled by a top-tier engineering team.
+原文是：“DeepSeek aside, this is an insane amount of progress on real-world engineering tasks. Sonnet 4.5 came out on September 29, 2025, and Opus 4.6 dropped on February 5, 2026. In just four months, the success rate jumped from 50% to 80%. And keep in mind, these aren't trivial problems. We're talking about complex R&amp;D tasks typically handled by a top-tier engineering team. It's only going to accelerate from here 🚀”
 
-It's only going to accelerate from here 🚀
+首先，我需要确认每个部分怎么处理。保留Markdown格式，比如加粗、斜体、代码块等，但这段文字里好像没有明显的Markdown标记，除了可能的🚀这个表情符号，不过可能不算格式。LaTeX数学公式的话，原文里没有$...$或者$$...$$，所以不用处理。代码块的话，也没有```这样的，所以可能不需要处理。URL链接也没有，所以这部分没问题。
+
+技术术语方面，DeepSeek应该保留，Sonnet 4.5和Opus 4.6是产品名称，可能不需要翻译，直接保留。R&D是Research and Development，通常中文里会翻译成“研发”，但有时候也会用R&D，不过这里可能需要看习惯。不过用户说技术术语如MoE、Attention、Transformer直接保留英文，但R&D可能属于缩写，可能需要处理。不过R&D在中文里通常翻译为“研发”或者保留R&D。比如“R&D tasks”可以翻译为“研发任务”或者“R&D任务”。不过有时候在中文技术文档中会直接写R&D，但可能更常见的是翻译成“研发”。例如“complex R&D tasks typically handled by a top-tier engineering team”可以翻译为“通常由顶级工程团队处理的复杂研发任务”。
+
+“DeepSeek aside”这里可能需要处理。DeepSeek是一个模型或者公司的名字，应该保留。"aside"在这里可能意思是“抛开DeepSeek不谈”，或者“除了DeepSeek之外”。比如“抛开DeepSeek不谈”或者“除DeepSeek外”。
+
+“this is an insane amount of progress on real-world engineering tasks”——“insane amount”可以翻译为“惊人的进展”或者“难以置信的进展”，但“insane”在这里可能有夸张的意味，用“惊人”比较合适。“real-world engineering tasks”是“实际工程任务”。
+
+“Sonnet 4.5 came out on September 29, 2025, and Opus 4.6 dropped on February 5, 2026.” 这里“came out”可以翻译为“发布”，“dropped”通常指发布，但可能用“推出”或者“发布”更合适。日期格式在中文里通常用“2025年9月29日”这样的格式。
+
+“In just four months, the success rate jumped from 50% to 80%.” 这里的“jumped”可以用“跃升”或者“提升”，“success rate”是“成功率”。
+
+“these aren't trivial problems” ——“trivial”翻译为“微不足道”或者“简单”，但这里说“这些不是简单的问题”，或者“并非 trivial 问题”，但可能更自然的说法是“这些问题绝非 trivial”或者“这些问题并不简单”。不过根据用户要求，技术术语可以保留英文，但trivial可能不是特定术语，可能需要翻译。比如“这些问题绝非 trivial”或者“这些问题并非 trivial”，但可能中文习惯会说“这些问题并不简单”或者“这些问题并非 trivial”，不过可能更准确的是“这些问题绝非 trivial”，但trivial在中文技术文档中有时保留，但可能翻译为“琐碎”或者“微不足道”。不过通常会说“这些问题并不简单”或者“这些问题并非 trivial”，但可能更专业的是“这些问题并非 trivial”，但可能更自然的翻译是“这些问题绝非 trivial”，不过可能直接说“这些问题并不简单”更合适。
+
+“We're talking about complex R&D tasks typically handled by a top-tier engineering team.” ——“complex R&D tasks”翻译为“复杂研发任务”，“top-tier engineering team”是“顶级工程团队”。
+
+“It's only going to accelerate from here 🚀” ——“accelerate”是“加速”，“from here”是“从此开始”，所以“此后只会加速 🚀”或者“此后将加速推进 🚀
