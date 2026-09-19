@@ -1,12 +1,12 @@
 ---
-title: "vLLM HiSparse 本地 KV 卸载架构"
+title: "vLLM HiSparse 本地 KV 卸载架构（附 SGLang HiSparse 对照）"
 date: 2026-09-19 22:00:00
-tags: [vLLM, KV Cache, HiSparse, 稀疏注意力, KV 卸载, 推理优化, MLA]
+tags: [vLLM, SGLang, KV Cache, HiSparse, 稀疏注意力, KV 卸载, 推理优化, MLA]
 categories: [技术]
 source: https://docs.vllm.ai/en/latest/design/hisparse/
 ---
 
-> **来源**: vLLM 官方设计文档（developer preview / latest，2026-09-12 更新）
+> **来源**: vLLM 官方设计文档（developer preview / latest，2026-09-12 更新）；文末附 LMSYS Blog 的 SGLang HiSparse 博文（2026-04-10）作为延伸对照
 > **原文**: [HiSparse local KV offload architecture](https://docs.vllm.ai/en/latest/design/hisparse/)
 
 状态：实验性（experimental）。
@@ -183,6 +183,115 @@ choose GPU LRU victim ──► copy pinned host row ──► hot physical row
 
 command/result 与 attention 层的边界可以共享。主机分配器、拷贝实现、热行布局和替换策略应当保持平台特定。NVIDIA 使用当前的加速器端 LRU 与融合 host/hot kernel。目前不支持 ROCm；AMD 或其他加速器后端可以实现自己的 worker，而不必把 NVIDIA 的策略强加进共享边界。
 
+## 延伸对照：SGLang HiSparse——同一问题的另一条路线
+
+> **来源**: LMSYS Blog（2026-04-10）
+> **原文**: [HiSparse: Turbocharging Sparse Attention with Hierarchical Memory](https://www.lmsys.org/blog/2026-04-10-sglang-hisparse/)
+
+vLLM 这份设计文档并非凭空出现。更早的 2026 年 4 月，SGLang 社区（LMSYS）就发布了同名的 HiSparse——作为他们 HiCache 工作的延续（本博此前对 SGLang HiCache 有专文拆解）。两个框架面对同一个问题（稀疏注意力下的 KV 内存管理），收敛出了高度相似的架构：GPU 热缓冲 + 主机层 + GPU 端 LRU + 融合 kernel。这个趋同本身就很说明问题：一套关于稀疏注意力 KV 管理的最佳实践正在成型。
+
+### 为什么稀疏注意力会浪费性能
+
+自注意力因二次方的计算与内存/IO 开销，已成为 LLM 长上下文扩展的主要瓶颈，由此催生了对高效注意力机制的持续关注。其中稀疏注意力尤其有前景：只关注选中的一小部分 KV cache，在保持强建模能力的同时，避开了常规注意力随上下文增长而急剧上升的计算与 I/O 开销。
+
+然而稀疏注意力——典型形式是 top-k 选择——并没有消除内存容量瓶颈。实践中，完整上下文的 KV cache 必须驻留在 GPU HBM 中以保证快速访问，尽管任一解码步真正活跃的条目只占一小部分。结果，稀疏注意力往往受限于容量而非算力，制约了可用的 batch size 和整体吞吐。如下图所示，基线（不带 HiSparse 的稀疏注意力）的 token 生成吞吐早早进入平台期，因为 KV cache 占用很快顶到 GPU 显存容量上限。
+
+相比之下，HiSparse 的吞吐随并发数接近线性扩展，在 256 并发时达到基线的 3 倍以上。注意在低并发下 HiSparse 有适度开销——稀疏 KV 加载带来的额外 I/O 超过了省下的内存收益；随着并发上升、内存压力成为主导，收益才变得显著。
+
+![图 A：吞吐 vs 并发数](asset/sglang-hisparse/throughput_concurrency.png)
+
+GLM-5.1-FP8 模型在 PD 混部 8×H200 部署上、32k 输入 / 8k 输出请求的基准结果。
+
+### HiSparse 的设计
+
+延续此前的 HiCache 工作，SGLang 提出 HiSparse：一套为突破上述限制设计的层级内存系统。HiSparse 主动把不活跃的 KV cache 条目卸载到主机内存，显著降低 GPU 显存压力；同时在 GPU HBM 上维护一个热设备缓冲（hot device buffer），存放被频繁访问的 KV 区域，把关键路径上的数据搬运降到最低。这使得更大的解码 batch size 成为可能，在提升吞吐的同时支撑更长的上下文。下图展示 HiSparse 的工作流。虽然画的是 prefill–decode 分离部署，该设计同样适用于混部实例。
+
+![图 B：HiSparse 工作流总览](asset/sglang-hisparse/hisparse_overview.png)
+
+（译注：这套「热缓冲 + 主机层 + GPU 端 LRU」的组合，与上面 vLLM 设计文档里的驻留页/热行/GPU LRU 结构几乎一一对应；vLLM 的「融合解析器」做的正是下面这个 swap-in kernel 的事。）
+
+### 高效的换入（swap-in）kernel
+
+系统核心是一个专用 CUDA kernel，它一次性完成三件事：
+
+1. 在设备缓冲中识别 top-k cache miss；
+2. 用 LRU 策略挑选驱逐候选；
+3. 更新页表，并把所需条目从主机内存取回设备内存。
+
+下图展示了热缓冲大小与驱逐策略对 miss 率的影响。更大的热设备缓冲（4096 vs 2048 个槽位）加上 LRU 驱逐，miss 次数大幅下降，直接转化为关键路径上更低的换入延迟。
+
+![图 C：cache miss 次数趋势](asset/sglang-hisparse/miss_count_trend.png)
+
+DeepSeek-V3.2（top-k=2048）在 LongBenchV2 上的 cache miss 次数基准，miss 数经过 100 步滚动窗口平滑。
+
+### 基准结果
+
+对 GLM-5.1-FP8 各种序列长度配置的扫描显示，长上下文场景下吞吐最高提升 5 倍。
+
+![图 D：不同输入/输出序列长度组合的扫描](asset/sglang-hisparse/hisparse_sweep.png)
+
+GLM-5.1-FP8 模型在双 H20 PD 分离部署上、不同输入/输出序列长度组合的基准结果。
+
+启用方式是打开 `--enable-hisparse` 并配置 `--hisparse-config`，三个关键参数：`top_k`、`device_buffer_size`（热设备缓冲槽位数）与 `host_to_device_ratio`（主机层与设备缓冲的容量比）。
+
+PD 分离部署（推荐，双 H20 节点）：
+
+```bash
+# prefill instance:
+python3 -m sglang.launch_server \
+ --model-path "zai-org/GLM-5.1-FP8" --trust-remote-code --watchdog-timeout 100000 \
+ --chunked-prefill-size 65536 --max-running-requests 480 --mem-fraction-static 0.8 \
+ --tp-size 8 --dp-size 8 --enable-dp-attention --schedule-conservativeness 0.5 \
+ --disaggregation-mode prefill \
+ --disaggregation-ib-device mlx5_0,mlx5_1,mlx5_2,mlx5_3 \
+ --dist-init-addr 127.0.0.1:5757 --nnodes 1 --node-rank 0
+
+# decode instance:
+python3 -m sglang.launch_server \
+ --model-path "zai-org/GLM-5.1-FP8" --trust-remote-code --watchdog-timeout 100000 \
+ --chunked-prefill-size 65536 --max-running-requests 480 --mem-fraction-static 0.85 \
+ --tp-size 8 --dp-size 8 --enable-dp-attention \
+ --load-balance-method round_robin --prefill-round-robin-balance \
+ --kv-cache-dtype bfloat16 --nsa-decode-backend flashmla_sparse \
+ --disaggregation-mode decode --dist-init-addr 127.0.0.1:5757 \
+ --disaggregation-ib-device mlx5_0,mlx5_1,mlx5_2,mlx5_3 --nnodes 1 --node-rank 0 \
+ --enable-hisparse \
+ --hisparse-config '{"top_k": 2048, "device_buffer_size": 6144, "host_to_device_ratio": 10}'
+```
+
+PD 混部部署（单机 8×H200）：
+
+```bash
+python3 -m sglang.launch_server \
+ --model-path "zai-org/GLM-5.1-FP8" --trust-remote-code --watchdog-timeout 100000 \
+ --chunked-prefill-size 65536 --max-running-requests 480 --mem-fraction-static 0.85 \
+ --tp-size 8 --dp-size 8 --enable-dp-attention --disable-radix-cache \
+ --enable-hisparse \
+ --hisparse-config '{"top_k": 2048, "device_buffer_size": 4096, "host_to_device_ratio": 8}'
+```
+
+### 未来工作
+
+HiSparse 目前支持使用 DeepSeek Sparse Attention（DSA）的模型家族，包括 DeepSeek-V3.2 和 GLM-5.1。作为实验特性，他们计划持续改进性能与模型覆盖。HiSparse 面向高并发场景以最大化吞吐，但 top-k cache miss 带来的额外 I/O 也引入了一定开销；他们期望通过更好的计算/传输重叠来降低这部分开销，并认为 Grace Blackwell（GB）等新平台更高的 CPU–GPU 带宽会进一步缓解它。展望未来，沿着 HiCache 的方向，他们计划把这套层级内存管理推广到更广泛的新兴架构，包括混合模型。
+
+（原文并致谢阿里云 TairKVCache 团队、蚂蚁 SCT 推理团队、Stanford 及百度百骥团队等，此处从略，见原文。）
+
+### 两套方案对照（译注）
+
+| 维度 | SGLang HiSparse（LMSYS 博文） | vLLM HiSparse（设计文档） |
+| --- | --- | --- |
+| 发布时间 | 2026-04-10，附公开基准 | 设计文档（experimental），未见基准 |
+| 目标模型 | DSA 家族（DeepSeek-V3.2、GLM-5.1），`nsa-decode-backend flashmla_sparse` | 稀疏 MLA；indexer KV 走通用卸载路径 |
+| GPU 热结构 | 热设备缓冲（`device_buffer_size` 槽位） | 驻留页 + 热行（HMA 租约） |
+| 主机层容量 | `host_to_device_ratio` 控制容量比 | `host_pool_gib`（每 DP 副本） |
+| 替换决策 | LRU，在 swap-in kernel 内于 GPU 上完成 | GPU LRU + 融合解析器，全部在加速器上 |
+| miss 处理 | 识别 top-k miss → 换入 | 融合解析：驻留页 → 热行 → 锁页主机内存 |
+| P/D | 分离与混部均支持 | NIXL P/D 导入（设备直传或主机层落地） |
+| 一致性协议 | 博文未展开 | 两阶段 spill 事务（enqueued/completed）+ host-write 事件 |
+
 ---
 
-**原文链接**: [HiSparse local KV offload architecture](https://docs.vllm.ai/en/latest/design/hisparse/)
+**原文链接**:
+
+- [HiSparse local KV offload architecture — vLLM docs](https://docs.vllm.ai/en/latest/design/hisparse/)
+- [HiSparse: Turbocharging Sparse Attention with Hierarchical Memory — LMSYS Blog](https://www.lmsys.org/blog/2026-04-10-sglang-hisparse/)
